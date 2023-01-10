@@ -17,6 +17,15 @@ pub fn Hello(cx: Scope) -> impl IntoView {
             color: red;
             font-size: 6rem;
         }
+        div {
+            border: 1px solid black;
+            margin: 25px 50px 75px 100px;
+            background-color: lightblue;
+        }
+        p.four {
+            border-style: solid;
+            border-color: #ff0000 #00ff00 #0000ff rgb(250,0,255);
+        }
     );
 
     // let k = css();

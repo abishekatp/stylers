@@ -3,14 +3,8 @@ use proc_macro::TokenStream;
 mod builder;
 
 #[proc_macro]
-pub fn style(ts: TokenStream) -> TokenStream {
-    // println!("{:#?}",ts);
-    let ts = builder::get_style_string(ts.into());
-    println!("============================================================");
-    println!("{}",ts);
-    println!("============================================================");
-    //todo: use quote here.
-    
+pub fn style(ts: TokenStream) -> TokenStream {   
+    let _class_name = builder::build_style(ts.into());
     "1+2".parse().unwrap()
 }
 

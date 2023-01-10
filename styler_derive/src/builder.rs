@@ -1,42 +1,28 @@
 use std::collections::hash_map::RandomState;
+use std::fs::{OpenOptions, File};
 use std::hash::{BuildHasher, Hasher};
-use proc_macro::{TokenStream,TokenTree};
+use std::io::{ErrorKind, Write};
+use proc_macro::{TokenStream,TokenTree, Group,Delimiter};
 
-//todo: in future try to conver this to proc_macro2 types to use outside proc_macro crate
-pub fn get_style_string(ts:TokenStream)->String{
+//todo: try to convert this to proc_macro2 types to use outside proc_macro crate
+pub fn build_style(ts:TokenStream)->String{
+    // println!("{:#?}",ts);
     let mut pre_col:usize=0;
     let mut pre_line:usize=0;
     let mut style = String::new();
-    let mut joint_punct =false;
-    let mut random_class= rand_class();
-    ts.into_iter().for_each(|t|{
-        match t {
+    //each componenet will have one unique random class 
+    let random_class= rand_class();
+    ts.into_iter().for_each(|tt|{
+        match tt{
             TokenTree::Group(t) =>{
-                //when we start partcular group that means we have completed parsing
-                //one full css selector so we will change the random class now.
-                random_class = rand_class();
-                //after . or # charactor if there is some group
-                if joint_punct{
-                    panic!("something is wrong on line:{},col:{}",pre_line,pre_col);
-                }
-                style.push_str(&t.to_string());
-                //todo:remove this
-                style.push_str("\n");
-                let end = t.span().end();
-                pre_col = end.column;
-                pre_line = end.line;
+                style.push_str(&parse_line(t.span(), &mut pre_line, &mut pre_col));
+                style.push_str(&parse_body(t));
             },
             TokenTree::Ident(t)=>{
-                if !joint_punct{
-                    style.push(' ');
-                }
+                style.push_str(&parse_line(t.span(), &mut pre_line, &mut pre_col));
                 style.push_str(&t.to_string());
                 //attaching random class to each selector
                 style.push_str(&random_class);
-                let end = t.span().end();
-                pre_col = end.column;
-                pre_line = end.line;
-                joint_punct=false;
             },
             TokenTree::Literal(t)=>{
                 let start = t.span().start();
@@ -48,7 +34,6 @@ pub fn get_style_string(ts:TokenStream)->String{
                 let end = t.span().end();
                 let cur_col=start.column;
                 let cur_line=start.line;
-
                 if pre_line==cur_line && cur_col>pre_col{
                     style.push(' ');
                 }else if pre_line==cur_line {
@@ -60,17 +45,75 @@ pub fn get_style_string(ts:TokenStream)->String{
                         style = String::from(&style[0..len-9]);
                     }
                 }
-                let cha = t.as_char();
-                if cha == '.' || cha == '#'{
-                    joint_punct = true;
-                }
-                style.push(cha);
+                style.push(t.as_char());
                 pre_col =end.column;
                 pre_line = end.line;
             }
         }
     });
-    style
+    println!("============================================================");
+    println!("{}",style);
+    println!("============================================================");
+    // _write_to_file(style);
+    random_class
+}
+
+fn parse_body(group: Group)->String{
+    let mut body = String::new();
+    let mut pre_col:usize=0;
+    let mut pre_line:usize=0;
+    let mut closing = ' ';
+    match group.delimiter() {
+        Delimiter::Brace=>{
+            body.push('{');
+            closing='}';
+        },
+        Delimiter::Parenthesis=>{
+            body.push('(');
+            closing=')';
+        },
+        Delimiter::Bracket=>{
+            body.push('[');
+            closing=']';
+        },
+        _=>()
+    }
+    group.stream().into_iter().for_each(|tt|{
+        match tt {
+            TokenTree::Group(t) =>{
+                body.push_str(&parse_line(t.span(), &mut pre_line, &mut pre_col));
+                body.push_str(&parse_body(t));
+            },
+            TokenTree::Ident(t)=>{
+                body.push_str(&parse_line(t.span(), &mut pre_line, &mut pre_col));
+                body.push_str(&t.to_string());
+            },
+            TokenTree::Literal(t)=>{
+                body.push_str(&parse_line(t.span(), &mut pre_line, &mut pre_col));
+                body.push_str(&t.to_string());
+            },
+            TokenTree::Punct(t)=>{
+                body.push_str(&parse_line(t.span(), &mut pre_line, &mut pre_col));
+                body.push(t.as_char());
+            },
+        }
+    });
+    body.push(closing);
+    body
+}
+
+fn parse_line(span:proc_macro::Span,pre_line:&mut usize,pre_col:&mut usize)->String{
+    let mut temp = String::new();
+    let start = span.start();
+    let end = span.end();
+    let cur_col=start.column;
+    let cur_line=start.line;
+    if *pre_line==cur_line && cur_col>*pre_col{
+        temp.push(' ');
+    }
+    *pre_col = end.column;
+    *pre_line = end.line;
+    temp
 }
 
 fn rand_class() -> String{
@@ -79,5 +122,20 @@ fn rand_class() -> String{
     format!(".l-{}", k.to_string())
 }
 
+fn _write_to_file(data: String){
+    let mut file= OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open("out.css").unwrap_or_else(|err|{
+            if err.kind() == ErrorKind::NotFound{
+                File::create("out.css").unwrap_or_else(|err|{
+                    panic!("Problem creating the file: {:?}", err);
+                })
+            }else{
+                panic!("Problem opening the file: {:?}", err);
+            }
+    });
+    let _ = file.write_all(data.as_bytes()).expect("Problem writing to file");
+}
 
 
