@@ -8,3 +8,5 @@ edition = "2021"
 proc_macro = true
 
 [dependencies]
+quote = "1.0"
+proc-macro2 = "1.0"

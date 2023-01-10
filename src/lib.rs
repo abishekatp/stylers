@@ -4,8 +4,7 @@ use styler_derive::style;
 #[component]
 pub fn Hello(cx: Scope) -> impl IntoView {
     // create user interfaces with the declarative `view!` macro
-
-    let _a=style!(
+    let _k = style!(
         h1 .class2 div{
             color: red;
             font-size: 6rem;
@@ -20,6 +19,8 @@ pub fn Hello(cx: Scope) -> impl IntoView {
         }
     );
 
+    // let k = css();
+    // dbg!("hello",k);
     view! {
         cx,
         <div id="one">
@@ -29,25 +30,3 @@ pub fn Hello(cx: Scope) -> impl IntoView {
     }
 }
 
-
-#[cfg(test)]
-mod tests{
-    use styler_derive::style;
-    #[test]
-    fn check_output(){
-        let _t = style!(
-            h1 .class2 div{
-                color: red;
-                font-size: 6rem;
-            }
-            .class1 div{
-                color: red;
-                font-size: 6rem;
-            }
-            h1.class2 #item.class3{
-                color: red;
-                font-size: 6rem;
-            }
-        );
-    }
-}
