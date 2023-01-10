@@ -1,6 +1,5 @@
 use leptos::*;
 use stylers::*;
-use styler_derive::style;
 
 
 pub fn main() {
