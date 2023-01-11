@@ -2,9 +2,9 @@ use leptos::*;
 use styler_derive::style;
 
 #[component]
-pub fn Hello(cx: Scope) -> impl IntoView {
+fn Hello(cx: Scope) -> impl IntoView {
     // create user interfaces with the declarative `view!` macro
-    let _k = style!(
+    style! {
         h1 .class2 div{
             color: red;
             font-size: 6rem;
@@ -26,16 +26,23 @@ pub fn Hello(cx: Scope) -> impl IntoView {
             border-style: solid;
             border-color: #ff0000 #00ff00 #0000ff rgb(250,0,255);
         }
-    );
-
-    // let k = css();
-    // dbg!("hello",k);
+    }
+    println!("==============Hello====================");
+    // let a = build();
+    // dbg!("hello",a);
     view! {
         cx,
-        <div id="one">
+        <div id="one" class={class}>
             <h1 id="two">"Blue"</h1>
             <h2>"Red"</h2>
         </div>
     }
 }
 
+#[component]
+pub fn Abi(cx: Scope) -> impl IntoView {
+    view! {cx,
+        <Hello />
+        <Hello />
+    }
+}
