@@ -27,7 +27,6 @@ fn Hello(cx: Scope) -> impl IntoView {
             border-color: #ff0000 #00ff00 #0000ff rgb(250,0,255);
         }
     }
-    println!("==============Hello====================");
     // let a = build();
     // dbg!("hello",a);
     view! {
