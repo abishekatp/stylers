@@ -2,20 +2,15 @@ use leptos::*;
 use styler_derive::style;
 
 #[component]
-fn Hello(cx: Scope) -> impl IntoView {
+fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
     // create user interfaces with the declarative `view!` macro
+    //check out this is not allowed. div#one
     style! {
-        h1 .class2 div{
+        div.one{
             color: red;
-            font-size: 6rem;
         }
-        .class1 div{
-            color: red;
-            font-size: 6rem;
-        }
-        h1.class2 #item.class3{
-            color: red;
-            font-size: 6rem;
+        div #two{
+            color: blue;
         }
         div {
             border: 1px solid black;
@@ -27,21 +22,37 @@ fn Hello(cx: Scope) -> impl IntoView {
             border-color: #ff0000 #00ff00 #0000ff rgb(250,0,255);
         }
     }
+    // h1 .class2 div{
+    //     color: red;
+    //     font-size: 6rem;
+    // }
+    // .class1 div{
+    //     color: red;
+    //     font-size: 6rem;
+    // }
+    // h1.class2 #item.class3{
+    //     color: red;
+    //     font-size: 6rem;
+    // }
     // let a = build();
     // dbg!("hello",a);
     view! {
         cx,
-        <div id="one" class={class}>
-            <h1 id="two">"Blue"</h1>
-            <h2>"Red"</h2>
+        <div>
+            <div class="one" class={class}>
+                <h1 id="two" class={class}>"Blue"</h1>
+                <h2 class={class}>"Red"</h2>
+                <h2 class={class}>{name}</h2>
+            </div>
         </div>
+
     }
 }
 
 #[component]
 pub fn Abi(cx: Scope) -> impl IntoView {
     view! {cx,
-        <Hello />
-        <Hello />
+        <Hello name="hello"/>
+        // <Hello name="hai" />
     }
 }
