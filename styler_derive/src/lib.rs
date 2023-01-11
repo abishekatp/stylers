@@ -19,6 +19,7 @@ pub fn style(ts: TokenStream) -> TokenStream {
     let expanded = quote! {       
         let class_name = #random_class;
     };
+    dbg!(&style);
     write_to_file(&style);
     TokenStream::from(expanded)
 }
