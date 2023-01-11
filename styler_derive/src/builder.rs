@@ -38,7 +38,7 @@ pub fn build_style(ts: TokenStream, random_class: &String)-> (String, HashMap<St
             }
         }
     });
-    dbg!(&style);
+    // dbg!(&style);
     // _write_to_file(style);
     (style, sel_map)
 }

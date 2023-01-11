@@ -14,10 +14,10 @@ mod builder;
 pub fn style(ts: TokenStream) -> TokenStream {
     let random_class = rand_class();
     let (style, sel_map) = builder::build_style(ts, &random_class);
-    dbg!(sel_map);
+    dbg!(&sel_map);
     let random_class = random_class[1..].to_string();
-    let expanded = quote! {
-        let class = #random_class;
+    let expanded = quote! {       
+        let class_name = #random_class;
     };
     write_to_file(&style);
     TokenStream::from(expanded)

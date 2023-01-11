@@ -39,10 +39,10 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
     view! {
         cx,
         <div>
-            <div class="one" class={class}>
-                <h1 id="two" class={class}>"Blue"</h1>
-                <h2 class={class}>"Red"</h2>
-                <h2 class={class}>{name}</h2>
+            <div class="one" class={class_name}>
+                <h1 id="two" class={class_name}>"Blue"</h1>
+                <h2 class={class_name}>"Red"</h2>
+                <h2 class={class_name}>{name}</h2>
             </div>
         </div>
 
