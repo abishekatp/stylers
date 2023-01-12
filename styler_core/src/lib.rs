@@ -1,10 +1,11 @@
-use proc_macro::{Delimiter, Group, TokenStream, TokenTree};
+#![feature(proc_macro_span)]
+use proc_macro2::{Delimiter, Group, TokenStream, TokenTree};
 use std::{collections::HashMap, vec};
 
 //todo: try to convert this to proc_macro2 types to use outside proc_macro crate
 //this function will build the whole style and write it into the main.css file
 pub fn build_style(ts: TokenStream, random_class: &String)-> (String, HashMap<String, ()>){
-    println!("{:#?}",ts);
+    // println!("{:#?}",ts);
     let mut pre_col: usize = 0;
     let mut pre_line: usize = 0;
     let mut style = String::new();
@@ -91,9 +92,9 @@ fn parse_body(group: Group) -> String {
 }
 
 //check if spaces needed to be appended
-fn add_spaces(source: &mut String,span: proc_macro::Span, pre_line: &mut usize, pre_col: &mut usize){
-    let start = span.start();
-    let end = span.end();
+fn add_spaces(source: &mut String,span: proc_macro2::Span, pre_line: &mut usize, pre_col: &mut usize){
+    let start = span.unwrap().start();
+    let end = span.unwrap().end();
     let cur_col = start.column;
     let cur_line = start.line;
     if *pre_line == cur_line && cur_col > *pre_col {
@@ -136,4 +137,24 @@ fn append_selector(source:&mut String,selector: &str,random_class:&str,sel_map:&
             i+=1;
         }
     });
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use quote::quote;
+
+    #[test]
+    fn simple_tag() {
+        let input = quote!{
+            div {
+                border: 1px solid black;
+                margin: 25px 50px 75px 100px;
+                background-color: lightblue;
+            }
+        };
+        let (style,_) = build_style(input.into(), &"sty".to_string());
+        assert_eq!(style,"div.sty {border: 1px solid black;margin: 25px 50px 75px 100px;background-color: lightblue;}");
+    }
 }

@@ -1,5 +1,5 @@
 [package]
-name = "styler_derive"
+name = "styler"
 version = "0.1.0"
 edition = "2021"
 
@@ -10,3 +10,4 @@ proc_macro = true
 [dependencies]
 quote = "1.0"
 proc-macro2 = "1.0"
+styler_core = { path = "../styler_core" }

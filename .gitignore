@@ -1,4 +1,3 @@
 /target
-/styler_derive/target
-/dist
+examples/dist
 main.css

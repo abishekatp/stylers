@@ -1,5 +1,6 @@
 #![feature(proc_macro_span)]
 use proc_macro::TokenStream;
+use proc_macro2;
 use quote::quote;
 
 use std::collections::hash_map::RandomState;
@@ -7,13 +8,12 @@ use std::hash::{BuildHasher, Hasher};
 
 use std::fs::{File, OpenOptions};
 use std::io::{ErrorKind, Write};
-
-mod builder;
+use styler_core::build_style;
 
 #[proc_macro]
 pub fn style(ts: TokenStream) -> TokenStream {
     let random_class = rand_class();
-    let (style, sel_map) = builder::build_style(ts, &random_class);
+    let (style, sel_map) = build_style(proc_macro2::TokenStream::from(ts), &random_class);
     dbg!(&sel_map);
     let random_class = random_class[1..].to_string();
     let expanded = quote! {       
@@ -55,4 +55,3 @@ fn write_to_file(data: &str) {
         .write_all(data.as_bytes())
         .expect("Problem writing to file");
 }
-

@@ -1,20 +1,32 @@
 use leptos::*;
-use styler_derive::style;
+use styler::style;
+
 
 #[component]
 fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
+
+    //check this
+    // h2 h1,a.one {
+    //     color: purple;
+    // }
     
     style! {
+        div {
+            border: 1px solid black;
+            margin: 25px 50px 75px 100px;
+            background-color: lightblue;
+        }
+        .two{
+            color: yellow;
+        }
+        div .one p{
+            color: blue;
+        }
         div.one{
             color: red;
         }
         div #two{
             color: blue;
-        }
-        div {
-            border: 1px solid black;
-            margin: 25px 50px 75px 100px;
-            background-color: lightblue;
         }
         h2,a {
             color: purple;

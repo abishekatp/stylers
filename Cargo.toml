@@ -1,11 +1,6 @@
-[package]
-name = "stylers"
-version = "0.1.0"
-edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-
-[dependencies]
-leptos = { version = "0.1.0-alpha", features = ["stable"] }
-styler_derive = { path = "./styler_derive" }
+[workspace]
+members = [
+    "styler_core",
+    "styler",
+    "examples",
+]

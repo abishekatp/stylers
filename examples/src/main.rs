@@ -1,5 +1,5 @@
 use leptos::*;
-use stylers::*;
+use styler_examples::*;
 
 pub fn main() {
     println!["Hello, stylers!"];
