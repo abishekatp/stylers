@@ -26,11 +26,8 @@ pub fn build_style(ts: TokenStream, random_class: &String)-> (String, HashMap<St
                 selector.push_str(&t.to_string());
             }
             TokenTree::Literal(t) => {
-                let start = t.span().start();
-                panic!(
-                    "Literal strings are not allowed in selectors line:{},col:{}",
-                    start.line, start.column
-                );
+                add_spaces(&mut selector,t.span(), &mut pre_line, &mut pre_col);
+                selector.push_str(t.to_string().trim_matches('"'));
             }
             TokenTree::Punct(t) => {
                 add_spaces(&mut selector,t.span(), &mut pre_line, &mut pre_col);

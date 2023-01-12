@@ -22,6 +22,10 @@ pub fn style(ts: TokenStream) -> TokenStream {
     dbg!(&style);
     write_to_file(&style);
     TokenStream::from(expanded)
+    // let call_site = proc_macro::Span::call_site();
+    // dbg!(&call_site);
+    // println!("{}",call_site.source_text().unwrap());
+    // println!("{:?}",call_site.source_file());
 }
 
 fn rand_class() -> String {
