@@ -16,11 +16,19 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
             margin: 25px 50px 75px 100px;
             background-color: lightblue;
         }
-        h2 {
+        h2,a {
             color: purple;
         }
+        .one:hover{
+            background-color: green;
+        }
+        p:lang(it){
+            background: yellow;
+        }
+        p::before {
+            content: "Read this: ";
+        }
     }
-
     // Above style macro returns one unique class_name that needs to be handled by view macro.
     // currently mapped to dom manually.
     view! {cx,
@@ -29,6 +37,8 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
             <h2 class={class_name}>"World"</h2>
             <h2 class={class_name}>{name}</h2>
             <h3 class={class_name}>"Hello Kanna"</h3>
+            <p class={class_name}> "This is example conent"</p>
+            <a href="www.google.com">"Visit the link"</a>
         </div>
     }
 }

@@ -1,9 +1,10 @@
 use proc_macro::{Delimiter, Group, TokenStream, TokenTree};
-use std::collections::HashMap;
+use std::{collections::HashMap, vec};
 
 //todo: try to convert this to proc_macro2 types to use outside proc_macro crate
 //this function will build the whole style and write it into the main.css file
 pub fn build_style(ts: TokenStream, random_class: &String)-> (String, HashMap<String, ()>){
+    println!("{:#?}",ts);
     let mut pre_col: usize = 0;
     let mut pre_line: usize = 0;
     let mut style = String::new();
@@ -14,12 +15,18 @@ pub fn build_style(ts: TokenStream, random_class: &String)-> (String, HashMap<St
     ts.into_iter().for_each(|tt| {
         match tt {
             TokenTree::Group(t) => {
-                append_selector(&mut style, &selector, &random_class,&mut sel_map);
-                selector = String::new();
-                add_spaces(&mut style,t.span(), &mut pre_line, &mut pre_col);
-                style.push_str(&parse_body(t));
-                //todo:remove this.
-                style.push('\n');
+                //only if the delimiter is brace it will be style definition
+                if t.delimiter()==Delimiter::Brace{
+                    append_selector(&mut style, &selector, &random_class,&mut sel_map);
+                    selector = String::new();
+                    add_spaces(&mut style,t.span(), &mut pre_line, &mut pre_col);
+                    style.push_str(&parse_body(t));
+                    //todo:remove this.
+                    style.push('\n');
+                }else{
+                    add_spaces(&mut selector,t.span(), &mut pre_line, &mut pre_col);
+                    selector.push_str(&parse_body(t));
+                }
             }
             TokenTree::Ident(t) => {
                 add_spaces(&mut selector,t.span(), &mut pre_line, &mut pre_col);
@@ -99,10 +106,34 @@ fn add_spaces(source: &mut String,span: proc_macro::Span, pre_line: &mut usize, 
 //build selector
 fn append_selector(source:&mut String,selector: &str,random_class:&str,sel_map:&mut HashMap<String,()>){
     let selectors:Vec<&str> = selector.split(' ').collect();
-    selectors.into_iter().for_each(|s|{
-        sel_map.insert(s.to_string(), ());
+    selectors.into_iter().for_each(|t|{
+        sel_map.insert(t.to_string(), ());
+
         source.push(' ');
-        source.push_str(s);
-        source.push_str(random_class);
+        let is_pseudo_class=t.contains(':');
+        let contains_comma=t.contains(',');
+        let mut sels = vec![t];
+        if contains_comma{
+            sels = t.split(',').collect();
+        }
+        let sels_len = sels.len();
+        let mut i = 0;
+        //this code will handle commas and pseudo classes in the css selectors
+        for s in sels{
+            if is_pseudo_class{
+                let (pre,suf) = s.split_once(':').expect(&format!("Pseudo class error at {}",selector));
+                source.push_str(pre);
+                source.push_str(random_class);
+                source.push(':');
+                source.push_str(suf);
+            }else{
+                source.push_str(s);
+                source.push_str(random_class);
+            }
+            if sels_len>1 && i!=sels_len-1{
+                source.push(',')
+            }
+            i+=1;
+        }
     });
 }
