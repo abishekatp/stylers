@@ -1,15 +1,13 @@
 use leptos::*;
 use styler::style;
 
-
 #[component]
 fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
-
     //check this
     // h2 h1,a.one {
     //     color: purple;
     // }
-    
+
     style! {
         div {
             border: 1px solid black;

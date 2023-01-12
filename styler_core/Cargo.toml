@@ -7,4 +7,4 @@ edition = "2021"
 
 [dependencies]
 quote = "1.0"
-proc-macro2 = "1.0"
+proc-macro2 = {version="1.0"}

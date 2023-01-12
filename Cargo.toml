@@ -3,4 +3,5 @@ members = [
     "styler_core",
     "styler",
     "examples",
+    "styler_test",
 ]

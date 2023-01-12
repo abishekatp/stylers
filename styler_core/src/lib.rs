@@ -2,43 +2,42 @@
 use proc_macro2::{Delimiter, Group, TokenStream, TokenTree};
 use std::{collections::HashMap, vec};
 
-//todo: try to convert this to proc_macro2 types to use outside proc_macro crate
 //this function will build the whole style and write it into the main.css file
-pub fn build_style(ts: TokenStream, random_class: &String)-> (String, HashMap<String, ()>){
+pub fn build_style(ts: TokenStream, random_class: &String) -> (String, HashMap<String, ()>) {
     // println!("{:#?}",ts);
     let mut pre_col: usize = 0;
     let mut pre_line: usize = 0;
     let mut style = String::new();
     //selector will just store current selector for each style
     let mut selector = String::new();
-    let mut sel_map :HashMap<String, ()>= HashMap::new();
+    let mut sel_map: HashMap<String, ()> = HashMap::new();
 
     ts.into_iter().for_each(|tt| {
         match tt {
             TokenTree::Group(t) => {
                 //only if the delimiter is brace it will be style definition
-                if t.delimiter()==Delimiter::Brace{
-                    append_selector(&mut style, &selector, &random_class,&mut sel_map);
+                if t.delimiter() == Delimiter::Brace {
+                    append_selector(&mut style, &selector, &random_class, &mut sel_map);
                     selector = String::new();
-                    add_spaces(&mut style,t.span(), &mut pre_line, &mut pre_col);
+                    add_spaces(&mut style, t.span(), &mut pre_line, &mut pre_col);
                     style.push_str(&parse_body(t));
                     //todo:remove this.
                     style.push('\n');
-                }else{
-                    add_spaces(&mut selector,t.span(), &mut pre_line, &mut pre_col);
+                } else {
+                    add_spaces(&mut selector, t.span(), &mut pre_line, &mut pre_col);
                     selector.push_str(&parse_body(t));
                 }
             }
             TokenTree::Ident(t) => {
-                add_spaces(&mut selector,t.span(), &mut pre_line, &mut pre_col);
+                add_spaces(&mut selector, t.span(), &mut pre_line, &mut pre_col);
                 selector.push_str(&t.to_string());
             }
             TokenTree::Literal(t) => {
-                add_spaces(&mut selector,t.span(), &mut pre_line, &mut pre_col);
+                add_spaces(&mut selector, t.span(), &mut pre_line, &mut pre_col);
                 selector.push_str(t.to_string().trim_matches('"'));
             }
             TokenTree::Punct(t) => {
-                add_spaces(&mut selector,t.span(), &mut pre_line, &mut pre_col);
+                add_spaces(&mut selector, t.span(), &mut pre_line, &mut pre_col);
                 selector.push(t.as_char());
             }
         }
@@ -71,19 +70,19 @@ fn parse_body(group: Group) -> String {
     }
     group.stream().into_iter().for_each(|tt| match tt {
         TokenTree::Group(t) => {
-            add_spaces(&mut body,t.span(), &mut pre_line, &mut pre_col);
+            add_spaces(&mut body, t.span(), &mut pre_line, &mut pre_col);
             body.push_str(&parse_body(t));
         }
         TokenTree::Ident(t) => {
-            add_spaces(&mut body,t.span(), &mut pre_line, &mut pre_col);
+            add_spaces(&mut body, t.span(), &mut pre_line, &mut pre_col);
             body.push_str(&t.to_string());
         }
         TokenTree::Literal(t) => {
-            add_spaces(&mut body,t.span(), &mut pre_line, &mut pre_col);
+            add_spaces(&mut body, t.span(), &mut pre_line, &mut pre_col);
             body.push_str(&t.to_string());
         }
         TokenTree::Punct(t) => {
-            add_spaces(&mut body,t.span(), &mut pre_line, &mut pre_col);
+            add_spaces(&mut body, t.span(), &mut pre_line, &mut pre_col);
             body.push(t.as_char());
         }
     });
@@ -92,7 +91,12 @@ fn parse_body(group: Group) -> String {
 }
 
 //check if spaces needed to be appended
-fn add_spaces(source: &mut String,span: proc_macro2::Span, pre_line: &mut usize, pre_col: &mut usize){
+fn add_spaces(
+    source: &mut String,
+    span: proc_macro2::Span,
+    pre_line: &mut usize,
+    pre_col: &mut usize,
+) {
     let start = span.unwrap().start();
     let end = span.unwrap().end();
     let cur_col = start.column;
@@ -105,56 +109,67 @@ fn add_spaces(source: &mut String,span: proc_macro2::Span, pre_line: &mut usize,
 }
 
 //build selector
-fn append_selector(source:&mut String,selector: &str,random_class:&str,sel_map:&mut HashMap<String,()>){
-    let selectors:Vec<&str> = selector.split(' ').collect();
-    selectors.into_iter().for_each(|t|{
+fn append_selector(
+    source: &mut String,
+    selector: &str,
+    random_class: &str,
+    sel_map: &mut HashMap<String, ()>,
+) {
+    let selectors: Vec<&str> = selector.split(' ').collect();
+    selectors.into_iter().for_each(|t| {
         sel_map.insert(t.to_string(), ());
 
         source.push(' ');
-        let is_pseudo_class=t.contains(':');
-        let contains_comma=t.contains(',');
+        let is_pseudo_class = t.contains(':');
+        let contains_comma = t.contains(',');
         let mut sels = vec![t];
-        if contains_comma{
+        if contains_comma {
             sels = t.split(',').collect();
         }
         let sels_len = sels.len();
         let mut i = 0;
         //this code will handle commas and pseudo classes in the css selectors
-        for s in sels{
-            if is_pseudo_class{
-                let (pre,suf) = s.split_once(':').expect(&format!("Pseudo class error at {}",selector));
+        for s in sels {
+            if matches!(s, "@keyframes" | "@-webkit-keyframes") {
+                source.push_str(s);
+            } else if is_pseudo_class {
+                let (pre, suf) = s
+                    .split_once(':')
+                    .expect(&format!("Pseudo class error at {}", selector));
                 source.push_str(pre);
                 source.push_str(random_class);
                 source.push(':');
                 source.push_str(suf);
-            }else{
+            } else {
                 source.push_str(s);
                 source.push_str(random_class);
             }
-            if sels_len>1 && i!=sels_len-1{
+
+            if sels_len > 1 && i != sels_len - 1 {
                 source.push(',')
             }
-            i+=1;
+            i += 1;
         }
     });
 }
 
+//todo: This test will only work when Span is available outside proceduaral macro crate.
+//https://docs.rs/proc-macro2/latest/proc_macro2/struct.Span.html#method.unwrap
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
+//     use quote::quote;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use quote::quote;
-
-    #[test]
-    fn simple_tag() {
-        let input = quote!{
-            div {
-                border: 1px solid black;
-                margin: 25px 50px 75px 100px;
-                background-color: lightblue;
-            }
-        };
-        let (style,_) = build_style(input.into(), &"sty".to_string());
-        assert_eq!(style,"div.sty {border: 1px solid black;margin: 25px 50px 75px 100px;background-color: lightblue;}");
-    }
-}
+//     #[test]
+//     fn simple_tag() {
+//         let input = quote!{
+//             div {
+//                 border: 1px solid black;
+//                 margin: 25px 50px 75px 100px;
+//                 background-color: lightblue;
+//             }
+//         };
+//         let (style,_) = build_style(input.into(), &"sty".to_string());
+//         assert_eq!(style,"div.sty {border: 1px solid black;margin: 25px 50px 75px 100px;background-color: lightblue;}");
+//     }
+// }

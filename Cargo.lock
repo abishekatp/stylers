@@ -1229,6 +1229,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "styler_test"
+version = "0.1.0"
+dependencies = [
+ "styler",
+]
+
+[[package]]
 name = "syn"
 version = "1.0.107"
 source = "registry+https://github.com/rust-lang/crates.io-index"

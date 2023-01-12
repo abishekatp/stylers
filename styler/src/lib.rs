@@ -13,13 +13,13 @@ use styler_core::build_style;
 #[proc_macro]
 pub fn style(ts: TokenStream) -> TokenStream {
     let random_class = rand_class();
-    let (style, sel_map) = build_style(proc_macro2::TokenStream::from(ts), &random_class);
-    dbg!(&sel_map);
+    let (style, _sel_map) = build_style(proc_macro2::TokenStream::from(ts), &random_class);
+    // dbg!(&sel_map);
     let random_class = random_class[1..].to_string();
-    let expanded = quote! {       
+    let expanded = quote! {
         let class_name = #random_class;
     };
-    dbg!(&style);
+    // dbg!(&style);
     write_to_file(&style);
     TokenStream::from(expanded)
     // let call_site = proc_macro::Span::call_site();
@@ -28,12 +28,22 @@ pub fn style(ts: TokenStream) -> TokenStream {
     // println!("{:?}",call_site.source_file());
 }
 
+//this macro will return the style string. Note:created for testing purpose only.
+#[proc_macro]
+pub fn style_str(ts: TokenStream) -> TokenStream {
+    let random_class = String::from(".test");
+    let (style, _sel_map) = build_style(proc_macro2::TokenStream::from(ts), &random_class);
+    let expanded = quote! {
+        #style
+    };
+    TokenStream::from(expanded)
+}
+
 fn rand_class() -> String {
     let hash = RandomState::new().build_hasher().finish().to_string();
     let k = &hash[0..6];
     format!(".l-{}", k.to_string())
 }
-
 
 //append if file exists or write it into the new file
 fn write_to_file(data: &str) {
