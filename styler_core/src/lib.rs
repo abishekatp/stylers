@@ -1,6 +1,6 @@
 #![feature(proc_macro_span)]
 use proc_macro2::{Delimiter, Group, TokenStream, TokenTree};
-use std::{collections::HashMap, vec};
+use std::collections::HashMap;
 
 //this function will build the whole style and write it into the main.css file
 pub fn build_style(ts: TokenStream, random_class: &String) -> (String, HashMap<String, ()>) {
@@ -115,25 +115,38 @@ fn append_selector(
     random_class: &str,
     sel_map: &mut HashMap<String, ()>,
 ) {
-    let selectors: Vec<&str> = selector.split(' ').collect();
-    selectors.into_iter().for_each(|t| {
-        sel_map.insert(t.to_string(), ());
+    dbg!(&selector);
 
-        source.push(' ');
-        let is_pseudo_class = t.contains(':');
-        let contains_comma = t.contains(',');
-        let mut sels = vec![t];
-        if contains_comma {
-            sels = t.split(',').collect();
+    //to handle commad separated selectors
+    let separators:Vec<&str> = selector.split_inclusive(&[',','>','+','~']).collect();
+    let separators_len = separators.len();
+    let mut i = 0;
+    for s1 in separators{
+        let mut s1 = s1.trim();
+        let mut separator = "";
+        //handles two cases first when there are no separators, 
+        //second when last selector will not have any separator.
+        if separators_len >1 && i!=separators_len-1{
+            let len = s1.len();
+            separator = &s1[len-1..];
+            s1 = &s1[..len-1];
         }
-        let sels_len = sels.len();
-        let mut i = 0;
-        //this code will handle commas and pseudo classes in the css selectors
-        for s in sels {
-            if matches!(s, "@keyframes" | "@-webkit-keyframes") {
-                source.push_str(s);
+        // to handle indirect child selector
+        let indirect_childs: Vec<&str> = s1.trim().split(' ').collect();
+        let indirect_len = indirect_childs.len();
+        let mut j =0;
+        for s3 in indirect_childs {
+            let s3 = s3.trim();
+            sel_map.insert(s3.to_string(), ());
+            let is_pseudo_class = s3.contains(':');
+            if s3=="*"{
+                //to handle universal selector
+                source.push_str(random_class);
+            }else if matches!(s3, "@keyframes" | "@-webkit-keyframes") {
+                source.push_str(s3);
             } else if is_pseudo_class {
-                let (pre, suf) = s
+                //to handle pseudo classes
+                let (pre, suf) = s3
                     .split_once(':')
                     .expect(&format!("Pseudo class error at {}", selector));
                 source.push_str(pre);
@@ -141,16 +154,18 @@ fn append_selector(
                 source.push(':');
                 source.push_str(suf);
             } else {
-                source.push_str(s);
+                //general case
+                source.push_str(s3);
                 source.push_str(random_class);
             }
-
-            if sels_len > 1 && i != sels_len - 1 {
-                source.push(',')
+            if indirect_len-1!=j{
+                source.push(' ');
             }
-            i += 1;
-        }
-    });
+            j+=1;
+        }//indirect childs
+        source.push_str(separator);
+        i+=1;
+    }//separators
 }
 
 //todo: This test will only work when Span is available outside proceduaral macro crate.

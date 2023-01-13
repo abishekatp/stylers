@@ -27,7 +27,7 @@ pub fn run_tests() {
 
     println!("------------------Test-3------------------");
     let style = style_str! {
-        .two .one{
+        .two  .one{
             color: yellow;
         }
     };
@@ -36,12 +36,13 @@ pub fn run_tests() {
 
     println!("------------------Test-4------------------");
     let style = style_str! {
-        #firstname {
+        #firstname{
             background-color: yellow;
         }
     };
-    assert_eq!(style.trim(), "#firstname.test {background-color: yellow;}");
+    assert_eq!(style.trim(), "#firstname.test{background-color: yellow;}");
 
+    // todo: decide weather all element should have the random classname inserted for this.
     println!("------------------Test-5------------------");
     let style = style_str! {
         *{
@@ -52,13 +53,13 @@ pub fn run_tests() {
 
     println!("------------------Test-6------------------");
     let style = style_str! {
-        div {
+        div{
             border: 1px solid black;
             margin: 25px 50px 75px 100px;
             background-color: lightblue;
         }
     };
-    assert_eq!(style.trim(),"div.test {border: 1px solid black;margin: 25px 50px 75px 100px;background-color: lightblue;}");
+    assert_eq!(style.trim(),"div.test{border: 1px solid black;margin: 25px 50px 75px 100px;background-color: lightblue;}");
 
     println!("------------------Test-7------------------");
     let style = style_str! {
@@ -88,20 +89,20 @@ pub fn run_tests() {
 
     println!("------------------Test-10------------------");
     let style = style_str! {
-        h2,a {
+        h2 , a{
             color: purple;
         }
     };
-    assert_eq!(style.trim(), "h2.test,a.test {color: purple;}");
+    assert_eq!(style.trim(), "h2.test,a.test{color: purple;}");
 
 
     println!("------------------Test-11------------------");
     let style = style_str! {
-        div > p {
+        div > p{
             background-color: yellow;
         }
     };
-    assert_eq!(style.trim(), "div.test>p.test {background-color: yellow;}");
+    assert_eq!(style.trim(), "div.test>p.test{background-color: yellow;}");
 
     println!("------------------Test-12-----------------");
     let style = style_str! {
@@ -111,7 +112,7 @@ pub fn run_tests() {
     };
     assert_eq!(
         style.trim(),
-        "div.test + p.test {background-color: yellow;}"
+        "div.test+p.test {background-color: yellow;}"
     );
 
     println!("------------------Test-13-----------------");
@@ -122,7 +123,7 @@ pub fn run_tests() {
     };
     assert_eq!(
         style.trim(),
-        "p.test ~ ul.test {background: #ff0000;}"
+        "p.test~ul.test {background: #ff0000;}"
     );
 
     println!("------------------Test-14-----------------");
@@ -147,6 +148,7 @@ pub fn run_tests() {
         r#"a[id="1"].test {background-color: yellow;}"#
     );
 
+    //todo: check how we can resolve this problem.
     println!("------------------Test-16-----------------");
     let style = style_str! {
         [title~=flower] {
@@ -155,7 +157,7 @@ pub fn run_tests() {
     };
     assert_eq!(
         style.trim(),
-        "[title~=flower].test {background-color: yellow;}"
+        "[title~=flower].test{background-color: yellow;}"
     );
 
     println!("------------------Test-17-----------------");
@@ -193,6 +195,17 @@ pub fn run_tests() {
 
     println!("------------------Test-20-----------------");
     let style = style_str! {
+        div [class$=test] {
+            background-color: yellow;
+        }
+    };
+    assert_eq!(
+        style.trim(),
+        "div.test [class$=test].test {background-color: yellow;}"
+    );
+
+    println!("------------------Test-21-----------------");
+    let style = style_str! {
         div[class*="test"] {
             background-color: yellow;
         }
@@ -202,7 +215,7 @@ pub fn run_tests() {
         r#"div[class*="test"].test {background-color: yellow;}"#
     );
 
-    println!("------------------Test-21------------------");
+    println!("------------------Test-22------------------");
     let style = style_str! {
         .one:hover{
             background-color: green;
@@ -210,7 +223,7 @@ pub fn run_tests() {
     };
     assert_eq!(style.trim(), ".one.test:hover{background-color: green;}");
 
-    println!("------------------Test-22------------------");
+    println!("------------------Test-23------------------");
     let style = style_str! {
         p::before {
             content: "Read this: ";
@@ -219,7 +232,7 @@ pub fn run_tests() {
     assert_eq!(style.trim(), r#"p.test::before {content: "Read this: ";}"#);
 
 
-    println!("------------------Test-23------------------");
+    println!("------------------Test-24------------------");
     let style = style_str! {
         div:nth-child(2){
             background-color: green;
@@ -227,7 +240,7 @@ pub fn run_tests() {
     };
     assert_eq!(style.trim(), "div.test:nth-child(2){background-color: green;}");
 
-    println!("------------------Test-24------------------");
+    println!("------------------Test-25------------------");
     let style = style_str! {
         p:lang(it){
             background: yellow;
@@ -237,7 +250,7 @@ pub fn run_tests() {
 
     
 
-    println!("------------------Test-25-----------------");
+    println!("------------------Test-26-----------------");
     let style = style_str! {
         @keyframes spin {
             to {
@@ -250,7 +263,7 @@ pub fn run_tests() {
         "@keyframes spin.test {to {-webkit-transform: rotate(360deg);}}"
     );
 
-    println!("------------------Test-26-----------------");
+    println!("------------------Test-27-----------------");
     let style = style_str! {
         @-webkit-keyframes spin {
             to {
