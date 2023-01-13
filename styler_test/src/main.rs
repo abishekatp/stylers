@@ -33,7 +33,6 @@ pub fn run_tests() {
     };
     assert_eq!(style.trim(), ".two.test .one.test{color: yellow;}");
 
-
     println!("------------------Test-4------------------");
     let style = style_str! {
         #firstname{
@@ -69,7 +68,6 @@ pub fn run_tests() {
     };
     assert_eq!(style.trim(), "div.test .one.test p.test{color: blue;}");
 
-
     println!("------------------Test-8------------------");
     let style = style_str! {
         div.one p div{
@@ -86,7 +84,6 @@ pub fn run_tests() {
     };
     assert_eq!(style.trim(), "div.test #two.test{color: blue;}");
 
-
     println!("------------------Test-10------------------");
     let style = style_str! {
         h2 , a{
@@ -94,7 +91,6 @@ pub fn run_tests() {
         }
     };
     assert_eq!(style.trim(), "h2.test,a.test{color: purple;}");
-
 
     println!("------------------Test-11------------------");
     let style = style_str! {
@@ -110,10 +106,7 @@ pub fn run_tests() {
             background-color: yellow;
         }
     };
-    assert_eq!(
-        style.trim(),
-        "div.test+p.test {background-color: yellow;}"
-    );
+    assert_eq!(style.trim(), "div.test+p.test {background-color: yellow;}");
 
     println!("------------------Test-13-----------------");
     let style = style_str! {
@@ -121,10 +114,7 @@ pub fn run_tests() {
             background: #ff0000;
         }
     };
-    assert_eq!(
-        style.trim(),
-        "p.test~ul.test {background: #ff0000;}"
-    );
+    assert_eq!(style.trim(), "p.test~ul.test {background: #ff0000;}");
 
     println!("------------------Test-14-----------------");
     let style = style_str! {
@@ -132,10 +122,7 @@ pub fn run_tests() {
             background-color: yellow;
         }
     };
-    assert_eq!(
-        style.trim(),
-        "a[target].test {background-color: yellow;}"
-    );
+    assert_eq!(style.trim(), "a[target].test {background-color: yellow;}");
 
     println!("------------------Test-15-----------------");
     let style = style_str! {
@@ -166,10 +153,7 @@ pub fn run_tests() {
             background-color: yellow;
         }
     };
-    assert_eq!(
-        style.trim(),
-        "[lang|=en].test {background-color: yellow;}"
-    );
+    assert_eq!(style.trim(), "[lang|=en].test {background-color: yellow;}");
 
     println!("------------------Test-18-----------------");
     let style = style_str! {
@@ -231,14 +215,16 @@ pub fn run_tests() {
     };
     assert_eq!(style.trim(), r#"p.test::before {content: "Read this: ";}"#);
 
-
     println!("------------------Test-24------------------");
     let style = style_str! {
         div:nth-child(2){
             background-color: green;
         }
     };
-    assert_eq!(style.trim(), "div.test:nth-child(2){background-color: green;}");
+    assert_eq!(
+        style.trim(),
+        "div.test:nth-child(2){background-color: green;}"
+    );
 
     println!("------------------Test-25------------------");
     let style = style_str! {
@@ -247,8 +233,6 @@ pub fn run_tests() {
         }
     };
     assert_eq!(style.trim(), "p.test:lang(it){background: yellow;}");
-
-    
 
     println!("------------------Test-26-----------------");
     let style = style_str! {
