@@ -39,9 +39,9 @@ pub fn build_style(ts: TokenStream, random_class: &String) -> (String, HashMap<S
             TokenTree::Punct(t) => {
                 let ch = t.as_char();
                 //only in these two cases we need space information
-                if ch=='.' || ch=='#'{
+                if ch == '.' || ch == '#' {
                     add_spaces(&mut selector, t.span(), &mut pre_line, &mut pre_col);
-                }else{
+                } else {
                     let end = t.span().unwrap().end();
                     pre_col = end.column;
                     pre_line = end.line;
@@ -131,16 +131,16 @@ fn append_selector(
     let mut ignore_untill_event_end = false;
     let mut temp = String::new();
     let mut i = 0;
-    for c in selector.chars(){
-        i+=1;
+    for c in selector.chars() {
+        i += 1;
 
         //ignore everything between square brackets.
-        if ignore_untill_close && c!=']'{
+        if ignore_untill_close && c != ']' {
             source.push(c);
             temp.push(c);
             continue;
         }
-        if ignore_untill_close && c==']'{
+        if ignore_untill_close && c == ']' {
             source.push(c);
             ignore_untill_close = false;
             source.push_str(random_class);
@@ -150,7 +150,7 @@ fn append_selector(
             temp = String::new();
             continue;
         }
-        if c =='['{
+        if c == '[' {
             source.push(c);
             ignore_untill_close = true;
             temp.push(c);
@@ -158,40 +158,42 @@ fn append_selector(
         }
 
         //ignore everything until we reach to whitespace.
-        if ignore_untill_event_end && c!=' '{
+        if ignore_untill_event_end && c != ' ' {
             source.push(c);
             continue;
         }
-        if ignore_untill_event_end && c==' '{
+        if ignore_untill_event_end && c == ' ' {
             ignore_untill_event_end = false;
             source.push(' ');
             continue;
         }
         //check for event selector
-        if c=='@'{
+        if c == '@' {
             ignore_untill_event_end = true;
             source.push(c);
             continue;
         }
 
         //ignore everything until we reach to whitespace or end of the line.
-        if ignore_untill_space && (c==' ' || i==sel_len){
+        if ignore_untill_space && (c == ' ' || i == sel_len) {
             //this condition will should be true when either we reach space or end of line.
             source.push(c);
             ignore_untill_space = false;
-            
-            if c!=' '{temp.push(c);}
+
+            if c != ' ' {
+                temp.push(c);
+            }
             sel_map.insert(temp.clone(), ());
             temp = String::new();
             continue;
         }
-        if ignore_untill_space && c!=' '{
+        if ignore_untill_space && c != ' ' {
             source.push(c);
             temp.push(c);
             continue;
         }
         //check for pseudo class selector
-        if c==':'{
+        if c == ':' {
             ignore_untill_space = true;
             source.push_str(random_class);
             source.push(c);
@@ -199,14 +201,13 @@ fn append_selector(
             continue;
         }
 
-
         //check for child or sibiling selectors
         //this condition ignores the unwanted white space after comma, >, +, ~ punctuations.
-        if c==' ' && ignore_spaces{
+        if c == ' ' && ignore_spaces {
             ignore_spaces = false;
             continue;
         }
-        if c==','||c=='+'||c=='~'||c=='>'{
+        if c == ',' || c == '+' || c == '~' || c == '>' {
             source.push_str(random_class);
             source.push(c);
             ignore_spaces = true;
@@ -217,15 +218,14 @@ fn append_selector(
         }
 
         //check for universal selector.
-        if c=='*'{
+        if c == '*' {
             source.push_str(random_class);
             sel_map.insert("*".to_string(), ());
             continue;
         }
 
-
         //append random class if we reach end of the line.
-        if i==sel_len{
+        if i == sel_len {
             source.push(c);
             source.push_str(random_class);
 
@@ -236,12 +236,12 @@ fn append_selector(
         }
 
         //check for direct child selector
-        if c!=' '{
+        if c != ' ' {
             source.push(c);
             temp.push(c);
             continue;
         }
-        if c==' '{
+        if c == ' ' {
             source.push_str(random_class);
             source.push(' ');
 
