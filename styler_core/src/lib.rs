@@ -50,6 +50,7 @@ pub fn build_style(ts: TokenStream, random_class: &String) -> (String, HashMap<S
             }
         }
     });
+    dbg!(&sel_map);
     // dbg!(&style);
     // _write_to_file(style);
     (style, sel_map)
@@ -122,12 +123,13 @@ fn append_selector(
     random_class: &str,
     sel_map: &mut HashMap<String, ()>,
 ) {
-    dbg!(&selector);
-    // let selector = selector.trim();
+    // dbg!(&selector);
     let sel_len = selector.len();
     let mut ignore_spaces = false;
     let mut ignore_untill_space = false;
     let mut ignore_untill_close = false;
+    let mut ignore_untill_event_end = false;
+    let mut temp = String::new();
     let mut i = 0;
     for c in selector.chars(){
         i+=1;
@@ -135,42 +137,57 @@ fn append_selector(
         //ignore everything between square brackets.
         if ignore_untill_close && c!=']'{
             source.push(c);
+            temp.push(c);
             continue;
-        }else if ignore_untill_close{
+        }
+        if ignore_untill_close && c==']'{
             source.push(c);
             ignore_untill_close = false;
             source.push_str(random_class);
+
+            temp.push(c);
+            sel_map.insert(temp.clone(), ());
+            temp = String::new();
             continue;
         }
         if c =='['{
             source.push(c);
             ignore_untill_close = true;
+            temp.push(c);
             continue;
         }
 
         //ignore everything until we reach to whitespace.
-        if ignore_untill_space && c!=' '{
+        if ignore_untill_event_end && c!=' '{
             source.push(c);
             continue;
-        }else if ignore_untill_space{
-            ignore_untill_space = false;
+        }
+        if ignore_untill_event_end && c==' '{
+            ignore_untill_event_end = false;
             source.push(' ');
             continue;
         }
         //check for event selector
         if c=='@'{
-            ignore_untill_space = true;
+            ignore_untill_event_end = true;
             source.push(c);
             continue;
         }
 
-        //ignore everything until we reach to whitespace.
+        //ignore everything until we reach to whitespace or end of the line.
+        if ignore_untill_space && (c==' ' || i==sel_len){
+            //this condition will should be true when either we reach space or end of line.
+            source.push(c);
+            ignore_untill_space = false;
+            
+            if c!=' '{temp.push(c);}
+            sel_map.insert(temp.clone(), ());
+            temp = String::new();
+            continue;
+        }
         if ignore_untill_space && c!=' '{
             source.push(c);
-            continue;
-        }else if ignore_untill_space{
-            ignore_untill_space = false;
-            source.push(' ');
+            temp.push(c);
             continue;
         }
         //check for pseudo class selector
@@ -178,6 +195,7 @@ fn append_selector(
             ignore_untill_space = true;
             source.push_str(random_class);
             source.push(c);
+            temp.push(c);
             continue;
         }
 
@@ -192,28 +210,43 @@ fn append_selector(
             source.push_str(random_class);
             source.push(c);
             ignore_spaces = true;
+
+            sel_map.insert(temp.clone(), ());
+            temp = String::new();
             continue;
         }
 
         //check for universal selector.
         if c=='*'{
             source.push_str(random_class);
+            sel_map.insert("*".to_string(), ());
             continue;
         }
 
 
-        //check for direct child selector
-        //append random class if charactor is the last charactor
+        //append random class if we reach end of the line.
         if i==sel_len{
             source.push(c);
             source.push_str(random_class);
+
+            temp.push(c);
+            sel_map.insert(temp.clone(), ());
+            temp = String::new();
             continue;
         }
+
+        //check for direct child selector
         if c!=' '{
             source.push(c);
-        }else{
+            temp.push(c);
+            continue;
+        }
+        if c==' '{
             source.push_str(random_class);
             source.push(' ');
+
+            sel_map.insert(temp.clone(), ());
+            temp = String::new();
         }
     }
 }
