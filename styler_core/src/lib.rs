@@ -37,11 +37,20 @@ pub fn build_style(ts: TokenStream, random_class: &String) -> (String, HashMap<S
                 selector.push_str(t.to_string().trim_matches('"'));
             }
             TokenTree::Punct(t) => {
-                add_spaces(&mut selector, t.span(), &mut pre_line, &mut pre_col);
+                let ch = t.as_char();
+                //only in these two cases we need space information
+                if ch == '.' || ch == '#' {
+                    add_spaces(&mut selector, t.span(), &mut pre_line, &mut pre_col);
+                } else {
+                    let end = t.span().unwrap().end();
+                    pre_col = end.column;
+                    pre_line = end.line;
+                }
                 selector.push(t.as_char());
             }
         }
     });
+    dbg!(&sel_map);
     // dbg!(&style);
     // _write_to_file(style);
     (style, sel_map)
@@ -108,64 +117,138 @@ fn add_spaces(
     *pre_line = end.line;
 }
 
-//build selector
 fn append_selector(
     source: &mut String,
     selector: &str,
     random_class: &str,
     sel_map: &mut HashMap<String, ()>,
 ) {
-    dbg!(&selector);
-
-    //to handle commad separated selectors
-    let separators: Vec<&str> = selector.split_inclusive(&[',', '>', '+', '~']).collect();
-    let separators_len = separators.len();
+    // dbg!(&selector);
+    let sel_len = selector.len();
+    let mut ignore_spaces = false;
+    let mut ignore_untill_space = false;
+    let mut ignore_untill_close = false;
+    let mut ignore_untill_event_end = false;
+    let mut temp = String::new();
     let mut i = 0;
-    for s1 in separators {
-        let mut s1 = s1.trim();
-        let mut separator = "";
-        //handles two cases first when there are no separators,
-        //second when last selector does not have any separator.
-        if separators_len > 1 && i != separators_len - 1 {
-            let len = s1.len();
-            separator = &s1[len - 1..];
-            s1 = &s1[..len - 1];
-        }
-        // to handle indirect child selector
-        let indirect_childs: Vec<&str> = s1.trim().split(' ').collect();
-        let indirect_len = indirect_childs.len();
-        let mut j = 0;
-        for s3 in indirect_childs {
-            let s3 = s3.trim();
-            sel_map.insert(s3.to_string(), ());
-            let is_pseudo_class = s3.contains(':');
-            if s3 == "*" {
-                //to handle universal selector
-                source.push_str(random_class);
-            } else if matches!(s3, "@keyframes" | "@-webkit-keyframes") {
-                source.push_str(s3);
-            } else if is_pseudo_class {
-                //to handle pseudo classes
-                let (pre, suf) = s3
-                    .split_once(':')
-                    .expect(&format!("Pseudo class error at {}", selector));
-                source.push_str(pre);
-                source.push_str(random_class);
-                source.push(':');
-                source.push_str(suf);
-            } else {
-                //general case
-                source.push_str(s3);
-                source.push_str(random_class);
-            }
-            if indirect_len - 1 != j {
-                source.push(' ');
-            }
-            j += 1;
-        } //indirect childs
-        source.push_str(separator);
+    for c in selector.chars() {
         i += 1;
-    } //separators
+
+        //ignore everything between square brackets.
+        if ignore_untill_close && c != ']' {
+            source.push(c);
+            temp.push(c);
+            continue;
+        }
+        if ignore_untill_close && c == ']' {
+            source.push(c);
+            ignore_untill_close = false;
+            source.push_str(random_class);
+
+            temp.push(c);
+            sel_map.insert(temp.clone(), ());
+            temp = String::new();
+            continue;
+        }
+        if c == '[' {
+            source.push(c);
+            ignore_untill_close = true;
+            temp.push(c);
+            continue;
+        }
+
+        //ignore everything until we reach to whitespace.
+        if ignore_untill_event_end && c != ' ' {
+            source.push(c);
+            continue;
+        }
+        if ignore_untill_event_end && c == ' ' {
+            ignore_untill_event_end = false;
+            source.push(' ');
+            continue;
+        }
+        //check for event selector
+        if c == '@' {
+            ignore_untill_event_end = true;
+            source.push(c);
+            continue;
+        }
+
+        //ignore everything until we reach to whitespace or end of the line.
+        if ignore_untill_space && (c == ' ' || i == sel_len) {
+            //this condition will should be true when either we reach space or end of line.
+            source.push(c);
+            ignore_untill_space = false;
+
+            if c != ' ' {
+                temp.push(c);
+            }
+            sel_map.insert(temp.clone(), ());
+            temp = String::new();
+            continue;
+        }
+        if ignore_untill_space && c != ' ' {
+            source.push(c);
+            temp.push(c);
+            continue;
+        }
+        //check for pseudo class selector
+        if c == ':' {
+            ignore_untill_space = true;
+            source.push_str(random_class);
+            source.push(c);
+            temp.push(c);
+            continue;
+        }
+
+        //check for child or sibiling selectors
+        //this condition ignores the unwanted white space after comma, >, +, ~ punctuations.
+        if c == ' ' && ignore_spaces {
+            ignore_spaces = false;
+            continue;
+        }
+        if c == ',' || c == '+' || c == '~' || c == '>' {
+            source.push_str(random_class);
+            source.push(c);
+            ignore_spaces = true;
+
+            sel_map.insert(temp.clone(), ());
+            temp = String::new();
+            continue;
+        }
+
+        //check for universal selector.
+        if c == '*' {
+            source.push_str(random_class);
+            sel_map.insert("*".to_string(), ());
+            continue;
+        }
+
+        //append random class if we reach end of the line.
+        if i == sel_len {
+            source.push(c);
+            source.push_str(random_class);
+
+            temp.push(c);
+            sel_map.insert(temp.clone(), ());
+            temp = String::new();
+            continue;
+        }
+
+        //check for direct child selector
+        if c != ' ' {
+            source.push(c);
+            temp.push(c);
+            continue;
+        }
+        if c == ' ' {
+            source.push_str(random_class);
+            source.push(' ');
+
+            sel_map.insert(temp.clone(), ());
+            temp = String::new();
+        }
+    }
 }
 
 //todo: This test will only work when Span is available outside proceduaral macro crate.

@@ -19,11 +19,11 @@ pub fn run_tests() {
 
     println!("------------------Test-2------------------");
     let style = style_str! {
-        .two.one{
+        .two.one  {
             color: yellow;
         }
     };
-    assert_eq!(style.trim(), ".two.one.test{color: yellow;}");
+    assert_eq!(style.trim(), ".two.one.test {color: yellow;}");
 
     println!("------------------Test-3------------------");
     let style = style_str! {
@@ -126,13 +126,13 @@ pub fn run_tests() {
 
     println!("------------------Test-15-----------------");
     let style = style_str! {
-        a[id="1"] {
+        a[title="I am ,testing"] {
             background-color: yellow;
         }
     };
     assert_eq!(
         style.trim(),
-        r#"a[id="1"].test {background-color: yellow;}"#
+        r#"a[title="I am ,testing"].test {background-color: yellow;}"#
     );
 
     //todo: check how we can resolve this problem.
@@ -144,7 +144,7 @@ pub fn run_tests() {
     };
     assert_eq!(
         style.trim(),
-        "[title~=flower].test{background-color: yellow;}"
+        "[title~=flower].test {background-color: yellow;}"
     );
 
     println!("------------------Test-17-----------------");
