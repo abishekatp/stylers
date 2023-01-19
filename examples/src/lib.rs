@@ -3,12 +3,7 @@ use styler::style;
 
 #[component]
 fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
-    //check this
-    // h2 h1,a.one {
-    //     color: purple;
-    // }
-
-    style! {
+    style! {"Hello",
         div {
             border: 1px solid black;
             margin: 25px 50px 75px 100px;
@@ -55,8 +50,13 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
 
 #[component]
 pub fn Abi(cx: Scope) -> impl IntoView {
+    style! {"Abi",
+        h3{
+            background-color: black;
+        }
+    }
     view! {cx,
         <Hello name="hello"/>
-        <h3>"Hai"</h3>
+        <h3 class={__STYLER_CLASS_NAME}>"Hai"</h3>
     }
 }

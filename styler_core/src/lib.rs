@@ -2,16 +2,34 @@
 use proc_macro2::{Delimiter, Group, TokenStream, TokenTree};
 use std::collections::HashMap;
 
-//this function will build the whole style and write it into the main.css file
-pub fn build_style(ts: TokenStream, random_class: &String) -> (String, HashMap<String, ()>) {
+//this function will build the whole style. This will return style string, component name, map of unique keys.
+pub fn build_style(
+    ts: TokenStream,
+    random_class: &String,
+) -> (String, String, HashMap<String, ()>) {
     let mut pre_col: usize = 0;
     let mut pre_line: usize = 0;
     let mut style = String::new();
     //selector will just store current selector for each style
     let mut selector = String::new();
     let mut sel_map: HashMap<String, ()> = HashMap::new();
+    
+    let mut ts_iter = ts.into_iter();
 
-    ts.into_iter().for_each(|tt| {
+    //first two tokens are for component name and comma.
+    let TokenTree::Literal(comp_name) = ts_iter.next().expect("Expected value of type token tree") else {
+        panic!(r#"Expected component name at the start like style!("component_name", your css comes here)"#)
+    };
+    let comp_name = comp_name.to_string().trim_matches('"').to_string();
+
+    let TokenTree::Punct(comma) = ts_iter.next().expect("Expected value of type token tree") else {
+        panic!("Expected comma(,) after component name");   
+    };
+    if comma.as_char() != ',' {
+        panic!("Expected comma(,) after component name")
+    }
+
+    ts_iter.for_each(|tt| {
         match tt {
             TokenTree::Group(t) => {
                 //only if the delimiter is brace it will be style definition
@@ -49,8 +67,7 @@ pub fn build_style(ts: TokenStream, random_class: &String) -> (String, HashMap<S
             }
         }
     });
-    dbg!(&sel_map);
-    (style, sel_map)
+    (style, comp_name, sel_map)
 }
 
 //parse each css selector body. this function recursively calls itself
