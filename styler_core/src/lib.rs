@@ -4,7 +4,6 @@ use std::collections::HashMap;
 
 //this function will build the whole style and write it into the main.css file
 pub fn build_style(ts: TokenStream, random_class: &String) -> (String, HashMap<String, ()>) {
-    // println!("{:#?}",ts);
     let mut pre_col: usize = 0;
     let mut pre_line: usize = 0;
     let mut style = String::new();
@@ -51,8 +50,6 @@ pub fn build_style(ts: TokenStream, random_class: &String) -> (String, HashMap<S
         }
     });
     dbg!(&sel_map);
-    // dbg!(&style);
-    // _write_to_file(style);
     (style, sel_map)
 }
 
@@ -125,92 +122,89 @@ fn append_selector(
 ) {
     // dbg!(&selector);
     let sel_len = selector.len();
-    let mut ignore_spaces = false;
-    let mut ignore_untill_space = false;
-    let mut ignore_untill_close = false;
-    let mut ignore_untill_event_end = false;
+    let mut is_punct_start = false;
+    let mut is_pseudo_class_start = false;
+    let mut is_bracket_open = false;
+    let mut is_event_start = false;
     let mut temp = String::new();
     let mut i = 0;
     for c in selector.chars() {
         i += 1;
 
         //ignore everything between square brackets.
-        if ignore_untill_close && c != ']' {
-            source.push(c);
-            temp.push(c);
-            continue;
-        }
-        if ignore_untill_close && c == ']' {
-            source.push(c);
-            ignore_untill_close = false;
-            source.push_str(random_class);
+        //todo:handle the case when brackets inside attribute.
+        if is_bracket_open {
+            if c == ']' {
+                is_bracket_open = false;
+                source.push(c);
+                source.push_str(random_class);
 
-            temp.push(c);
-            sel_map.insert(temp.clone(), ());
-            temp = String::new();
+                temp.push(c);
+                sel_map.insert(temp.clone(), ());
+                temp = String::new();
+            } else {
+                source.push(c);
+                temp.push(c);
+            }
             continue;
         }
         if c == '[' {
+            is_bracket_open = true;
             source.push(c);
-            ignore_untill_close = true;
             temp.push(c);
             continue;
         }
 
-        //ignore everything until we reach to whitespace.
-        if ignore_untill_event_end && c != ' ' {
-            source.push(c);
+        //ignore everything until we reach to whitespace after encountering event selector(@).
+        if is_event_start {
+            if c == ' ' {
+                is_event_start = false;
+                source.push(' ');
+            } else {
+                source.push(c);
+            }
             continue;
         }
-        if ignore_untill_event_end && c == ' ' {
-            ignore_untill_event_end = false;
-            source.push(' ');
-            continue;
-        }
-        //check for event selector
         if c == '@' {
-            ignore_untill_event_end = true;
+            is_event_start = true;
             source.push(c);
             continue;
         }
 
-        //ignore everything until we reach to whitespace or end of the line.
-        if ignore_untill_space && (c == ' ' || i == sel_len) {
-            //this condition will should be true when either we reach space or end of line.
-            source.push(c);
-            ignore_untill_space = false;
+        //ignore everything until we reach to whitespace or end of the line after encountering pseudo class selector(:).
+        if is_pseudo_class_start {
+            if c == ' ' || i == sel_len {
+                source.push(c);
+                is_pseudo_class_start = false;
 
-            if c != ' ' {
+                if c != ' ' {
+                    temp.push(c);
+                }
+                sel_map.insert(temp.clone(), ());
+                temp = String::new();
+            } else {
+                source.push(c);
                 temp.push(c);
             }
-            sel_map.insert(temp.clone(), ());
-            temp = String::new();
             continue;
         }
-        if ignore_untill_space && c != ' ' {
-            source.push(c);
-            temp.push(c);
-            continue;
-        }
-        //check for pseudo class selector
         if c == ':' {
-            ignore_untill_space = true;
+            is_pseudo_class_start = true;
             source.push_str(random_class);
             source.push(c);
             temp.push(c);
             continue;
         }
 
-        //check for child or sibiling selectors
         //this condition ignores the unwanted white space after comma, >, +, ~ punctuations.
-        if c == ' ' && ignore_spaces {
-            ignore_spaces = false;
+        if is_punct_start && c == ' ' {
+            is_punct_start = false;
             continue;
         }
         if c == ',' || c == '+' || c == '~' || c == '>' {
             source.push_str(random_class);
             source.push(c);
-            ignore_spaces = true;
+            is_punct_start = true;
 
             sel_map.insert(temp.clone(), ());
             temp = String::new();
@@ -236,17 +230,15 @@ fn append_selector(
         }
 
         //check for direct child selector
-        if c != ' ' {
-            source.push(c);
-            temp.push(c);
-            continue;
-        }
         if c == ' ' {
             source.push_str(random_class);
             source.push(' ');
 
             sel_map.insert(temp.clone(), ());
             temp = String::new();
+        } else {
+            source.push(c);
+            temp.push(c);
         }
     }
 }

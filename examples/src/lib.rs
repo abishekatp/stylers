@@ -42,12 +42,12 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
     // Above style macro returns one unique class_name that needs to be handled by view macro.
     // currently mapped to dom manually.
     view! {cx,
-        <div class=format!("one {class_name}")>
-            <h1 id="two" class={class_name}>"Hello"</h1>
-            <h2 class={class_name}>"World"</h2>
-            <h2 class={class_name}>{name}</h2>
-            <h3 class={class_name}>"Hello Kanna"</h3>
-            <p class={class_name}> "This is example conent"</p>
+        <div class=format!("one {__STYLER_CLASS_NAME}")>
+            <h1 id="two" class={__STYLER_CLASS_NAME}>"Hello"</h1>
+            <h2 class={__STYLER_CLASS_NAME}>"World"</h2>
+            <h2 class={__STYLER_CLASS_NAME}>{name}</h2>
+            <h3 class={__STYLER_CLASS_NAME}>"Hello Kanna"</h3>
+            <p class={__STYLER_CLASS_NAME}> "This is example conent"</p>
             <a href="www.google.com">"Visit the link"</a>
         </div>
     }
