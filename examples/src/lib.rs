@@ -3,7 +3,7 @@ use styler::style;
 
 #[component]
 fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
-    style! {"Hello",
+    let styler_class = style! {"Hello",
         div {
             border: 1px solid black;
             margin: 25px 50px 75px 100px;
@@ -33,16 +33,16 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
         p::before {
             content: "Read this: ";
         }
-    }
+    };
     // Above style macro returns one unique class_name that needs to be handled by view macro.
     // currently mapped to dom manually.
     view! {cx,
-        <div class=format!("one {__STYLER_CLASS_NAME}")>
-            <h1 id="two" class={__STYLER_CLASS_NAME}>"Hello"</h1>
-            <h2 class={__STYLER_CLASS_NAME}>"World"</h2>
-            <h2 class={__STYLER_CLASS_NAME}>{name}</h2>
-            <h3 class={__STYLER_CLASS_NAME}>"Hello Kanna"</h3>
-            <p class={__STYLER_CLASS_NAME}> "This is example conent"</p>
+        <div class=format!("one {styler_class}")>
+            <h1 id="two" class={styler_class}>"Hello"</h1>
+            <h2 class={styler_class}>"World"</h2>
+            <h2 class={styler_class}>{name}</h2>
+            <h3 class={styler_class}>"Hello Kanna"</h3>
+            <p class={styler_class}> "This is example conent"</p>
             <a href="www.google.com">"Visit the link"</a>
         </div>
     }
@@ -50,13 +50,13 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
 
 #[component]
 pub fn Abi(cx: Scope) -> impl IntoView {
-    style! {"Abi",
+    let styler_class = style! {"Abi",
         h3{
             background-color: yellow;
         }
-    }
+    };
     view! {cx,
         <Hello name="hello"/>
-        <h3 class={__STYLER_CLASS_NAME}>"Hai"</h3>
+        <h3 class={styler_class}>"Hai"</h3>
     }
 }

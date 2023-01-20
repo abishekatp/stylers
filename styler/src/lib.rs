@@ -18,7 +18,7 @@ pub fn style(ts: TokenStream) -> TokenStream {
     // dbg!(&sel_map);
     let random_class = random_class[1..].to_string();
     let expanded = quote! {
-        const __STYLER_CLASS_NAME:&str = #random_class;
+        #random_class
     };
     // dbg!(&style);
     write_to_file(&style, &comp_name);
