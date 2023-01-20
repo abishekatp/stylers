@@ -13,7 +13,7 @@ all the selectors. this random class name will be same all selectors in same som
 #[component]
 fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
     
-    style! {
+    style! {"Hello",
         div.one{
             color: red;
         }
