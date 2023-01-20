@@ -232,6 +232,7 @@ pub fn run_tests() {
     };
     assert_eq!(style.trim(), "p.test:lang(it){background: yellow;}");
 
+    //todo: check how to add class name.
     println!("------------------Test-26-----------------");
     let style = style_str! {"Hello",
         @keyframes spin {

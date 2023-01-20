@@ -1,4 +1,4 @@
-use crate::css_style::CSSStyleDeclaration;
+use crate::css_style_declar::CSSStyleDeclaration;
 use proc_macro2::Group;
 use std::collections::HashMap;
 
@@ -31,13 +31,12 @@ impl CSSStyleRule {
         group: Group,
         random_class: &str,
         sel_map: &mut HashMap<String, ()>,
-    ) -> CSSStyleRule {
+    ) -> Box<dyn CSSRule> {
         let mut source = String::new();
         let sel_len = selector_text.len();
         let mut is_punct_start = false;
         let mut is_pseudo_class_start = false;
         let mut is_bracket_open = false;
-        let mut is_event_start = false;
         let mut temp = String::new();
         let mut i = 0;
         for c in selector_text.chars() {
@@ -64,22 +63,6 @@ impl CSSStyleRule {
                 is_bracket_open = true;
                 source.push(c);
                 temp.push(c);
-                continue;
-            }
-
-            //ignore everything until we reach to whitespace after encountering event selector(@).
-            if is_event_start {
-                if c == ' ' {
-                    is_event_start = false;
-                    source.push(' ');
-                } else {
-                    source.push(c);
-                }
-                continue;
-            }
-            if c == '@' {
-                is_event_start = true;
-                source.push(c);
                 continue;
             }
 
@@ -154,9 +137,9 @@ impl CSSStyleRule {
             }
         }
 
-        CSSStyleRule {
+        Box::new(CSSStyleRule {
             selector_text: source,
             style: CSSStyleDeclaration::parse(group),
-        }
+        })
     }
 }
