@@ -134,7 +134,6 @@ pub fn run_tests() {
         r#"a[title="I am ,testing"].test {background-color: yellow;}"#
     );
 
-    //todo: check how we can resolve this problem.
     println!("------------------Test-16-----------------");
     let style = style_str! {"Hello",
         [title~=flower] {
