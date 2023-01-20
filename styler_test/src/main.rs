@@ -22,7 +22,7 @@ pub fn run_tests() {
             color: yellow;
         }
     };
-    assert_eq!(style.trim(), ".two.one.test {color: yellow;}");
+    assert_eq!(style.trim(), ".two.one.test{color: yellow;}");
 
     println!("------------------Test-3------------------");
     let style = style_str! {"Hello",
@@ -105,7 +105,7 @@ pub fn run_tests() {
             background-color: yellow;
         }
     };
-    assert_eq!(style.trim(), "div.test+p.test {background-color: yellow;}");
+    assert_eq!(style.trim(), "div.test+p.test{background-color: yellow;}");
 
     println!("------------------Test-13-----------------");
     let style = style_str! {"Hello",
@@ -113,7 +113,7 @@ pub fn run_tests() {
             background: #ff0000;
         }
     };
-    assert_eq!(style.trim(), "p.test~ul.test {background: #ff0000;}");
+    assert_eq!(style.trim(), "p.test~ul.test{background: #ff0000;}");
 
     println!("------------------Test-14-----------------");
     let style = style_str! {"Hello",
@@ -121,7 +121,7 @@ pub fn run_tests() {
             background-color: yellow;
         }
     };
-    assert_eq!(style.trim(), "a[target].test {background-color: yellow;}");
+    assert_eq!(style.trim(), "a[target].test{background-color: yellow;}");
 
     println!("------------------Test-15-----------------");
     let style = style_str! {"Hello",
@@ -131,7 +131,7 @@ pub fn run_tests() {
     };
     assert_eq!(
         style.trim(),
-        r#"a[title="I am ,testing"].test {background-color: yellow;}"#
+        r#"a[title="I am ,testing"].test{background-color: yellow;}"#
     );
 
     println!("------------------Test-16-----------------");
@@ -142,7 +142,7 @@ pub fn run_tests() {
     };
     assert_eq!(
         style.trim(),
-        "[title~=flower].test {background-color: yellow;}"
+        "[title~=flower].test{background-color: yellow;}"
     );
 
     println!("------------------Test-17-----------------");
@@ -151,7 +151,7 @@ pub fn run_tests() {
             background-color: yellow;
         }
     };
-    assert_eq!(style.trim(), "[lang|=en].test {background-color: yellow;}");
+    assert_eq!(style.trim(), "[lang|=en].test{background-color: yellow;}");
 
     println!("------------------Test-18-----------------");
     let style = style_str! {"Hello",
@@ -161,7 +161,7 @@ pub fn run_tests() {
     };
     assert_eq!(
         style.trim(),
-        r#"div[class^="test"].test {background-color: yellow;}"#
+        r#"div[class^="test"].test{background-color: yellow;}"#
     );
 
     println!("------------------Test-19-----------------");
@@ -172,7 +172,7 @@ pub fn run_tests() {
     };
     assert_eq!(
         style.trim(),
-        "div[class$=test].test {background-color: yellow;}"
+        "div[class$=test].test{background-color: yellow;}"
     );
 
     println!("------------------Test-20-----------------");
@@ -183,7 +183,7 @@ pub fn run_tests() {
     };
     assert_eq!(
         style.trim(),
-        "div.test [class$=test].test {background-color: yellow;}"
+        "div.test [class$=test].test{background-color: yellow;}"
     );
 
     println!("------------------Test-21-----------------");
@@ -194,7 +194,7 @@ pub fn run_tests() {
     };
     assert_eq!(
         style.trim(),
-        r#"div[class*="test"].test {background-color: yellow;}"#
+        r#"div[class*="test"].test{background-color: yellow;}"#
     );
 
     println!("------------------Test-22------------------");
@@ -211,7 +211,7 @@ pub fn run_tests() {
             content: "Read this: ";
         }
     };
-    assert_eq!(style.trim(), r#"p.test::before {content: "Read this: ";}"#);
+    assert_eq!(style.trim(), r#"p.test::before{content: "Read this: ";}"#);
 
     println!("------------------Test-24------------------");
     let style = style_str! {"Hello",
@@ -242,7 +242,7 @@ pub fn run_tests() {
     };
     assert_eq!(
         style.trim(),
-        "@keyframes spin.test {to {-webkit-transform: rotate(360deg);}}"
+        "@keyframes spin.test{to {-webkit-transform: rotate(360deg);}}"
     );
 
     println!("------------------Test-27-----------------");
@@ -255,6 +255,6 @@ pub fn run_tests() {
     };
     assert_eq!(
         style.trim(),
-        "@-webkit-keyframes spin.test {to {-webkit-transform: rotate(360deg);}}"
+        "@-webkit-keyframes spin.test{to {-webkit-transform: rotate(360deg);}}"
     );
 }
