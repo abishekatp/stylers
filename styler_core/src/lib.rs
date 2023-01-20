@@ -13,7 +13,7 @@ pub fn build_style(
     //selector will just store current selector for each style
     let mut selector = String::new();
     let mut sel_map: HashMap<String, ()> = HashMap::new();
-    
+
     let mut ts_iter = ts.into_iter();
 
     //first two tokens are for component name and comma.

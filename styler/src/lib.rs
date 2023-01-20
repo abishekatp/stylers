@@ -6,14 +6,15 @@ use quote::quote;
 use std::collections::hash_map::RandomState;
 use std::hash::{BuildHasher, Hasher};
 
-use std::fs::{File, self, OpenOptions};
+use std::fs::{self, File, OpenOptions};
 use std::io::Write;
 use styler_core::build_style;
 
 #[proc_macro]
 pub fn style(ts: TokenStream) -> TokenStream {
     let random_class = rand_class();
-    let (style, comp_name, _sel_map) = build_style(proc_macro2::TokenStream::from(ts), &random_class);
+    let (style, comp_name, _sel_map) =
+        build_style(proc_macro2::TokenStream::from(ts), &random_class);
     // dbg!(&sel_map);
     let random_class = random_class[1..].to_string();
     let expanded = quote! {
@@ -32,7 +33,8 @@ pub fn style(ts: TokenStream) -> TokenStream {
 #[proc_macro]
 pub fn style_str(ts: TokenStream) -> TokenStream {
     let random_class = String::from(".test");
-    let (style, _comp_name, _sel_map) = build_style(proc_macro2::TokenStream::from(ts), &random_class);
+    let (style, _comp_name, _sel_map) =
+        build_style(proc_macro2::TokenStream::from(ts), &random_class);
     let expanded = quote! {
         #style
     };
@@ -46,22 +48,30 @@ fn rand_class() -> String {
 }
 
 //append if file exists or write it into the new file
-fn write_to_file(data: &str,file_name: &str) {
-    fs::create_dir_all("./css").unwrap();
+fn write_to_file(data: &str, file_name: &str) {
+    let dir_path = String::from("./css");
     let mut file_path = String::from("./css/");
     file_path.push_str(&file_name.to_lowercase());
     file_path.push_str(".css");
+
+    fs::create_dir_all(&dir_path).unwrap();
     let mut buffer = File::create(file_path).expect("Problem creating css file");
     let _ = buffer.write_all(data.as_bytes());
     buffer.flush().expect("Problem closing css file");
-    cat("./css")
+
+    cat(&dir_path)
 }
 
-fn cat(dir: &str){
+fn cat(dir: &str) {
+    let out_path = "./main.css";
+    let _ = File::create(out_path).expect("Problem creating css file");
+    let mut buffer = OpenOptions::new()
+        .append(true)
+        .open(out_path)
+        .expect("Problem opening css file");
+
     let files = fs::read_dir(dir).unwrap();
-    let _ = File::create("main.css").expect("Problem creating css file");
-    let mut buffer = OpenOptions::new().append(true).open("main.css").expect("Problem opening css file");
-    for file in files{
+    for file in files {
         let data = fs::read_to_string(file.unwrap().path()).unwrap();
         let _ = buffer.write(data.as_bytes());
     }

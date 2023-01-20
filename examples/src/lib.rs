@@ -52,7 +52,7 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
 pub fn Abi(cx: Scope) -> impl IntoView {
     style! {"Abi",
         h3{
-            background-color: black;
+            background-color: yellow;
         }
     }
     view! {cx,
