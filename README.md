@@ -13,7 +13,7 @@ all the selectors. this random class name will be same all selectors in same som
 #[component]
 fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
     
-    style! {"Hello",
+    let styler_class = style! {"Hello",
         div.one{
             color: red;
         }
@@ -33,14 +33,14 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
     // Above style macro returns one unique class_name that needs to be handled by view macro.
     // currently mapped to dom manually.
     view! {cx,
-        <div class=format!("one {__STYLER_CLASS_NAME}")>
-            <h1 id="two" class={__STYLER_CLASS_NAME}>"Hello"</h1>
-            <h2 class={__STYLER_CLASS_NAME}>"World"</h2>
-            <h2 class={__STYLER_CLASS_NAME}>{name}</h2>
-            <h3 class={__STYLER_CLASS_NAME}>"Hello Kanna"</h3>
+        <div class=format!("one {styler_class}")>
+            <h1 id="two" class={styler_class}>"Hello"</h1>
+            <h2 class={styler_class}>"World"</h2>
+            <h2 class={styler_class}>{name}</h2>
+            <h3 class={styler_class}>"Hello Kanna"</h3>
         </div>
     }
 }
 ```
 
- #### Here style macro gives one unique class name called __STYLER_CLASS_NAME that needs to be handled by view macro!
+ #### Here style macro gives one unique class name called styler_class that needs to be handled by view macro!

@@ -1,12 +1,12 @@
 #![feature(proc_macro_span)]
-mod css_style_sheet;
 mod css_rule;
 mod css_style;
+mod css_style_sheet;
 mod utils;
 
+use css_style_sheet::CSSStyleSheet;
 use proc_macro2::{TokenStream, TokenTree};
 use std::collections::HashMap;
-use css_style_sheet::CSSStyleSheet;
 //this function will build the whole style. This will return style string, component name, map of unique keys.
 pub fn build_style(
     ts: TokenStream,
@@ -28,15 +28,14 @@ pub fn build_style(
     }
 
     let mut style = String::new();
-    let (style_sheet,sel_map) = CSSStyleSheet::parse(ts_iter.collect(),random_class.clone());
-    style_sheet.css_rules.iter().for_each(|rule|{
-        style.push_str(&rule.css_text())
-    });
+    let (style_sheet, sel_map) = CSSStyleSheet::parse(ts_iter.collect(), random_class.clone());
+    style_sheet
+        .css_rules
+        .iter()
+        .for_each(|rule| style.push_str(&rule.css_text()));
 
-    (style, comp_name,sel_map)
+    (style, comp_name, sel_map)
 }
-
-
 
 //todo: This test will only work when Span is available outside proceduaral macro crate.
 //https://docs.rs/proc-macro2/latest/proc_macro2/struct.Span.html#method.unwrap

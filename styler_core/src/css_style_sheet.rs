@@ -1,18 +1,18 @@
+use proc_macro2::{Delimiter, TokenStream, TokenTree};
 use std::collections::HashMap;
-use proc_macro2::{TokenStream, TokenTree, Delimiter};
 
-use crate::css_rule::{CSSRule,CSSStyleRule};
-use crate::utils::{add_spaces,parse_group};
+use crate::css_rule::{CSSRule, CSSStyleRule};
+use crate::utils::{add_spaces, parse_group};
 
 //ref: https://developer.mozilla.org/en-US/docs/Web/API/StyleSheet
 //ref: https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet
-pub struct CSSStyleSheet{
-    pub css_rules: Vec<Box<dyn CSSRule>>
+pub struct CSSStyleSheet {
+    pub css_rules: Vec<Box<dyn CSSRule>>,
 }
 
 impl CSSStyleSheet {
-    pub fn parse(ts:TokenStream,random_class: String)->(CSSStyleSheet,HashMap<String, ()>){
-        let mut css_style_sheet = CSSStyleSheet{css_rules: vec![]};
+    pub fn parse(ts: TokenStream, random_class: String) -> (CSSStyleSheet, HashMap<String, ()>) {
+        let mut css_style_sheet = CSSStyleSheet { css_rules: vec![] };
         let mut pre_col: usize = 0;
         let mut pre_line: usize = 0;
         //selector will just store current selector for each style
@@ -24,10 +24,11 @@ impl CSSStyleSheet {
                 TokenTree::Group(t) => {
                     //only if the delimiter is brace it will be style definition
                     if t.delimiter() == Delimiter::Brace {
-                        let style_rule = CSSStyleRule::parse(&selector,t,&random_class,&mut sel_map);
-                        css_style_sheet.css_rules.push(Box::new(style_rule));  
-                         
-                        selector = String::new();      
+                        let style_rule =
+                            CSSStyleRule::parse(&selector, t, &random_class, &mut sel_map);
+                        css_style_sheet.css_rules.push(Box::new(style_rule));
+
+                        selector = String::new();
                     } else {
                         add_spaces(&mut selector, t.span(), &mut pre_line, &mut pre_col);
                         selector.push_str(&parse_group(t));
@@ -56,6 +57,6 @@ impl CSSStyleSheet {
             }
         });
 
-        (css_style_sheet,sel_map)
+        (css_style_sheet, sel_map)
     }
 }

@@ -1,4 +1,4 @@
-use proc_macro2::{Group, Delimiter, TokenTree};
+use proc_macro2::{Delimiter, Group, TokenTree};
 
 pub fn parse_group(group: Group) -> String {
     let mut body = String::new();
