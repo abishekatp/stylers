@@ -27,10 +27,13 @@ pub fn build_style(
         panic!("Expected comma(,) after component name")
     }
 
-    let _style_sheet = CSSStyleSheet::parse(ts_iter.collect(),random_class.clone());
-    _style_sheet.css_rules;
+    let mut style = String::new();
+    let (style_sheet,sel_map) = CSSStyleSheet::parse(ts_iter.collect(),random_class.clone());
+    style_sheet.css_rules.iter().for_each(|rule|{
+        style.push_str(&rule.css_text())
+    });
 
-    ("".to_string(), comp_name, HashMap::new())
+    (style, comp_name,sel_map)
 }
 
 
