@@ -2,12 +2,19 @@ use proc_macro2::{Delimiter, TokenStream, TokenTree};
 use std::collections::HashMap;
 
 use crate::css_at_rule::CSSAtRule;
-use crate::css_style_rule::{CSSRule, CSSStyleRule};
+use crate::css_style_rule::CSSStyleRule;
+
+//ref: https://developer.mozilla.org/en-US/docs/Web/API/CSSRule
+pub enum CSSRule {
+    StyleRule(CSSStyleRule),
+    AtRule(CSSAtRule)
+}
+
 
 //ref: https://developer.mozilla.org/en-US/docs/Web/API/StyleSheet
 //ref: https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet
 pub struct CSSStyleSheet {
-    pub css_rules: Vec<Box<dyn CSSRule>>,
+    pub css_rules: Vec<CSSRule>,
 }
 
 impl CSSStyleSheet {
@@ -28,13 +35,13 @@ impl CSSStyleSheet {
                             count = 0;
                             if is_at_rule {
                                 let (at_rule, new_map) = CSSAtRule::new(css_rule_tt, random_class);
-                                css_style_sheet.css_rules.push(Box::new(at_rule));
+                                css_style_sheet.css_rules.push(CSSRule::AtRule(at_rule));
                                 sel_map.extend(new_map.into_iter());
                                 is_at_rule = false;
                             } else {
                                 let (style_rule, new_map) =
                                     CSSStyleRule::new(css_rule_tt, random_class);
-                                css_style_sheet.css_rules.push(Box::new(style_rule));
+                                css_style_sheet.css_rules.push(CSSRule::StyleRule(style_rule));
                                 sel_map.extend(new_map.into_iter());
                             }
                             css_rule_tt = TokenStream::new();
@@ -48,7 +55,7 @@ impl CSSStyleSheet {
                         //in regular at-rule css rule ends with semicolon without any style declaration.
                         if is_at_rule && ch == ';' {
                             let (at_rule, new_map) = CSSAtRule::new(css_rule_tt, random_class);
-                            css_style_sheet.css_rules.push(Box::new(at_rule));
+                            css_style_sheet.css_rules.push(CSSRule::AtRule(at_rule));
                             sel_map.extend(new_map.into_iter());
                             is_at_rule = false;
                             css_rule_tt = TokenStream::new();

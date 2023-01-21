@@ -266,7 +266,6 @@ pub fn run_tests() {
     );
 
     //nested at-rules
-    //todo: check how to add class name.
     println!("------------------Test-30-----------------");
     let style = style_str! {"Hello",
         @supports (display: flex) {
@@ -282,6 +281,26 @@ pub fn run_tests() {
         "@supports (display: flex){@media screen and (min-width: 900px){article.test{display: flex;}}}"
     );
 
+    println!("------------------Test-30-----------------");
+    let style = style_str! {"Hello",
+        @supports (display: flex) {
+            .flex-container > * {
+                text-shadow: 0 0 2px blue;
+                float: none;
+            }
+        
+            .flex-container {
+                display: flex;
+            }
+        }
+    };
+    assert_eq!(
+        style.trim(),
+        "@supports (display: flex){.flex-container.test>.test{text-shadow: 0 0 2px blue;float: none;}.flex-container.test{display: flex;}}"
+    );
+    
+
+    //todo: check how to add class name.
     // println!("------------------Test-31-----------------");
     // let style = style_str! {"Hello",
     //     @keyframes spin {

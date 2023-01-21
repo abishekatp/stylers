@@ -3,11 +3,6 @@ use crate::utils::{add_spaces, parse_group};
 use proc_macro2::{Delimiter, TokenStream, TokenTree};
 use std::collections::HashMap;
 
-//ref: https://developer.mozilla.org/en-US/docs/Web/API/CSSRule
-pub trait CSSRule {
-    //e.g div{color:red;}
-    fn css_text(&self) -> String;
-}
 
 //ref: https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleRule
 #[derive(Debug)]
@@ -16,14 +11,6 @@ pub struct CSSStyleRule {
     style: CSSStyleDeclaration,
     //todo: parse the style argument in parse and create this style_map.
     // style_map: HashMap<String,String>,
-}
-
-impl CSSRule for CSSStyleRule {
-    fn css_text(&self) -> String {
-        let mut text = self.selector_text.clone();
-        text.push_str(&self.style.style_css_text());
-        text
-    }
 }
 
 impl CSSStyleRule {
@@ -35,6 +22,12 @@ impl CSSStyleRule {
         let sel_map = css_style_rule.parse(ts, random_class);
 
         (css_style_rule, sel_map)
+    }
+
+    pub fn css_text(&self) -> String {
+        let mut text = self.selector_text.clone();
+        text.push_str(&self.style.style_css_text());
+        text
     }
 
     fn parse(&mut self, ts: TokenStream, random_class: &str) -> HashMap<String, ()> {

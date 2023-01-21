@@ -6,7 +6,7 @@ mod css_style_rule;
 mod css_style_sheet;
 mod utils;
 
-use css_style_sheet::CSSStyleSheet;
+use css_style_sheet::{CSSStyleSheet, CSSRule};
 use proc_macro2::{TokenStream, TokenTree};
 use std::collections::HashMap;
 //this function will build the whole style. This will return style string, component name, map of unique keys.
@@ -34,7 +34,12 @@ pub fn build_style(
     style_sheet
         .css_rules
         .iter()
-        .for_each(|rule| style.push_str(&rule.css_text()));
+        .for_each(|rule| {
+            match rule {
+                CSSRule::AtRule(at_rule)=> style.push_str(&at_rule.css_text()),
+                CSSRule::StyleRule(style_rule) => style.push_str(&style_rule.css_text())
+            }
+        });
 
     (style, comp_name, sel_map)
 }
