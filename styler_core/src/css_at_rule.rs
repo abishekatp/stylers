@@ -1,9 +1,8 @@
+use proc_macro2::{Delimiter, TokenStream, TokenTree};
 use std::collections::HashMap;
 
-use crate::css_style_rule::CSSStyleRule;
 use crate::css_style_sheet::{CSSRule, CSSStyleSheet};
 use crate::utils::{add_spaces, parse_group};
-use proc_macro2::{Delimiter, TokenStream, TokenTree};
 
 //ref: https://developer.mozilla.org/en-US/docs/Web/CSS/At-rule
 #[derive(Debug)]
@@ -70,20 +69,24 @@ impl CSSAtRule {
                                         is_at_rule = true;
                                     }
                                 }
-                                if is_at_rule {
+                                //@font-feature-values at-rule does not need inner at-rules to be parsed
+                                if is_at_rule && !at_rule.contains("@font-feature-values") {
                                     //if there is another inner at-rule
                                     self.parse(t.stream(), random_class);
                                 } else {
-                                    if at_rule.contains(&"@support".to_string()) {
-                                        //@support rule can contain multiple rules inside it.
+                                    if at_rule.contains("@page")
+                                        || at_rule.contains("@font-face")
+                                        || at_rule.contains("keyframes")
+                                        || at_rule.contains("@counter-style")
+                                        || at_rule.contains("@font-feature-values")
+                                        || at_rule.contains("@property")
+                                    {
+                                        //@page will not contain any nested css-rules.
+                                        at_rule.push_str(&parse_group(t));
+                                    } else {
                                         let (mut style_sheet, new_map) =
                                             CSSStyleSheet::new(t.stream(), random_class);
                                         self.css_rules.append(&mut style_sheet.css_rules);
-                                        sel_map = new_map;
-                                    } else {
-                                        let (style_rule, new_map) =
-                                            CSSStyleRule::new(t.stream(), random_class);
-                                        self.css_rules.push(CSSRule::StyleRule(style_rule));
                                         sel_map = new_map;
                                     }
                                 }

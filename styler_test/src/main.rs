@@ -299,30 +299,137 @@ pub fn run_tests() {
         "@supports (display: flex){.flex-container.test>.test{text-shadow: 0 0 2px blue;float: none;}.flex-container.test{display: flex;}}"
     );
 
-    //todo: check how to add class name.
-    // println!("------------------Test-31-----------------");
-    // let style = style_str! {"Hello",
-    //     @keyframes spin {
-    //         to {
-    //             -webkit-transform: rotate(360deg);
-    //         }
-    //     }
-    // };
-    // assert_eq!(
-    //     style.trim(),
-    //     "@keyframes spin{to {-webkit-transform: rotate(360deg);}}"
-    // );
+    println!("------------------Test-31-----------------");
+    let style = style_str! {"Hello",
+        @document url("https://www.example.com/")
+        {
+            h1 {
+                color: green;
+            }
+        }
+    };
+    assert_eq!(
+        style.trim(),
+        r#"@document url("https://www.example.com/"){h1.test{color: green;}}"#
+    );
 
-    // println!("------------------Test-32-----------------");
-    // let style = style_str! {"Hello",
-    //     @-webkit-keyframes spin {
-    //         to {
-    //             -webkit-transform: rotate(360deg);
-    //         }
-    //     }
-    // };
-    // assert_eq!(
-    //     style.trim(),
-    //     "@-webkit-keyframes spin{to {-webkit-transform: rotate(360deg);}}"
-    // );
+    println!("------------------Test-32-----------------");
+    let style = style_str! {"Hello",
+        @page {
+            size: A4;
+            margin: 10%;
+
+            @top-left-corner {
+            content: "Page " counter(page);
+            }
+        }
+    };
+    assert_eq!(
+        style.trim(),
+        r#"@page{size: A4;margin: 10%;@top-left-corner {content: "Page " counter(page);}}"#
+    );
+
+    println!("------------------Test-33-----------------");
+    let style = style_str! {"Hello",
+        @font-face {
+            font-family: "Trickster";
+            src: local("Trickster"),
+            url("trickster-COLRv1.otf") format("opentype") tech(color-COLRv1), url("trickster-outline.otf")
+                format("opentype"), url("trickster-outline.woff") format("woff");
+        }
+    };
+    assert_eq!(
+        style.trim(),
+        r#"@font-face{font-family: "Trickster";src: local("Trickster"),url("trickster-COLRv1.otf") format("opentype") tech(color-COLRv1), url("trickster-outline.otf")format("opentype"), url("trickster-outline.woff") format("woff");}"#
+    );
+
+    // todo: currently we not adding any random string to keyframe identifier.
+    //it is users responsibility to make these identifiers unique globaly.
+    println!("------------------Test-34-----------------");
+    let style = style_str! {"Hello",
+        @keyframes spin1 {
+            to {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+    };
+    assert_eq!(
+        style.trim(),
+        "@keyframes spin1{to {-webkit-transform: rotate(360deg);}}"
+    );
+
+    println!("------------------Test-35-----------------");
+    let style = style_str! {"Hello",
+        @-webkit-keyframes spin2 {
+            to {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+    };
+    assert_eq!(
+        style.trim(),
+        "@-webkit-keyframes spin2{to {-webkit-transform: rotate(360deg);}}"
+    );
+
+    //note: here we have to declare raw string because of backslash charactor
+    println!("------------------Test-36-----------------");
+    let style = style_str! {"Hello",
+        @counter-style thumbs {
+            system: cyclic;
+            symbols: r"\1F44D";
+            suffix: " ";
+        }
+    };
+    assert_eq!(
+        style.trim(),
+        r#"@counter-style thumbs{system: cyclic;symbols: "\1F44D";suffix: " ";}"#
+    );
+
+    println!("------------------Test-37-----------------");
+    let style = style_str! {"Hello",
+        @font-feature-values Font One {
+            @styleset {
+                nice-style: 12;
+            }
+        }
+    };
+    assert_eq!(
+        style.trim(),
+        r#"@font-feature-values Font One{@styleset {nice-style: 12;}}"#
+    );
+
+    //note: this is experimental css rule.
+    println!("------------------Test-38-----------------");
+    let style = style_str! {"Hello",
+        @property --property-name {
+            syntax: "<color>";
+            inherits: false;
+            initial-value: #c0ffee;
+        }
+    };
+    assert_eq!(
+        style.trim(),
+        r#"@property --property-name{syntax: "<color>";inherits: false;initial-value: #c0ffee;}"#
+    );
+
+    println!("------------------Test-39-----------------");
+    let style = style_str! {"Hello",
+        @layer framework {
+            @layer layout {
+                p {
+                    margin-block: 1rem;
+                }
+            }
+        }
+    };
+    assert_eq!(
+        style.trim(),
+        r#"@layer framework{@layer layout{p.test{margin-block: 1rem;}}}"#
+    );
+
+    println!("------------------Test-40-----------------");
+    let style = style_str! {"Hello",
+        @layer theme, layout, utilities;
+    };
+    assert_eq!(style.trim(), r#"@layer theme, layout, utilities;"#);
 }

@@ -31,7 +31,7 @@ pub fn parse_group(group: Group) -> String {
         }
         TokenTree::Literal(t) => {
             add_spaces(&mut body, t.span(), &mut pre_line, &mut pre_col);
-            body.push_str(&t.to_string());
+            body.push_str(t.to_string().trim_start_matches('r'));
         }
         TokenTree::Punct(t) => {
             add_spaces(&mut body, t.span(), &mut pre_line, &mut pre_col);

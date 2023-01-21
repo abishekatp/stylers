@@ -1,7 +1,8 @@
-use crate::css_style_declar::CSSStyleDeclaration;
-use crate::utils::{add_spaces, parse_group};
 use proc_macro2::{Delimiter, TokenStream, TokenTree};
 use std::collections::HashMap;
+
+use crate::css_style_declar::CSSStyleDeclaration;
+use crate::utils::{add_spaces, parse_group};
 
 //ref: https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleRule
 #[derive(Debug)]
