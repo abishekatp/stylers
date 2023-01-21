@@ -4,16 +4,17 @@ use std::collections::HashMap;
 use crate::css_style_declar::CSSStyleDeclaration;
 use crate::utils::{add_spaces, parse_group};
 
-//ref: https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleRule
+/// ref: https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleRule
+/// CSSStyleRule is one kind of CSSRule which will contain two parts.
+/// One is selector text and another one is style declaration for that selector.
 #[derive(Debug)]
 pub struct CSSStyleRule {
     selector_text: String,
     style: CSSStyleDeclaration,
-    //todo: parse the style argument in parse and create this style_map.
-    // style_map: HashMap<String,String>,
 }
 
 impl CSSStyleRule {
+    /// This function will take the token stream of one CSSStyleRule and parse it.
     pub fn new(ts: TokenStream, random_class: &str) -> (CSSStyleRule, HashMap<String, ()>) {
         let mut css_style_rule = CSSStyleRule {
             selector_text: String::new(),
@@ -24,12 +25,14 @@ impl CSSStyleRule {
         (css_style_rule, sel_map)
     }
 
+    /// This css_text method will give the whole style-rule as single string value.
     pub fn css_text(&self) -> String {
         let mut text = self.selector_text.clone();
         text.push_str(&self.style.style_css_text());
         text
     }
 
+    /// parse method will extract the selector part of the style-rule and parse that selector using parse_selector method
     fn parse(&mut self, ts: TokenStream, random_class: &str) -> HashMap<String, ()> {
         let mut pre_col: usize = 0;
         let mut pre_line: usize = 0;
@@ -79,6 +82,7 @@ impl CSSStyleRule {
         sel_map
     }
 
+    ///parse_selector method will parse the all parts of selector and add random class to them
     fn parse_selector(&mut self, selector_text: &str, random_class: &str) -> HashMap<String, ()> {
         let mut sel_map: HashMap<String, ()> = HashMap::new();
         let mut source = String::new();

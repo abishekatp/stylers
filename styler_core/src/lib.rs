@@ -9,7 +9,7 @@ mod utils;
 use css_style_sheet::{CSSRule, CSSStyleSheet};
 use proc_macro2::{TokenStream, TokenTree};
 use std::collections::HashMap;
-//this function will build the whole style. This will return style string, component name, map of unique keys.
+//this function will build the whole style. This will return style string, component name, map of unique keys of selectors.
 pub fn build_style(
     ts: TokenStream,
     random_class: &String,
