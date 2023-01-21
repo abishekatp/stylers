@@ -288,7 +288,7 @@ pub fn run_tests() {
                 text-shadow: 0 0 2px blue;
                 float: none;
             }
-        
+
             .flex-container {
                 display: flex;
             }
@@ -298,7 +298,6 @@ pub fn run_tests() {
         style.trim(),
         "@supports (display: flex){.flex-container.test>.test{text-shadow: 0 0 2px blue;float: none;}.flex-container.test{display: flex;}}"
     );
-    
 
     //todo: check how to add class name.
     // println!("------------------Test-31-----------------");

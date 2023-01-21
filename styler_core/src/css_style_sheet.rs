@@ -5,11 +5,11 @@ use crate::css_at_rule::CSSAtRule;
 use crate::css_style_rule::CSSStyleRule;
 
 //ref: https://developer.mozilla.org/en-US/docs/Web/API/CSSRule
+#[derive(Debug)]
 pub enum CSSRule {
     StyleRule(CSSStyleRule),
-    AtRule(CSSAtRule)
+    AtRule(CSSAtRule),
 }
-
 
 //ref: https://developer.mozilla.org/en-US/docs/Web/API/StyleSheet
 //ref: https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet
@@ -41,7 +41,9 @@ impl CSSStyleSheet {
                             } else {
                                 let (style_rule, new_map) =
                                     CSSStyleRule::new(css_rule_tt, random_class);
-                                css_style_sheet.css_rules.push(CSSRule::StyleRule(style_rule));
+                                css_style_sheet
+                                    .css_rules
+                                    .push(CSSRule::StyleRule(style_rule));
                                 sel_map.extend(new_map.into_iter());
                             }
                             css_rule_tt = TokenStream::new();

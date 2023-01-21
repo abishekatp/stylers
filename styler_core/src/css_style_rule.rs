@@ -3,7 +3,6 @@ use crate::utils::{add_spaces, parse_group};
 use proc_macro2::{Delimiter, TokenStream, TokenTree};
 use std::collections::HashMap;
 
-
 //ref: https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleRule
 #[derive(Debug)]
 pub struct CSSStyleRule {
