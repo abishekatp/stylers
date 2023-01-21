@@ -1,5 +1,6 @@
 use crate::css_style_declar::CSSStyleDeclaration;
-use proc_macro2::Group;
+use crate::utils::{add_spaces, parse_group};
+use proc_macro2::{Delimiter, TokenStream, TokenTree};
 use std::collections::HashMap;
 
 //ref: https://developer.mozilla.org/en-US/docs/Web/API/CSSRule
@@ -26,12 +27,67 @@ impl CSSRule for CSSStyleRule {
 }
 
 impl CSSStyleRule {
-    pub fn parse(
-        selector_text: &str,
-        group: Group,
-        random_class: &str,
-        sel_map: &mut HashMap<String, ()>,
-    ) -> Box<dyn CSSRule> {
+    pub fn new(ts: TokenStream, random_class: &str) -> (CSSStyleRule, HashMap<String, ()>) {
+        let mut css_style_rule = CSSStyleRule {
+            selector_text: String::new(),
+            style: CSSStyleDeclaration::empty(),
+        };
+        let sel_map = css_style_rule.parse(ts, random_class);
+
+        (css_style_rule, sel_map)
+    }
+
+    fn parse(&mut self, ts: TokenStream, random_class: &str) -> HashMap<String, ()> {
+        let mut pre_col: usize = 0;
+        let mut pre_line: usize = 0;
+        //selector will just store current selector for each style
+        let mut selector = String::new();
+        let mut ts_iter = ts.into_iter();
+        let mut sel_map = HashMap::new();
+        loop {
+            match ts_iter.next() {
+                Some(tt) => {
+                    match tt {
+                        TokenTree::Group(t) => {
+                            //only if the delimiter is brace it will be style definition
+                            if t.delimiter() == Delimiter::Brace {
+                                sel_map = self.parse_selector(&selector, random_class);
+                                self.style = CSSStyleDeclaration::new(t);
+                            } else {
+                                add_spaces(&mut selector, t.span(), &mut pre_line, &mut pre_col);
+                                selector.push_str(&parse_group(t));
+                            }
+                        }
+                        TokenTree::Ident(t) => {
+                            add_spaces(&mut selector, t.span(), &mut pre_line, &mut pre_col);
+                            selector.push_str(&t.to_string());
+                        }
+                        TokenTree::Literal(t) => {
+                            add_spaces(&mut selector, t.span(), &mut pre_line, &mut pre_col);
+                            selector.push_str(t.to_string().trim_matches('"'));
+                        }
+                        TokenTree::Punct(t) => {
+                            let ch = t.as_char();
+                            //only in these two cases we need space information
+                            if ch == '.' || ch == '#' {
+                                add_spaces(&mut selector, t.span(), &mut pre_line, &mut pre_col);
+                            } else {
+                                let end = t.span().unwrap().end();
+                                pre_col = end.column;
+                                pre_line = end.line;
+                            }
+                            selector.push(t.as_char());
+                        }
+                    }
+                }
+                None => break,
+            }
+        }
+        sel_map
+    }
+
+    fn parse_selector(&mut self, selector_text: &str, random_class: &str) -> HashMap<String, ()> {
+        let mut sel_map: HashMap<String, ()> = HashMap::new();
         let mut source = String::new();
         let sel_len = selector_text.len();
         let mut is_punct_start = false;
@@ -96,7 +152,7 @@ impl CSSStyleRule {
                 is_punct_start = false;
                 continue;
             }
-            if c == ',' || c == '+' || c == '~' || c == '>' {
+            if c == ',' || c == '+' || c == '~' || c == '>' || c == '|' {
                 source.push_str(random_class);
                 source.push(c);
                 is_punct_start = true;
@@ -136,10 +192,7 @@ impl CSSStyleRule {
                 temp.push(c);
             }
         }
-
-        Box::new(CSSStyleRule {
-            selector_text: source,
-            style: CSSStyleDeclaration::parse(group),
-        })
+        self.selector_text = source;
+        sel_map
     }
 }

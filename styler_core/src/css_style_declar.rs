@@ -9,7 +9,12 @@ pub struct CSSStyleDeclaration {
 }
 
 impl CSSStyleDeclaration {
-    pub fn parse(group: Group) -> CSSStyleDeclaration {
+    pub fn empty() -> CSSStyleDeclaration {
+        CSSStyleDeclaration {
+            style_css_text: "".to_string(),
+        }
+    }
+    pub fn new(group: Group) -> CSSStyleDeclaration {
         CSSStyleDeclaration {
             style_css_text: parse_group(group),
         }

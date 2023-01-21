@@ -1,4 +1,5 @@
 #![feature(proc_macro_span)]
+#![feature(extend_one)]
 mod css_at_rule;
 mod css_style_declar;
 mod css_style_rule;
@@ -29,7 +30,7 @@ pub fn build_style(
     }
 
     let mut style = String::new();
-    let (style_sheet, sel_map) = CSSStyleSheet::parse(ts_iter.collect(), random_class.clone());
+    let (style_sheet, sel_map) = CSSStyleSheet::new(ts_iter.collect(), random_class);
     style_sheet
         .css_rules
         .iter()

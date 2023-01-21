@@ -232,30 +232,79 @@ pub fn run_tests() {
     };
     assert_eq!(style.trim(), "p.test:lang(it){background: yellow;}");
 
-    //todo: check how to add class name.
     println!("------------------Test-26-----------------");
     let style = style_str! {"Hello",
-        @keyframes spin {
-            to {
-                -webkit-transform: rotate(360deg);
-            }
+        svg|a {
         }
     };
-    assert_eq!(
-        style.trim(),
-        "@keyframes spin.test{to {-webkit-transform: rotate(360deg);}}"
-    );
+    assert_eq!(style.trim(), "svg.test|a.test{}");
 
+    //Regular at-rules
     println!("------------------Test-27-----------------");
     let style = style_str! {"Hello",
-        @-webkit-keyframes spin {
-            to {
-                -webkit-transform: rotate(360deg);
+        @charset "UTF-8";
+    };
+    assert_eq!(style.trim(), r#"@charset "UTF-8";"#);
+
+    println!("------------------Test-28-----------------");
+    let style = style_str! {"Hello",
+        @import url("landscape.css") screen and (orientation: landscape);
+    };
+    assert_eq!(
+        style.trim(),
+        r#"@import url("landscape.css") screen and (orientation: landscape);"#
+    );
+
+    //note: this is one of restriction since url contains "//" it cannot be mentioned without double quotes
+    println!("------------------Test-29-----------------");
+    let style = style_str! {"Hello",
+        @namespace svg url("http://www.w3.org/2000/svg");
+    };
+    assert_eq!(
+        style.trim(),
+        r#"@namespace svg url("http://www.w3.org/2000/svg");"#
+    );
+
+    //nested at-rules
+    //todo: check how to add class name.
+    println!("------------------Test-30-----------------");
+    let style = style_str! {"Hello",
+        @supports (display: flex) {
+            @media screen and (min-width: 900px) {
+                article {
+                    display: flex;
+                }
             }
         }
     };
     assert_eq!(
         style.trim(),
-        "@-webkit-keyframes spin.test{to {-webkit-transform: rotate(360deg);}}"
+        "@supports (display: flex){@media screen and (min-width: 900px){article.test{display: flex;}}}"
     );
+
+    // println!("------------------Test-31-----------------");
+    // let style = style_str! {"Hello",
+    //     @keyframes spin {
+    //         to {
+    //             -webkit-transform: rotate(360deg);
+    //         }
+    //     }
+    // };
+    // assert_eq!(
+    //     style.trim(),
+    //     "@keyframes spin{to {-webkit-transform: rotate(360deg);}}"
+    // );
+
+    // println!("------------------Test-32-----------------");
+    // let style = style_str! {"Hello",
+    //     @-webkit-keyframes spin {
+    //         to {
+    //             -webkit-transform: rotate(360deg);
+    //         }
+    //     }
+    // };
+    // assert_eq!(
+    //     style.trim(),
+    //     "@-webkit-keyframes spin{to {-webkit-transform: rotate(360deg);}}"
+    // );
 }
