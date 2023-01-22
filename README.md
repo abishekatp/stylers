@@ -26,17 +26,14 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
         }
     }
 
-    // Above style macro returns one unique class_name that needs to be handled by view macro.
-    // currently mapped to dom manually.
     view! {cx, class = styler_class,
-        <div class=format!("one {styler_class}")>
-            <h1 id="two" class={styler_class}>"Hello"</h1>
-            <h2 class={styler_class}>"World"</h2>
-            <h2 class={styler_class}>{name}</h2>
-            <h3 class={styler_class}>"Hello Kanna"</h3>
+        <div class="one">
+            <h1 id="two">"Hello"</h1>
+            <h2>"World"</h2>
+            <h2>{name}</h2>
+            <h3>"Hello Kanna"</h3>
         </div>
     }
 }
 ```
-
- #### Here style macro gives one unique class name called styler_class that needs to be handled by view macro!
+### For more examples see examples section.
