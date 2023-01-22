@@ -1,40 +1,38 @@
 #![feature(proc_macro_span)]
+//! This crate exposes style macro for scoped css in rust web frameworks which follows component like architecture.
 use proc_macro::TokenStream;
-use proc_macro2;
+use proc_macro2::{self, TokenTree};
 use quote::quote;
 
 use std::collections::hash_map::RandomState;
-use std::hash::{BuildHasher, Hasher};
-
 use std::fs::{self, File, OpenOptions};
+use std::hash::{BuildHasher, Hasher};
 use std::io::Write;
 use styler_core::build_style;
 
+/// style macro take token stream as input and returns Rust string as token stream.
+/// The first two Tokens of the token stream must be component name and comma punctuation.
+/// This function will create css file named same as component name in the css folder of the root directory.
+/// For examples see: <https://github.com/abishekatp/stylers>
 #[proc_macro]
 pub fn style(ts: TokenStream) -> TokenStream {
+    let (comp_name, ts) = get_component_name(ts);
     let random_class = rand_class();
-    let (style, comp_name, _sel_map) =
-        build_style(proc_macro2::TokenStream::from(ts), &random_class);
-    // dbg!(&sel_map);
+    let (style, _sel_map) = build_style(ts, &random_class);
     let random_class = random_class[1..].to_string();
     let expanded = quote! {
         #random_class
     };
-    // dbg!(&style);
     write_to_file(&style, &comp_name);
     TokenStream::from(expanded)
-    // let call_site = proc_macro::Span::call_site();
-    // dbg!(&call_site);
-    // println!("{}",call_site.source_text().unwrap());
-    // println!("{:?}",call_site.source_file());
 }
 
-//this macro will return the style string. Note:created for testing purpose only.
+///This style_test macro will return the style string. Note:created for testing purpose only.
 #[proc_macro]
-pub fn style_str(ts: TokenStream) -> TokenStream {
+pub fn style_test(ts: TokenStream) -> TokenStream {
+    let (_comp_name, ts) = get_component_name(ts);
     let random_class = String::from(".test");
-    let (style, _comp_name, _sel_map) =
-        build_style(proc_macro2::TokenStream::from(ts), &random_class);
+    let (style, _sel_map) = build_style(proc_macro2::TokenStream::from(ts), &random_class);
     let expanded = quote! {
         #style
     };
@@ -76,4 +74,21 @@ fn cat(dir: &str) {
         let _ = buffer.write(data.as_bytes());
     }
     buffer.flush().expect("Problem closing css file");
+}
+
+fn get_component_name(ts: TokenStream) -> (String, proc_macro2::TokenStream) {
+    let mut ts_iter = proc_macro2::TokenStream::from(ts).into_iter();
+    //first two tokens are for component name and comma.
+    let TokenTree::Literal(comp_name) = ts_iter.next().expect("Expected value of type token tree") else {
+        panic!(r#"Expected component name at the start like style!("component_name", your css comes here)"#)
+    };
+    let comp_name = comp_name.to_string().trim_matches('"').to_string();
+
+    let TokenTree::Punct(comma) = ts_iter.next().expect("Expected value of type token tree") else {
+        panic!("Expected comma(,) after component name");   
+    };
+    if comma.as_char() != ',' {
+        panic!("Expected comma(,) after component name")
+    }
+    (comp_name, ts_iter.collect())
 }

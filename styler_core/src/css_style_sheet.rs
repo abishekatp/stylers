@@ -4,24 +4,24 @@ use std::collections::HashMap;
 use crate::css_at_rule::CSSAtRule;
 use crate::css_style_rule::CSSStyleRule;
 
-///ref: https://developer.mozilla.org/en-US/docs/Web/API/CSSRule
-/// CSSRule is enum which will have two kinds style-rule and at-rule(which begins with @)
+//ref: https://developer.mozilla.org/en-US/docs/Web/API/CSSRule
+// CSSRule is enum which will have two kinds style-rule and at-rule(which begins with @)
 #[derive(Debug)]
 pub enum CSSRule {
     StyleRule(CSSStyleRule),
     AtRule(CSSAtRule),
 }
 
-///ref: https://developer.mozilla.org/en-US/docs/Web/API/StyleSheet
-///ref: https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet
-///CSSStyleSheet is representation of single style sheet.
-/// It will contain list of CSSRule.
+//ref: https://developer.mozilla.org/en-US/docs/Web/API/StyleSheet
+//ref: https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet
+//CSSStyleSheet is representation of single style sheet.
+// It will contain list of CSSRule.
 pub struct CSSStyleSheet {
     pub css_rules: Vec<CSSRule>,
 }
 
 impl CSSStyleSheet {
-    ///This function will take the whole stylesheet content as token stream and return CSSStyleSheet structure
+    //This function will take the whole stylesheet content as token stream and return CSSStyleSheet structure
     pub fn new(ts: TokenStream, random_class: &str) -> (CSSStyleSheet, HashMap<String, ()>) {
         let mut css_style_sheet = CSSStyleSheet { css_rules: vec![] };
         let mut ts_iter = ts.into_iter();

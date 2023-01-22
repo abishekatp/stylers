@@ -1,4 +1,4 @@
-use styler::style_str;
+use styler::style_test;
 
 fn main() {
     println!("========================Running Tests=======================");
@@ -10,14 +10,14 @@ fn main() {
 //Ref: https://www.w3schools.com/cssref/css_selectors.php
 pub fn run_tests() {
     println!("------------------Test-1------------------");
-    let style = style_str! {"Hello",.two{
+    let style = style_test! {"Hello",.two{
             color: yellow;
         }
     };
     assert_eq!(style.trim(), ".two.test{color: yellow;}");
 
     println!("------------------Test-2------------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         .two.one  {
             color: yellow;
         }
@@ -25,7 +25,7 @@ pub fn run_tests() {
     assert_eq!(style.trim(), ".two.one.test{color: yellow;}");
 
     println!("------------------Test-3------------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         .two  .one{
             color: yellow;
         }
@@ -33,7 +33,7 @@ pub fn run_tests() {
     assert_eq!(style.trim(), ".two.test .one.test{color: yellow;}");
 
     println!("------------------Test-4------------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         #firstname{
             background-color: yellow;
         }
@@ -42,7 +42,7 @@ pub fn run_tests() {
 
     // todo: decide weather all element should have the random classname inserted for this.
     println!("------------------Test-5------------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         *{
             background-color: yellow;
         }
@@ -50,7 +50,7 @@ pub fn run_tests() {
     assert_eq!(style.trim(), ".test{background-color: yellow;}");
 
     println!("------------------Test-6------------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         div{
             border: 1px solid black;
             margin: 25px 50px 75px 100px;
@@ -60,7 +60,7 @@ pub fn run_tests() {
     assert_eq!(style.trim(),"div.test{border: 1px solid black;margin: 25px 50px 75px 100px;background-color: lightblue;}");
 
     println!("------------------Test-7------------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         div .one p{
             color: blue;
         }
@@ -68,7 +68,7 @@ pub fn run_tests() {
     assert_eq!(style.trim(), "div.test .one.test p.test{color: blue;}");
 
     println!("------------------Test-8------------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         div.one p div{
             color: blue;
         }
@@ -76,7 +76,7 @@ pub fn run_tests() {
     assert_eq!(style.trim(), "div.one.test p.test div.test{color: blue;}");
 
     println!("------------------Test-9------------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         div #two{
             color: blue;
         }
@@ -84,7 +84,7 @@ pub fn run_tests() {
     assert_eq!(style.trim(), "div.test #two.test{color: blue;}");
 
     println!("------------------Test-10------------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         h2 , a{
             color: purple;
         }
@@ -92,7 +92,7 @@ pub fn run_tests() {
     assert_eq!(style.trim(), "h2.test,a.test{color: purple;}");
 
     println!("------------------Test-11------------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         div > p{
             background-color: yellow;
         }
@@ -100,7 +100,7 @@ pub fn run_tests() {
     assert_eq!(style.trim(), "div.test>p.test{background-color: yellow;}");
 
     println!("------------------Test-12-----------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         div + p {
             background-color: yellow;
         }
@@ -108,7 +108,7 @@ pub fn run_tests() {
     assert_eq!(style.trim(), "div.test+p.test{background-color: yellow;}");
 
     println!("------------------Test-13-----------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         p ~ ul {
             background: #ff0000;
         }
@@ -116,7 +116,7 @@ pub fn run_tests() {
     assert_eq!(style.trim(), "p.test~ul.test{background: #ff0000;}");
 
     println!("------------------Test-14-----------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         a[target] {
             background-color: yellow;
         }
@@ -124,7 +124,7 @@ pub fn run_tests() {
     assert_eq!(style.trim(), "a[target].test{background-color: yellow;}");
 
     println!("------------------Test-15-----------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         a[title="I am ,testing"] {
             background-color: yellow;
         }
@@ -135,7 +135,7 @@ pub fn run_tests() {
     );
 
     println!("------------------Test-16-----------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         [title~=flower] {
             background-color: yellow;
         }
@@ -146,7 +146,7 @@ pub fn run_tests() {
     );
 
     println!("------------------Test-17-----------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         [lang|=en] {
             background-color: yellow;
         }
@@ -154,7 +154,7 @@ pub fn run_tests() {
     assert_eq!(style.trim(), "[lang|=en].test{background-color: yellow;}");
 
     println!("------------------Test-18-----------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         div[class^="test"] {
             background-color: yellow;
         }
@@ -165,7 +165,7 @@ pub fn run_tests() {
     );
 
     println!("------------------Test-19-----------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         div[class$=test] {
             background-color: yellow;
         }
@@ -176,7 +176,7 @@ pub fn run_tests() {
     );
 
     println!("------------------Test-20-----------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         div [class$=test] {
             background-color: yellow;
         }
@@ -187,7 +187,7 @@ pub fn run_tests() {
     );
 
     println!("------------------Test-21-----------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         div[class*="test"] {
             background-color: yellow;
         }
@@ -198,7 +198,7 @@ pub fn run_tests() {
     );
 
     println!("------------------Test-22------------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         .one:hover{
             background-color: green;
         }
@@ -206,7 +206,7 @@ pub fn run_tests() {
     assert_eq!(style.trim(), ".one.test:hover{background-color: green;}");
 
     println!("------------------Test-23------------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         p::before {
             content: "Read this: ";
         }
@@ -214,7 +214,7 @@ pub fn run_tests() {
     assert_eq!(style.trim(), r#"p.test::before{content: "Read this: ";}"#);
 
     println!("------------------Test-24------------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         div:nth-child(2){
             background-color: green;
         }
@@ -225,7 +225,7 @@ pub fn run_tests() {
     );
 
     println!("------------------Test-25------------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         p:lang(it){
             background: yellow;
         }
@@ -233,7 +233,7 @@ pub fn run_tests() {
     assert_eq!(style.trim(), "p.test:lang(it){background: yellow;}");
 
     println!("------------------Test-26-----------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         svg|a {
         }
     };
@@ -241,13 +241,13 @@ pub fn run_tests() {
 
     //Regular at-rules
     println!("------------------Test-27-----------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         @charset "UTF-8";
     };
     assert_eq!(style.trim(), r#"@charset "UTF-8";"#);
 
     println!("------------------Test-28-----------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         @import url("landscape.css") screen and (orientation: landscape);
     };
     assert_eq!(
@@ -257,7 +257,7 @@ pub fn run_tests() {
 
     //note: this is one of restriction since url contains "//" it cannot be mentioned without double quotes
     println!("------------------Test-29-----------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         @namespace svg url("http://www.w3.org/2000/svg");
     };
     assert_eq!(
@@ -267,7 +267,7 @@ pub fn run_tests() {
 
     //nested at-rules
     println!("------------------Test-30-----------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         @supports (display: flex) {
             @media screen and (min-width: 900px) {
                 article {
@@ -282,7 +282,7 @@ pub fn run_tests() {
     );
 
     println!("------------------Test-30-----------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         @supports (display: flex) {
             .flex-container > * {
                 text-shadow: 0 0 2px blue;
@@ -300,7 +300,7 @@ pub fn run_tests() {
     );
 
     println!("------------------Test-31-----------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         @document url("https://www.example.com/")
         {
             h1 {
@@ -314,7 +314,7 @@ pub fn run_tests() {
     );
 
     println!("------------------Test-32-----------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         @page {
             size: A4;
             margin: 10%;
@@ -330,7 +330,7 @@ pub fn run_tests() {
     );
 
     println!("------------------Test-33-----------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         @font-face {
             font-family: "Trickster";
             src: local("Trickster"),
@@ -346,7 +346,7 @@ pub fn run_tests() {
     // todo: currently we not adding any random string to keyframe identifier.
     //it is users responsibility to make these identifiers unique globaly.
     println!("------------------Test-34-----------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         @keyframes spin1 {
             to {
                 -webkit-transform: rotate(360deg);
@@ -359,7 +359,7 @@ pub fn run_tests() {
     );
 
     println!("------------------Test-35-----------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         @-webkit-keyframes spin2 {
             to {
                 -webkit-transform: rotate(360deg);
@@ -373,7 +373,7 @@ pub fn run_tests() {
 
     //note: here we have to declare raw string because of backslash charactor
     println!("------------------Test-36-----------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         @counter-style thumbs {
             system: cyclic;
             symbols: r"\1F44D";
@@ -386,7 +386,7 @@ pub fn run_tests() {
     );
 
     println!("------------------Test-37-----------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         @font-feature-values Font One {
             @styleset {
                 nice-style: 12;
@@ -400,7 +400,7 @@ pub fn run_tests() {
 
     //note: this is experimental css rule.
     println!("------------------Test-38-----------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         @property --property-name {
             syntax: "<color>";
             inherits: false;
@@ -413,7 +413,7 @@ pub fn run_tests() {
     );
 
     println!("------------------Test-39-----------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         @layer framework {
             @layer layout {
                 p {
@@ -428,7 +428,7 @@ pub fn run_tests() {
     );
 
     println!("------------------Test-40-----------------");
-    let style = style_str! {"Hello",
+    let style = style_test! {"Hello",
         @layer theme, layout, utilities;
     };
     assert_eq!(style.trim(), r#"@layer theme, layout, utilities;"#);

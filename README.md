@@ -3,7 +3,7 @@
 - Currently It has one macro named style! which will parse the css text, add random classname for
 all the selectors. this random class name will be same all selectors in same component. As of now we will save all of them into a css file which is named same as component name passed to the style macro.
 
-## Example
+## Leptos Example
 
 ```rust
 #[component]
@@ -28,7 +28,7 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
 
     // Above style macro returns one unique class_name that needs to be handled by view macro.
     // currently mapped to dom manually.
-    view! {cx,
+    view! {cx, class = styler_class,
         <div class=format!("one {styler_class}")>
             <h1 id="two" class={styler_class}>"Hello"</h1>
             <h2 class={styler_class}>"World"</h2>

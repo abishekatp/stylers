@@ -5,3 +5,9 @@ members = [
     "examples",
     "styler_test",
 ]
+
+[workspace.package]
+version = "0.1.0"
+
+[workspace.dependencies]
+styler_core = { path = "./styler_core", version = "0.1.0" }

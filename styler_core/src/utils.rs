@@ -1,5 +1,7 @@
 use proc_macro2::{Delimiter, Group, TokenTree};
 
+// This parse_group function will parse the TokenTree::Group and return a string.
+// This function will add at most one whitespace even if there are many whitespaces in actual tokenstream.
 pub fn parse_group(group: Group) -> String {
     let mut body = String::new();
     let mut pre_col: usize = 0;

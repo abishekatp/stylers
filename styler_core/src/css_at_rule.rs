@@ -4,11 +4,11 @@ use std::collections::HashMap;
 use crate::css_style_sheet::{CSSRule, CSSStyleSheet};
 use crate::utils::{add_spaces, parse_group};
 
-//// ref: https://developer.mozilla.org/en-US/docs/Web/CSS/At-rule
-/// CSSAtRule is one kind of CSSRule. It will have two parts
-/// at-rule may contain nested at-rules. style-rule will be the inner most nesting of nested at-rule
-/// some ar-rules like @support may contain multiple style-rules nested inside.
-/// So we store them in the css_rules list.
+// ref: https://developer.mozilla.org/en-US/docs/Web/CSS/At-rule
+// CSSAtRule is one kind of CSSRule. It will have two parts
+// at-rule may contain nested at-rules. style-rule will be the inner most nesting of nested at-rule
+// some ar-rules like @support may contain multiple style-rules nested inside.
+// So we store them in the css_rules list.
 #[derive(Debug)]
 pub struct CSSAtRule {
     //only nested at-rules will contain style_rule.
@@ -17,8 +17,8 @@ pub struct CSSAtRule {
 }
 
 impl CSSAtRule {
-    /// This method will parse the at-rule tokenstream and return teh CSSAtRule
-    /// HashMap will contain all unique selectors which may be nested inside at-rule.
+    // This method will parse the at-rule tokenstream and return teh CSSAtRule
+    // HashMap will contain all unique selectors which may be nested inside at-rule.
     pub fn new(ts: TokenStream, random_class: &str) -> (CSSAtRule, HashMap<String, ()>) {
         let mut css_at_rule = CSSAtRule {
             css_rules: vec![],
@@ -29,7 +29,7 @@ impl CSSAtRule {
         (css_at_rule, HashMap::new())
     }
 
-    /// This css_text method will give the whole at-rule as single string value.
+    // This css_text method will give the whole at-rule as single string value.
     pub fn css_text(&self) -> String {
         let mut text = String::new();
         //when we call parse method recursively it pushes at rule in order from inner most to outer most.
@@ -53,8 +53,8 @@ impl CSSAtRule {
         text.to_string()
     }
 
-    /// This parse method will parse the at-rule tokn stream.
-    /// Note: this is recursive function it will handle nested at-rules.
+    // This parse method will parse the at-rule tokn stream.
+    // Note: this is recursive function it will handle nested at-rules.
     fn parse(&mut self, ts: TokenStream, random_class: &str) -> HashMap<String, ()> {
         let mut at_rule = String::new();
         let mut pre_line = 0;

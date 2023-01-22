@@ -1,5 +1,9 @@
 #![feature(proc_macro_span)]
 #![feature(extend_one)]
+//! This create as of now only exposes one function named build_style.
+//! The main focus of this function is to provide scoped css for Rust components(for the framework which provides component like architecture e.g leptos).
+//! This function can be used parse the style sheet in rust.
+
 mod css_at_rule;
 mod css_style_declar;
 mod css_style_rule;
@@ -7,36 +11,25 @@ mod css_style_sheet;
 mod utils;
 
 use css_style_sheet::{CSSRule, CSSStyleSheet};
-use proc_macro2::{TokenStream, TokenTree};
+use proc_macro2::TokenStream;
 use std::collections::HashMap;
-//this function will build the whole style. This will return style string, component name, map of unique keys of selectors.
-pub fn build_style(
-    ts: TokenStream,
-    random_class: &String,
-) -> (String, String, HashMap<String, ()>) {
-    let mut ts_iter = ts.into_iter();
 
-    //first two tokens are for component name and comma.
-    let TokenTree::Literal(comp_name) = ts_iter.next().expect("Expected value of type token tree") else {
-        panic!(r#"Expected component name at the start like style!("component_name", your css comes here)"#)
-    };
-    let comp_name = comp_name.to_string().trim_matches('"').to_string();
-
-    let TokenTree::Punct(comma) = ts_iter.next().expect("Expected value of type token tree") else {
-        panic!("Expected comma(,) after component name");   
-    };
-    if comma.as_char() != ',' {
-        panic!("Expected comma(,) after component name")
-    }
-
+/// This function will build the whole style text as rust TokenStream.
+/// This function will take two arguments.
+/// ts: TokenStream which is token stream of text content of whole style sheet.
+/// random_class: &String is random class to be appended for each selector.
+/// This function will return tuple with two fields (style string, component name, map of unique keys of selectors.)
+/// style string: is the parsed style sheet as a string
+/// component name: is the name of the component passed by
+pub fn build_style(ts: TokenStream, random_class: &String) -> (String, HashMap<String, ()>) {
     let mut style = String::new();
-    let (style_sheet, sel_map) = CSSStyleSheet::new(ts_iter.collect(), random_class);
+    let (style_sheet, sel_map) = CSSStyleSheet::new(ts, random_class);
     style_sheet.css_rules.iter().for_each(|rule| match rule {
         CSSRule::AtRule(at_rule) => style.push_str(&at_rule.css_text()),
         CSSRule::StyleRule(style_rule) => style.push_str(&style_rule.css_text()),
     });
 
-    (style, comp_name, sel_map)
+    (style, sel_map)
 }
 
 //todo: This test will only work when Span is available outside proceduaral macro crate.
