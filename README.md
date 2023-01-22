@@ -1,7 +1,8 @@
 # Styler
-- This repo has draft implementation of style parser. **Note:It does not check any css rules.**
+- Scoped css solution for Rust web frameworks which follows component like architecture.
+- This repo has draft implementation of style parser. **Note:It does not check any css rules yet.**
 - Currently It has one macro named style! which will parse the css text, add random classname for
-all the selectors. this random class name will be same all selectors in same component. As of now we will save all of them into a css file which is named same as component name passed to the style macro.
+all the selectors. this random class name will be same all selectors in same component. As of now we will save all of them into a css file which is named same as component name passed to the style macro. **Note:All the component names in one package must be unique(Or user have to use unique string literal in the style macro.**
 
 ## Leptos Example
 
