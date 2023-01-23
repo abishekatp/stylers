@@ -7,7 +7,7 @@ all the selectors. this random class name will be same all selectors in same com
 - We are trying to improve the build process. Till then user have to consider given below things when they are building their app.
 - When we build the app we will generate two things. One is css directory which contains all css files for each component. At the end we will merge all these css file and create one main.css file. These css file in the directory can be used to debug css of each component.
 - Whenever component is recompiled two files will be fully overrided one is {component_name}.css and main.css. If your build tool gives error like "main.css file not found", then create main.css in the root directory of your project.
-- **You have to include this main.css in the index.html and add the css directory in watch ignore options to avoid infinite recompiling** in case if you are using build tools like Trunk to build your package (e.g <link data-trunk rel="css" href="./main.css">). In Trunk you will add this build ignore in the Trunk.toml file like below,
+- **You have to include this main.css in the index.html** in case if you are using build tools like Trunk to build your package (e.g <link data-trunk rel="css" href="./main.css">). **You have to add the css directory in watch ignore options to avoid infinite recompiling**. In Trunk you will add this build ignore in the Trunk.toml file like given below,
 ```toml
 [watch]
 ignore = ["./css"]
