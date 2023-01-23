@@ -11,7 +11,7 @@ use crate::utils::{add_spaces, parse_group};
 // So we store them in the css_rules list.
 #[derive(Debug)]
 pub struct CSSAtRule {
-    //only nested at-rules will contain style_rule.
+    //nested at-rule may contain one or more css rule block inside it.
     css_rules: Vec<CSSRule>,
     at_rules: Vec<String>,
 }
@@ -30,6 +30,7 @@ impl CSSAtRule {
     }
 
     // This css_text method will give the whole at-rule as single string value.
+    // Note that we the calling function will be responsible for passing token stream of single at-rule at a time.
     pub fn css_text(&self) -> String {
         let mut text = String::new();
         //when we call parse method recursively it pushes at rule in order from inner most to outer most.
@@ -37,6 +38,7 @@ impl CSSAtRule {
             text.push_str(r);
             text.push('{');
         });
+        //here we add the css_rules which are nested inside of at-rules one by one.
         if self.css_rules.len() > 0 {
             for css_rule in self.css_rules.iter() {
                 match css_rule {
@@ -48,7 +50,7 @@ impl CSSAtRule {
                 text.push('}');
             }
         }
-        //in case of regular at_rule remove all open braces added.
+        //in case of regular at_rule remove all extra open braces added in the previous step.
         let text = text.trim_matches('{');
         text.to_string()
     }
@@ -88,9 +90,11 @@ impl CSSAtRule {
                                         || at_rule.contains("@font-feature-values")
                                         || at_rule.contains("@property")
                                     {
-                                        //these at-rules will not contain any nested css-rules.
+                                        //these at-rules will not contain any nested css-rules. so we just parse that group as a string.
                                         at_rule.push_str(&parse_group(t));
                                     } else {
+                                        //each at-rule may contain one or more css rules nested inside of it.
+                                        //it is like another small style sheet inside of it. So we use CSSStyleSheet here.
                                         let (mut style_sheet, new_map) =
                                             CSSStyleSheet::new(t.stream(), random_class);
                                         self.css_rules.append(&mut style_sheet.css_rules);
@@ -116,7 +120,7 @@ impl CSSAtRule {
                             let ch = t.as_char();
                             add_spaces(&mut at_rule, t.span(), &mut pre_line, &mut pre_col);
                             at_rule.push(ch);
-                            //regular at rule ends with semicolon.
+                            //regular at rule ends with semicolon. there won't be any style declaration for this.
                             if ch == ';' {
                                 self.at_rules.push(at_rule.clone());
                             }

@@ -15,6 +15,7 @@ pub struct CSSStyleRule {
 
 impl CSSStyleRule {
     // This function will take the token stream of one CSSStyleRule and parse it.
+    // Note that we the calling function will be responsible for passing token stream of single style-rule at a time.
     pub fn new(ts: TokenStream, random_class: &str) -> (CSSStyleRule, HashMap<String, ()>) {
         let mut css_style_rule = CSSStyleRule {
             selector_text: String::new(),
@@ -32,11 +33,11 @@ impl CSSStyleRule {
         text
     }
 
-    // parse method will extract the selector part of the style-rule and parse that selector using parse_selector method
+    // parse method will extract the selector part of the style-rule and parse that selector using parse_selector method.
     fn parse(&mut self, ts: TokenStream, random_class: &str) -> HashMap<String, ()> {
         let mut pre_col: usize = 0;
         let mut pre_line: usize = 0;
-        //selector will just store current selector for each style
+        //selector will just store current selector of the style rule.
         let mut selector = String::new();
         let mut ts_iter = ts.into_iter();
         let mut sel_map = HashMap::new();
@@ -45,7 +46,7 @@ impl CSSStyleRule {
                 Some(tt) => {
                     match tt {
                         TokenTree::Group(t) => {
-                            //only if the delimiter is brace it will be style definition
+                            //only if the delimiter is brace it will be style definition.
                             if t.delimiter() == Delimiter::Brace {
                                 sel_map = self.parse_selector(&selector, random_class);
                                 self.style = CSSStyleDeclaration::new(t);
@@ -64,7 +65,7 @@ impl CSSStyleRule {
                         }
                         TokenTree::Punct(t) => {
                             let ch = t.as_char();
-                            //only in these two cases we need space information
+                            //only when ch is dot or hash we need space information. because space will mean direct child.
                             if ch == '.' || ch == '#' {
                                 add_spaces(&mut selector, t.span(), &mut pre_line, &mut pre_col);
                             } else {

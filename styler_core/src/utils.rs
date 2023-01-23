@@ -33,6 +33,8 @@ pub fn parse_group(group: Group) -> String {
         }
         TokenTree::Literal(t) => {
             add_spaces(&mut body, t.span(), &mut pre_line, &mut pre_col);
+            //we are trimming r because in some cases like "\1g34" is not valid rust syntax.
+            //in those places user have to use r"\1g34".
             body.push_str(t.to_string().trim_start_matches('r'));
         }
         TokenTree::Punct(t) => {
@@ -45,6 +47,7 @@ pub fn parse_group(group: Group) -> String {
 }
 
 //check if spaces needed to be appended
+//note: this function also reset the pre_line and pre_col to the cureent token's end line and column
 pub fn add_spaces(
     source: &mut String,
     span: proc_macro2::Span,

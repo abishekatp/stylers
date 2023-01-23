@@ -1,5 +1,5 @@
 #![feature(proc_macro_span)]
-//! This crate exposes style macro for scoped css in rust web frameworks which follows component like architecture.
+//! This crate provides style macro for scoped css in rust web frameworks which follows component like architecture e.g Leptos.
 use proc_macro::TokenStream;
 use proc_macro2::{self, TokenTree};
 use quote::quote;
@@ -52,7 +52,8 @@ fn write_to_file(data: &str, file_name: &str) {
     file_path.push_str(&file_name.to_lowercase());
     file_path.push_str(".css");
 
-    fs::create_dir_all(&dir_path).unwrap();
+    fs::create_dir_all(&dir_path)
+        .expect("Problem creating css directory in the root directory of the project.");
     let mut buffer = File::create(file_path).expect("Problem creating css file");
     let _ = buffer.write_all(data.as_bytes());
     buffer.flush().expect("Problem closing css file");
@@ -62,23 +63,27 @@ fn write_to_file(data: &str, file_name: &str) {
 
 fn cat(dir: &str) {
     let out_path = "./main.css";
-    let _ = File::create(out_path).expect("Problem creating css file");
+    let _ = File::create(out_path).expect("Problem creating main.css file");
     let mut buffer = OpenOptions::new()
         .append(true)
         .open(out_path)
-        .expect("Problem opening css file");
+        .expect("Problem opening main.css file");
 
-    let files = fs::read_dir(dir).unwrap();
+    let files = fs::read_dir(dir).expect("Problem reading css directory");
     for file in files {
-        let data = fs::read_to_string(file.unwrap().path()).unwrap();
+        let data = fs::read_to_string(
+            file.expect("Problem getting css file path inside css dir")
+                .path(),
+        )
+        .expect("Problem reading css file in css dir");
         let _ = buffer.write(data.as_bytes());
     }
-    buffer.flush().expect("Problem closing css file");
+    buffer.flush().expect("Problem closing main.css file");
 }
 
+//first two tokens are for component name and comma. we extract those info in this function
 fn get_component_name(ts: TokenStream) -> (String, proc_macro2::TokenStream) {
     let mut ts_iter = proc_macro2::TokenStream::from(ts).into_iter();
-    //first two tokens are for component name and comma.
     let TokenTree::Literal(comp_name) = ts_iter.next().expect("Expected value of type token tree") else {
         panic!(r#"Expected component name at the start like style!("component_name", your css comes here)"#)
     };

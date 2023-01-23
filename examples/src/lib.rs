@@ -34,7 +34,7 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
             content: "Read this: ";
         }
     };
-    
+
     view! {cx, class = class_name,
         <div class="one">
             <h1 id="two">"Hello"</h1>
