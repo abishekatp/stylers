@@ -1,5 +1,13 @@
 #![feature(proc_macro_span)]
+#![feature(extend_one)]
 //! This crate provides style macro for scoped css in rust web frameworks which follows component like architecture e.g Leptos.
+mod build;
+mod css_at_rule;
+mod css_style_declar;
+mod css_style_rule;
+mod css_style_sheet;
+mod utils;
+
 use proc_macro::TokenStream;
 use proc_macro2::{self, TokenTree};
 use quote::quote;
@@ -8,7 +16,8 @@ use std::collections::hash_map::RandomState;
 use std::fs::{self, File, OpenOptions};
 use std::hash::{BuildHasher, Hasher};
 use std::io::Write;
-use styler_core::build_style;
+
+use crate::build::build_style;
 
 /// style macro take token stream as input and returns Rust string as token stream.
 /// The first two Tokens of the token stream must be component name and comma punctuation.

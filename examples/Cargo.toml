@@ -6,5 +6,5 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-leptos = { git = "https://github.com/leptos-rs/leptos.git"}
-styler = { path = "../styler" }
+leptos = { git = "https://github.com/leptos-rs/leptos.git" }
+stylers = { path = "../stylers" }

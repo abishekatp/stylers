@@ -1,4 +1,4 @@
-use styler::style_test;
+use stylers::style_test;
 
 fn main() {
     println!("========================Running Tests=======================");

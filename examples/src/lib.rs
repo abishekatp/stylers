@@ -1,5 +1,5 @@
 use leptos::*;
-use styler::style;
+use stylers::style;
 
 #[component]
 fn Hello(cx: Scope, name: &'static str) -> impl IntoView {

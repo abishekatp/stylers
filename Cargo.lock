@@ -1191,35 +1191,26 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a507befe795404456341dfab10cef66ead4c041f62b8b11bbb92bffe5d0953e0"
 
 [[package]]
-name = "styler"
-version = "0.1.2"
-dependencies = [
- "proc-macro2",
- "quote",
- "styler_core",
-]
-
-[[package]]
-name = "styler_core"
-version = "0.1.2"
-dependencies = [
- "proc-macro2",
- "quote",
-]
-
-[[package]]
 name = "styler_examples"
 version = "0.1.0"
 dependencies = [
  "leptos",
- "styler",
+ "stylers",
 ]
 
 [[package]]
-name = "styler_test"
+name = "stylers"
 version = "0.1.0"
 dependencies = [
- "styler",
+ "proc-macro2",
+ "quote",
+]
+
+[[package]]
+name = "stylers_test"
+version = "0.1.0"
+dependencies = [
+ "stylers",
 ]
 
 [[package]]

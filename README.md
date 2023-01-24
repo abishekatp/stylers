@@ -1,6 +1,9 @@
-# Styler
+# Stylers
 - Scoped CSS for Rust web frameworks like Leptos.
 - style! macro validates css properties as well.
+
+### Installtion
+```cargo add stylers```
 
 ## Leptos Example
 ```rust
