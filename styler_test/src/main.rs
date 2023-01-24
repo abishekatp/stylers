@@ -208,7 +208,7 @@ pub fn run_tests() {
     println!("------------------Test-23------------------");
     let style = style_test! {"Hello",
         p::before {
-            content: "Read this: ";
+            content: raw_str("Read this: ");
         }
     };
     assert_eq!(style.trim(), r#"p.test::before{content: "Read this: ";}"#);
@@ -412,19 +412,23 @@ pub fn run_tests() {
         r#"@property --property-name{syntax: "<color>";inherits: false;initial-value: #c0ffee;}"#
     );
 
+    //note: when string literal is used as a value internally we will remove that double quotes unless it is wrapped with raw_str().
     println!("------------------Test-39-----------------");
     let style = style_test! {"Hello",
         @layer framework {
             @layer layout {
                 p {
                     margin-block: 1rem;
+                    font: "0.9em/1.2" Arial, Helvetica, sans-serif;
+                    content: raw_str(r"\hello");
+                    content: raw_str(r#"\hello"#);
                 }
             }
         }
     };
     assert_eq!(
         style.trim(),
-        r#"@layer framework{@layer layout{p.test{margin-block: 1rem;}}}"#
+        r#"@layer framework{@layer layout{p.test{margin-block: 1rem;font: 0.9em/1.2 Arial, Helvetica, sans-serif;content: "\hello";content: "\hello";}}}"#
     );
 
     println!("------------------Test-40-----------------");
