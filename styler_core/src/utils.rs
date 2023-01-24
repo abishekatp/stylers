@@ -35,7 +35,7 @@ pub fn parse_group(group: Group) -> String {
             add_spaces(&mut body, t.span(), &mut pre_line, &mut pre_col);
             //we are trimming r because in some cases like "\1g34" is not valid rust syntax.
             //in those places user have to use r"\1g34".
-            body.push_str(t.to_string().trim_start_matches('r'));
+            body.push_str(t.to_string().trim_start_matches('r').trim_matches('#'));
         }
         TokenTree::Punct(t) => {
             add_spaces(&mut body, t.span(), &mut pre_line, &mut pre_col);
