@@ -1,13 +1,8 @@
 [workspace]
-members = [
-    "styler_core",
-    "styler",
-    "examples",
-    "styler_test",
-]
+members = ["styler_core", "styler", "examples", "styler_test"]
 
 [workspace.package]
-version = "0.1.1"
+version = "0.1.2"
 
 [workspace.dependencies]
-styler_core = { path = "./styler_core", version = "0.1.1" }
+styler_core = { path = "./styler_core", version = "0.1.2" }
