@@ -456,4 +456,19 @@ pub fn run_tests() {
         style.trim(),
         ":root{--blue: #1e90ff;}body.test{background-color: var(--blue);}"
     );
+
+    println!("------------------Test-43-----------------");
+    let style = style_test! {"Hello",
+        #container {
+            --first-color: #290;
+        }
+        #thirdParagraph {
+            background-color: var(--first-color);
+            color: var(--second-color);
+        }
+    };
+    assert_eq!(
+        style.trim(),
+        "#container.test{--first-color: #290;}#thirdParagraph.test{background-color: var(--first-color);color: var(--second-color);}"
+    );
 }
