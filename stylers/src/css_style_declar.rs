@@ -439,6 +439,9 @@ fn validate_property(prop_key: &str, prop_map: &HashMap<&str, ()>) -> (bool, Opt
     let property = prop_key.trim_start_matches("-webkit-");
     if prop_map.contains_key(property) {
         return (true, None);
+    } else if property.starts_with("--") {
+        //this will check if the property is custom css property.
+        return (true, None);
     }
     let mut most_relevent = String::new();
     let mut min_distance = 1000;

@@ -436,4 +436,24 @@ pub fn run_tests() {
         @layer theme, layout, utilities;
     };
     assert_eq!(style.trim(), r#"@layer theme, layout, utilities;"#);
+
+    println!("------------------Test-41-----------------");
+    let style = style_test! {"Hello",
+        :not(body) {
+            background: #ff0000;
+        }
+    };
+    assert_eq!(style.trim(), ".test:not(body){background: #ff0000;}");
+
+    println!("------------------Test-42-----------------");
+    let style = style_test! {"Hello",
+        :root {
+            --blue: #1e90ff;
+        }
+        body { background-color: var(--blue); }
+    };
+    assert_eq!(
+        style.trim(),
+        ":root{--blue: #1e90ff;}body.test{background-color: var(--blue);}"
+    );
 }

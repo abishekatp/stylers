@@ -190,6 +190,11 @@ impl CSSStyleRule {
                 temp.push(c);
             }
         }
+
+        //if :root pseudo element is used then no need to add random class.
+        if source.contains(":root") {
+            source = String::from(":root");
+        }
         self.selector_text = source;
         sel_map
     }
