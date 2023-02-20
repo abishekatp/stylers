@@ -1,5 +1,5 @@
 use leptos::*;
-use styler_examples::*;
+use style_sheet_macro::*;
 
 pub fn main() {
     println!["Hello, stylers!"];

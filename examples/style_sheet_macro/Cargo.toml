@@ -1,5 +1,5 @@
 [package]
-name = "styler_examples"
+name = "style_sheet_macro"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,4 +7,4 @@ edition = "2021"
 
 [dependencies]
 leptos = { git = "https://github.com/leptos-rs/leptos.git" }
-stylers = { path = "../stylers" }
+stylers = { path = "../../stylers" }

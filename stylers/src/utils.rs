@@ -48,6 +48,7 @@ pub fn parse_group(group: Group) -> String {
 
 //check if spaces needed to be appended
 //note: this function also reset the pre_line and pre_col to the cureent token's end line and column
+//note: this function convert proc_macro2::Span to proc_macro::Span
 pub fn add_spaces(
     source: &mut String,
     span: proc_macro2::Span,

@@ -1,0 +1,11 @@
+.two {
+    color: yellow;
+}
+
+.two.one {
+    color: yellow;
+}
+
+.two .one {
+    color: yellow;
+}

@@ -36,6 +36,46 @@ pub fn style(ts: TokenStream) -> TokenStream {
     TokenStream::from(expanded)
 }
 
+//todo: think about just moving style macro to seprate crate and re-exporting it from here and make these function non-macro functions
+#[proc_macro]
+pub fn style_sheet(ts: TokenStream) -> TokenStream {
+    let file_path = ts.to_string();
+    let file_path = file_path.trim_matches('"');
+    let css_content = std::fs::read_to_string(&file_path).expect("Expected to read file");
+    let random_class = rand_class();
+    let ts: proc_macro2::TokenStream = css_content
+        .parse()
+        .expect("Expecting token stream from string");
+    let (style, _sel_map) = build_style(ts, &random_class);
+    let expanded = quote! {
+        #random_class
+    };
+    let file_name = file_path
+        .split("/")
+        .last()
+        .expect("Expecting file name from file path");
+    let file_name = file_name.split(".css").next().expect("Expecting file name");
+    write_to_file(&style, file_name);
+    TokenStream::from(expanded)
+}
+
+#[proc_macro]
+pub fn style_sheet_test(ts: TokenStream) -> TokenStream {
+    let file_path = ts.to_string();
+    let file_path = file_path.trim_matches('"');
+    let css_content = std::fs::read_to_string(&file_path).expect("Expected to read file");
+    let ts: proc_macro2::TokenStream = css_content
+        .parse()
+        .expect("Expecting token stream from string");
+    dbg!(&css_content, &ts);
+    let random_class = String::from(".test");
+    let (style, _sel_map) = build_style(ts, &random_class);
+    let expanded = quote! {
+        #style
+    };
+    TokenStream::from(expanded)
+}
+
 ///This style_test macro will return the style string. Note:created for testing purpose only.
 #[proc_macro]
 pub fn style_test(ts: TokenStream) -> TokenStream {
