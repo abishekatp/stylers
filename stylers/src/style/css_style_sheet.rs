@@ -1,8 +1,8 @@
 use proc_macro2::{Delimiter, TokenStream, TokenTree};
 use std::collections::HashMap;
 
-use crate::css_at_rule::CSSAtRule;
-use crate::css_style_rule::CSSStyleRule;
+use crate::style::css_at_rule::CSSAtRule;
+use crate::style::css_style_rule::CSSStyleRule;
 
 //ref: https://developer.mozilla.org/en-US/docs/Web/API/CSSRule
 // CSSRule is enum which will have two kinds style-rule and at-rule(which begins with @)

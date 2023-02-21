@@ -1,4 +1,4 @@
-use crate::utils::add_spaces;
+use crate::style::utils::add_spaces;
 use proc_macro2::{Delimiter, Group, TokenTree};
 use std::cmp::min;
 use std::collections::HashMap;

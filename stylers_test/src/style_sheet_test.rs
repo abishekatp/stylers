@@ -5,7 +5,7 @@ use stylers::style_sheet_test;
 //Ref: https://www.w3schools.com/cssref/css_selectors.php
 pub fn run_tests() {
     println!("------------------Test-1------------------");
-    let style = style_sheet_test!("./stylers_test/src/style_sheet_test/test.css");
+    let style = style_sheet_test!("./stylers_test/src/style_sheet_test.css");
     assert_eq!(
         style.trim(),
         ".two.test{color:yellow;}.two.one.test{color:yellow;}.two.test .one.test{color: yellow;}"

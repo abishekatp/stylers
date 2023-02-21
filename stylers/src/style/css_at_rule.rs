@@ -1,8 +1,8 @@
 use proc_macro2::{Delimiter, TokenStream, TokenTree};
 use std::collections::HashMap;
 
-use crate::css_style_sheet::{CSSRule, CSSStyleSheet};
-use crate::utils::{add_spaces, parse_group};
+use crate::style::css_style_sheet::{CSSRule, CSSStyleSheet};
+use crate::style::utils::{add_spaces, parse_group};
 
 // ref: https://developer.mozilla.org/en-US/docs/Web/CSS/At-rule
 // CSSAtRule is one kind of CSSRule. It will have two parts
