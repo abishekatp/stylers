@@ -1,0 +1,17 @@
+.one:hover {
+    background-color: green;
+}
+
+p::before {
+    content: "Read this: ";
+}
+
+div:nth-child(2) {
+    background-color: green;
+}
+
+p:lang(it) {
+    background: yellow;
+}
+
+svg|a {}

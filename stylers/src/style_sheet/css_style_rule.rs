@@ -32,13 +32,14 @@ impl CSSStyleRule {
     }
 
     // parse method will extract the selector part of the style-rule and parse that selector using parse_selector method.
-    fn parse(&mut self, ts: String, random_class: &str) {
-        let mut pre_col: usize = 0;
-        let mut pre_line: usize = 0;
+    fn parse(&mut self, style_block: String, random_class: &str) {
         //selector will just store current selector of the style rule.
-        let mut selector = String::new();
-
-        loop {}
+        let (selector_text, body) = style_block.split_once('{').expect("Expecting selector");
+        let selector_text = selector_text.trim();
+        let _ = self.parse_selector(selector_text, random_class);
+        let mut style_declar = String::from("{");
+        style_declar.push_str(&body);
+        self.style = CSSStyleDeclaration::new(style_declar);
     }
 
     //parse_selector method will parse the all parts of selector and add random class to them
@@ -53,7 +54,10 @@ impl CSSStyleRule {
         let mut i = 0;
         for c in selector_text.chars() {
             i += 1;
-
+            //when reading external files in h2,h1{} selector will be splitted into multiple lines
+            if c == '\n' {
+                continue;
+            }
             //ignore everything between square brackets.
             //todo:handle the case when brackets inside attribute.
             if is_bracket_open {

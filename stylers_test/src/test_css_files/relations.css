@@ -1,0 +1,43 @@
+div>p {
+    background-color: yellow;
+}
+
+div+p {
+    background-color: yellow;
+}
+
+p~ul {
+    background: #ff0000;
+}
+
+a[target] {
+    background-color: yellow;
+}
+
+a[title="I am ,testing"] {
+    background-color: yellow;
+}
+
+[title~=flower] {
+    background-color: yellow;
+}
+
+[lang|=en] {
+    background-color: yellow;
+}
+
+div[class^="test"] {
+    background-color: yellow;
+}
+
+div[class$=test] {
+    background-color: yellow;
+}
+
+div [class$=test] {
+    background-color: yellow;
+}
+
+div[class*="test"] {
+    background-color: yellow;
+}

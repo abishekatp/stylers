@@ -1,5 +1,7 @@
 use crate::style_sheet::css_style_sheet::CSSRule;
 
+use super::css_style_sheet::CSSStyleSheet;
+
 // ref: https://developer.mozilla.org/en-US/docs/Web/CSS/At-rule
 // CSSAtRule is one kind of CSSRule. It will have two parts
 // at-rule may contain nested at-rules. style-rule will be the inner most nesting of nested at-rule
@@ -29,7 +31,7 @@ impl CSSAtRule {
     pub fn css_text(&self) -> String {
         let mut text = String::new();
         //when we call parse method recursively it pushes at rule in order from inner most to outer most.
-        self.at_rules.iter().rev().for_each(|r| {
+        self.at_rules.iter().for_each(|r| {
             text.push_str(r);
             text.push('{');
         });
@@ -50,11 +52,33 @@ impl CSSAtRule {
         text.to_string()
     }
 
-    // This parse method will parse the at-rule tokn stream.
+    // This parse method will parse the at-rule block.
     // Note: this is recursive function it will handle nested at-rules.
-    fn parse(&mut self, ts: String, random_class: &str) {
-        let mut at_rule = String::new();
-        let mut pre_line = 0;
-        let mut pre_col = 0;
+    fn parse(&mut self, at_block: String, random_class: &str) {
+        if at_block.trim().ends_with(';') {
+            self.at_rules.push(at_block);
+        } else {
+            let mut at_block = at_block;
+            loop {
+                let (at_rule, declaration) = at_block.split_once('{').expect("Expecting At rule");
+                self.at_rules.push(at_rule.to_string());
+                let mut declaration = declaration.trim();
+                if declaration.starts_with('@') {
+                    at_block = declaration.to_string();
+                    continue;
+                } else {
+                    for _ in 0..self.at_rules.len() {
+                        let (first, _) = declaration
+                            .rsplit_once('}')
+                            .expect("Expecting to remove extra closing braces");
+                        declaration = first;
+                    }
+                    let (style_sheet, _) =
+                        CSSStyleSheet::new(declaration.to_string(), random_class);
+                    self.css_rules = style_sheet.css_rules;
+                    break;
+                }
+            }
+        }
     }
 }

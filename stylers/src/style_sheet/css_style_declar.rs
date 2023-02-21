@@ -23,15 +23,10 @@ impl CSSStyleDeclaration {
         self.style_css_text.clone()
     }
 
-    pub fn parse(&mut self, group: String) {
-        let mut body = String::new();
-
-        let mut property = String::new();
-        let mut is_property_start = false;
-        //if raw_str then we should not remove the double quotes
-        let mut raw_str = false;
-
-        let mut pre_col: usize = 0;
-        let mut pre_line: usize = 0;
+    pub fn parse(&mut self, style_delar: String) {
+        //todo: what if newline is inside content property
+        let mut declarations: Vec<&str> = style_delar.split('\n').collect();
+        declarations = declarations.iter().map(|item| item.trim()).collect();
+        self.style_css_text = declarations.join("");
     }
 }

@@ -24,28 +24,43 @@ impl CSSStyleSheet {
     pub fn new(style_str: String, random_class: &str) -> (CSSStyleSheet, HashMap<String, ()>) {
         let mut css_style_sheet = CSSStyleSheet { css_rules: vec![] };
         let mut is_at_rule = false;
-        let mut count = 0;
-        let mut sel_map = HashMap::new();
-        let mut style_rule = String::new();
+        let sel_map = HashMap::new();
+        let mut style = String::new();
         let mut no_of_openings = 0;
         let mut no_of_closings = 0;
         for ch in style_str.chars() {
-            if style_rule.len() <= 0 && ch == '@' {
+            //trimming the style because empty spaces at the beginning are not significant.
+            if style.trim_start().len() <= 0 && ch == '@' {
                 is_at_rule = true;
             }
-            style_rule.push(ch);
-            if is_at_rule && no_of_openings == 0 && ch == ';' {
-                //pass the rule to CSSAtRule
-                style_rule = String::new();
-            } else if no_of_openings != 0 && no_of_openings == no_of_closings {
+            if ch == '{' {
+                no_of_openings += 1;
+            }
+            if ch == '}' {
+                no_of_closings += 1;
+            }
+            style.push(ch);
+            if ch == ';' && is_at_rule && no_of_openings == 0 {
+                //to omit empty whitespaces.
+                style = style.trim().to_string();
+                let at_rule = CSSAtRule::new(style, random_class);
+                css_style_sheet.css_rules.push(CSSRule::AtRule(at_rule));
+                style = String::new();
+                is_at_rule = false
+            } else if ch == '}' && no_of_openings != 0 && no_of_openings == no_of_closings {
+                //to omit empty whitespaces.
+                style = style.trim().to_string();
                 if is_at_rule {
-                    //pass to the CSSAtRule
+                    let at_rule = CSSAtRule::new(style, random_class);
+                    css_style_sheet.css_rules.push(CSSRule::AtRule(at_rule));
                 } else {
-                    //pass to the CSSStyleRule
+                    let at_rule = CSSStyleRule::new(style, random_class);
+                    css_style_sheet.css_rules.push(CSSRule::StyleRule(at_rule));
                 }
                 no_of_openings = 0;
                 no_of_closings = 0;
-                style_rule = String::new();
+                style = String::new();
+                is_at_rule = false;
             }
         }
 

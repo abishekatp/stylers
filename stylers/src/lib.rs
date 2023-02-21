@@ -38,10 +38,7 @@ pub fn style_sheet(ts: TokenStream) -> TokenStream {
     let file_path = file_path.trim_matches('"');
     let css_content = std::fs::read_to_string(&file_path).expect("Expected to read file");
     let random_class = rand_class();
-    let ts: proc_macro2::TokenStream = css_content
-        .parse()
-        .expect("Expecting token stream from string");
-    let (style, _sel_map) = build_style(ts, &random_class);
+    let (style, _sel_map) = style_sheet::build_style(css_content, &random_class);
     let expanded = quote! {
         #random_class
     };
@@ -59,12 +56,8 @@ pub fn style_sheet_test(ts: TokenStream) -> TokenStream {
     let file_path = ts.to_string();
     let file_path = file_path.trim_matches('"');
     let css_content = std::fs::read_to_string(&file_path).expect("Expected to read file");
-    let ts: proc_macro2::TokenStream = css_content
-        .parse()
-        .expect("Expecting token stream from string");
-    dbg!(&css_content, &ts);
     let random_class = String::from(".test");
-    let (style, _sel_map) = build_style(ts, &random_class);
+    let (style, _sel_map) = style_sheet::build_style(css_content, &random_class);
     let expanded = quote! {
         #style
     };
