@@ -1,7 +1,7 @@
 use stylers::style_test;
 
 //note: temporarily writing these tests. once find a way to test styler_core module we can discard this.
-//run this command to run the test cases: cargo run -p styler_test
+//run this command cargo run inside styler_test folder.
 //Ref: https://www.w3schools.com/cssref/css_selectors.php
 pub fn run_tests() {
     println!("------------------Test-1------------------");

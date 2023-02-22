@@ -2,7 +2,7 @@ use proc_macro2::{Delimiter, Group, TokenTree};
 
 // This parse_group function will parse the TokenTree::Group and return a string.
 // This function will add at most one whitespace even if there are many whitespaces in actual tokenstream.
-pub fn parse_group(group: Group) -> String {
+pub(crate) fn parse_group(group: Group) -> String {
     let mut body = String::new();
     let mut pre_col: usize = 0;
     let mut pre_line: usize = 0;
@@ -49,7 +49,7 @@ pub fn parse_group(group: Group) -> String {
 //check if spaces needed to be appended
 //note: this function also reset the pre_line and pre_col to the cureent token's end line and column
 //note: this function convert proc_macro2::Span to proc_macro::Span
-pub fn add_spaces(
+pub(crate) fn add_spaces(
     source: &mut String,
     span: proc_macro2::Span,
     pre_line: &mut usize,

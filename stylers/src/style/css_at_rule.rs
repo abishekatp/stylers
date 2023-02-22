@@ -10,16 +10,16 @@ use crate::style::utils::{add_spaces, parse_group};
 // some ar-rules like @support may contain multiple style-rules nested inside.
 // So we store them in the css_rules list.
 #[derive(Debug)]
-pub struct CSSAtRule {
+pub(crate) struct CSSAtRule {
     //nested at-rule may contain one or more css rule block inside it.
-    css_rules: Vec<CSSRule>,
-    at_rules: Vec<String>,
+    pub(crate) css_rules: Vec<CSSRule>,
+    pub(crate) at_rules: Vec<String>,
 }
 
 impl CSSAtRule {
     // This method will parse the at-rule tokenstream and return teh CSSAtRule
     // HashMap will contain all unique selectors which may be nested inside at-rule.
-    pub fn new(ts: TokenStream, random_class: &str) -> (CSSAtRule, HashMap<String, ()>) {
+    pub(crate) fn new(ts: TokenStream, random_class: &str) -> (CSSAtRule, HashMap<String, ()>) {
         let mut css_at_rule = CSSAtRule {
             css_rules: vec![],
             at_rules: vec![],
@@ -31,7 +31,7 @@ impl CSSAtRule {
 
     // This css_text method will give the whole at-rule as single string value.
     // Note that we the calling function will be responsible for passing token stream of single at-rule at a time.
-    pub fn css_text(&self) -> String {
+    pub(crate) fn css_text(&self) -> String {
         let mut text = String::new();
         //when we call parse method recursively it pushes at rule in order from inner most to outer most.
         self.at_rules.iter().rev().for_each(|r| {

@@ -338,29 +338,32 @@ static ALL_PROPERTIES: [&str; 328] = [
 //ref: https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleDeclaration
 //CSSStyleDeclaration is actual style declaration for each selectors
 #[derive(Debug)]
-pub struct CSSStyleDeclaration {
+pub(crate) struct CSSStyleDeclaration {
     //e.g {color:red;}
-    style_css_text: String,
+    pub(crate) style_css_text: String,
 }
 
 impl CSSStyleDeclaration {
-    pub fn empty() -> CSSStyleDeclaration {
+    pub(crate) fn empty() -> CSSStyleDeclaration {
         CSSStyleDeclaration {
             style_css_text: "".to_string(),
         }
     }
-    pub fn new(group: Group) -> CSSStyleDeclaration {
+    //new method parse the style declaration group
+    pub(crate) fn new(group: Group) -> CSSStyleDeclaration {
         let mut css_style_declar = CSSStyleDeclaration {
             style_css_text: "".to_string(),
         };
         css_style_declar.parse(group);
         css_style_declar
     }
-    pub fn style_css_text(&self) -> String {
+    //style_css_text style declaration as text
+    pub(crate) fn style_css_text(&self) -> String {
         self.style_css_text.clone()
     }
 
-    pub fn parse(&mut self, group: Group) {
+    //parse and validate the style declaration group and store it in style_css_text.
+    pub(crate) fn parse(&mut self, group: Group) {
         let mut body = String::new();
         let mut property_map = HashMap::new();
         ALL_PROPERTIES.iter().for_each(|key| {

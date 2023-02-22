@@ -6,18 +6,21 @@ mod css_style_declar;
 mod css_style_rule;
 mod css_style_sheet;
 mod utils;
-use crate::style::css_style_sheet::{CSSRule, CSSStyleSheet};
 use proc_macro2::TokenStream;
 use std::collections::HashMap;
+
+pub(crate) use crate::style::css_at_rule::CSSAtRule;
+pub(crate) use crate::style::css_style_declar::CSSStyleDeclaration;
+pub(crate) use crate::style::css_style_rule::CSSStyleRule;
+pub(crate) use crate::style::css_style_sheet::{CSSRule, CSSStyleSheet};
 
 /// This function will build the whole style text as rust TokenStream.
 /// This function will take two arguments.
 /// ts: TokenStream which is token stream of text content of whole style sheet.
 /// random_class: &String is random class to be appended for each selector.
-/// This function will return tuple with two fields (style string, component name, map of unique keys of selectors.)
+/// This function will return tuple with two fields (style string, map of unique keys of selectors.)
 /// style string: is the parsed style sheet as a string
-/// component name: is the name of the component passed by
-pub fn build_style(ts: TokenStream, random_class: &String) -> (String, HashMap<String, ()>) {
+pub(crate) fn build_style(ts: TokenStream, random_class: &String) -> (String, HashMap<String, ()>) {
     let mut style = String::new();
     let (style_sheet, sel_map) = CSSStyleSheet::new(ts, random_class);
     style_sheet.css_rules.iter().for_each(|rule| match rule {

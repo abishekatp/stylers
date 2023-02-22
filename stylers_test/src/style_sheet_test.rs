@@ -2,7 +2,7 @@ use stylers::style_sheet_test;
 
 //note: to check why test cases are failing we can use the text compare tools to compare and see the differences between left and right values of a test case
 //note: temporarily writing these tests. once find a way to test styler_core module we can discard this.
-//run this command to run the test cases: cargo run -p styler_test
+//run this command cargo run inside styler_test folder.
 //Ref: https://www.w3schools.com/cssref/css_selectors.php
 pub fn run_tests() {
     println!("------------------Basic Tests------------------");
