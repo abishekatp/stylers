@@ -13,7 +13,7 @@ use std::collections::HashMap;
 /// This function will return tuple with two fields (style string, component name, map of unique keys of selectors.)
 /// style string: is the parsed style sheet as a string
 /// component name: is the name of the component passed by
-pub fn build_style(style_str: String, random_class: &String) -> (String, HashMap<String, ()>) {
+pub fn build_style(style_str: &str, random_class: &String) -> (String, HashMap<String, ()>) {
     let mut style = String::new();
     let (style_sheet, sel_map) = CSSStyleSheet::new(style_str, random_class);
     style_sheet.css_rules.iter().for_each(|rule| match rule {

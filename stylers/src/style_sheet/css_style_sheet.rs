@@ -21,7 +21,7 @@ pub struct CSSStyleSheet {
 
 impl CSSStyleSheet {
     //This function will take the whole stylesheet content as token stream and return CSSStyleSheet structure
-    pub fn new(style_str: String, random_class: &str) -> (CSSStyleSheet, HashMap<String, ()>) {
+    pub fn new(style_str: &str, random_class: &str) -> (CSSStyleSheet, HashMap<String, ()>) {
         let mut css_style_sheet = CSSStyleSheet { css_rules: vec![] };
         let mut is_at_rule = false;
         let sel_map = HashMap::new();
@@ -43,7 +43,7 @@ impl CSSStyleSheet {
             if ch == ';' && is_at_rule && no_of_openings == 0 {
                 //to omit empty whitespaces.
                 style = style.trim().to_string();
-                let at_rule = CSSAtRule::new(style, random_class);
+                let at_rule = CSSAtRule::new(&style, random_class);
                 css_style_sheet.css_rules.push(CSSRule::AtRule(at_rule));
                 style = String::new();
                 is_at_rule = false
@@ -51,10 +51,10 @@ impl CSSStyleSheet {
                 //to omit empty whitespaces.
                 style = style.trim().to_string();
                 if is_at_rule {
-                    let at_rule = CSSAtRule::new(style, random_class);
+                    let at_rule = CSSAtRule::new(&style, random_class);
                     css_style_sheet.css_rules.push(CSSRule::AtRule(at_rule));
                 } else {
-                    let at_rule = CSSStyleRule::new(style, random_class);
+                    let at_rule = CSSStyleRule::new(&style, random_class);
                     css_style_sheet.css_rules.push(CSSRule::StyleRule(at_rule));
                 }
                 no_of_openings = 0;

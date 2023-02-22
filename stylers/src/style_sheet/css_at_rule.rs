@@ -16,7 +16,7 @@ pub struct CSSAtRule {
 
 impl CSSAtRule {
     // This method will parse the at-rule block and return the CSSAtRule
-    pub fn new(at_block: String, random_class: &str) -> CSSAtRule {
+    pub fn new(at_block: &str, random_class: &str) -> CSSAtRule {
         let mut css_at_rule = CSSAtRule {
             css_rules: vec![],
             at_rules: vec![],
@@ -31,7 +31,7 @@ impl CSSAtRule {
     pub fn css_text(&self) -> String {
         let mut text = String::new();
         //when we call parse method recursively it pushes at rule in order from inner most to outer most.
-        self.at_rules.iter().for_each(|r| {
+        self.at_rules.iter().rev().for_each(|r| {
             text.push_str(r);
             text.push('{');
         });
@@ -54,31 +54,53 @@ impl CSSAtRule {
 
     // This parse method will parse the at-rule block.
     // Note: this is recursive function it will handle nested at-rules.
-    fn parse(&mut self, at_block: String, random_class: &str) {
+    fn parse(&mut self, at_block: &str, random_class: &str) {
         if at_block.trim().ends_with(';') {
-            self.at_rules.push(at_block);
+            self.at_rules.push(parse_at_rule_declaration(at_block));
         } else {
             let mut at_block = at_block;
             loop {
                 let (at_rule, declaration) = at_block.split_once('{').expect("Expecting At rule");
-                self.at_rules.push(at_rule.to_string());
+                //removing extra white spaces and extra closing braces at the end.
                 let mut declaration = declaration.trim();
-                if declaration.starts_with('@') {
-                    at_block = declaration.to_string();
+                let (first, _) = declaration
+                    .rsplit_once('}')
+                    .expect("Expecting to remove extra closing braces");
+                declaration = first;
+
+                //for some cases keyframes comes with prefix @-webkit-keyframes
+                if at_rule.contains("@page")
+                    || at_rule.contains("@font-face")
+                    || at_rule.contains("keyframes")
+                    || at_rule.contains("@counter-style")
+                    || at_rule.contains("@font-feature-values")
+                    || at_rule.contains("@property")
+                {
+                    let mut at_rule = at_rule.to_string();
+                    at_rule.push('{');
+                    at_rule.push_str(&parse_at_rule_declaration(declaration));
+                    at_rule.push('}');
+                    self.at_rules.push(at_rule.to_string());
+                    break;
+                } else if declaration.starts_with('@') {
+                    self.at_rules.push(at_rule.to_string());
+                    at_block = declaration;
                     continue;
                 } else {
-                    for _ in 0..self.at_rules.len() {
-                        let (first, _) = declaration
-                            .rsplit_once('}')
-                            .expect("Expecting to remove extra closing braces");
-                        declaration = first;
-                    }
-                    let (style_sheet, _) =
-                        CSSStyleSheet::new(declaration.to_string(), random_class);
+                    self.at_rules.push(at_rule.to_string());
+                    let (style_sheet, _) = CSSStyleSheet::new(declaration, random_class);
                     self.css_rules = style_sheet.css_rules;
                     break;
                 }
             }
         }
+        self.at_rules.reverse();
     }
+}
+
+//Some at rules don't contain another style rule inside them for those rule we can directly parse the string
+fn parse_at_rule_declaration(at_rule_declar: &str) -> String {
+    let mut parts: Vec<&str> = at_rule_declar.split('\n').collect();
+    parts = parts.iter().map(|item| item.trim()).collect();
+    parts.join("")
 }

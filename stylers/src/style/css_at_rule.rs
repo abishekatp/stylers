@@ -78,28 +78,26 @@ impl CSSAtRule {
                                         is_at_rule = true;
                                     }
                                 }
-                                //@font-feature-values at-rule does not need inner at-rules to be parsed
-                                if is_at_rule && !at_rule.contains("@font-feature-values") {
+
+                                if at_rule.contains("@page")
+                                    || at_rule.contains("@font-face")
+                                    || at_rule.contains("keyframes")
+                                    || at_rule.contains("@counter-style")
+                                    || at_rule.contains("@font-feature-values")
+                                    || at_rule.contains("@property")
+                                {
+                                    //these at-rules will not contain any nested css-rules. so we just parse that group as a string.
+                                    at_rule.push_str(&parse_group(t));
+                                } else if is_at_rule {
                                     //if there is another inner at-rule
                                     self.parse(t.stream(), random_class);
                                 } else {
-                                    if at_rule.contains("@page")
-                                        || at_rule.contains("@font-face")
-                                        || at_rule.contains("keyframes")
-                                        || at_rule.contains("@counter-style")
-                                        || at_rule.contains("@font-feature-values")
-                                        || at_rule.contains("@property")
-                                    {
-                                        //these at-rules will not contain any nested css-rules. so we just parse that group as a string.
-                                        at_rule.push_str(&parse_group(t));
-                                    } else {
-                                        //each at-rule may contain one or more css rules nested inside of it.
-                                        //it is like another small style sheet inside of it. So we use CSSStyleSheet here.
-                                        let (mut style_sheet, new_map) =
-                                            CSSStyleSheet::new(t.stream(), random_class);
-                                        self.css_rules.append(&mut style_sheet.css_rules);
-                                        sel_map = new_map;
-                                    }
+                                    //each at-rule may contain one or more css rules nested inside of it.
+                                    //it is like another small style sheet inside of it. So we use CSSStyleSheet here.
+                                    let (mut style_sheet, new_map) =
+                                        CSSStyleSheet::new(t.stream(), random_class);
+                                    self.css_rules.append(&mut style_sheet.css_rules);
+                                    sel_map = new_map;
                                 }
                                 self.at_rules.push(at_rule);
                                 at_rule = String::new();

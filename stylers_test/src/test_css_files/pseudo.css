@@ -15,3 +15,24 @@ p:lang(it) {
 }
 
 svg|a {}
+
+:not(body) {
+    background: #ff0000;
+}
+
+:root {
+    --blue: #1e90ff;
+}
+
+body {
+    background-color: var(--blue);
+}
+
+#container {
+    --first-color: #290;
+}
+
+#thirdParagraph {
+    background-color: var(--first-color);
+    color: var(--second-color);
+}

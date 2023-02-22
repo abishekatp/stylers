@@ -14,7 +14,7 @@ pub struct CSSStyleRule {
 impl CSSStyleRule {
     // This function will take the token stream of one CSSStyleRule and parse it.
     // Note that we the calling function will be responsible for passing token stream of single style-rule at a time.
-    pub fn new(style_block: String, random_class: &str) -> CSSStyleRule {
+    pub fn new(style_block: &str, random_class: &str) -> CSSStyleRule {
         let mut css_style_rule = CSSStyleRule {
             selector_text: String::new(),
             style: CSSStyleDeclaration::empty(),
@@ -32,7 +32,7 @@ impl CSSStyleRule {
     }
 
     // parse method will extract the selector part of the style-rule and parse that selector using parse_selector method.
-    fn parse(&mut self, style_block: String, random_class: &str) {
+    fn parse(&mut self, style_block: &str, random_class: &str) {
         //selector will just store current selector of the style rule.
         let (selector_text, body) = style_block.split_once('{').expect("Expecting selector");
         let selector_text = selector_text.trim();

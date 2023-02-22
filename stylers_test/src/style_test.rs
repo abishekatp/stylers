@@ -78,7 +78,7 @@ pub fn run_tests() {
     };
     assert_eq!(style.trim(), "div.test #two.test{color: blue;}");
 
-    println!("------------------Test-10------------------");
+    println!("------------------Test-10-----------------");
     let style = style_test! {"Hello",
         h2 , a{
             color: purple;
@@ -86,7 +86,7 @@ pub fn run_tests() {
     };
     assert_eq!(style.trim(), "h2.test,a.test{color: purple;}");
 
-    println!("------------------Test-11------------------");
+    println!("------------------Test-11-----------------");
     let style = style_test! {"Hello",
         div > p{
             background-color: yellow;
@@ -192,7 +192,7 @@ pub fn run_tests() {
         r#"div[class*="test"].test{background-color: yellow;}"#
     );
 
-    println!("------------------Test-22------------------");
+    println!("------------------Test-22-----------------");
     let style = style_test! {"Hello",
         .one:hover{
             background-color: green;
@@ -200,7 +200,7 @@ pub fn run_tests() {
     };
     assert_eq!(style.trim(), ".one.test:hover{background-color: green;}");
 
-    println!("------------------Test-23------------------");
+    println!("------------------Test-23-----------------");
     let style = style_test! {"Hello",
         p::before {
             content: raw_str("Read this: ");
@@ -208,7 +208,7 @@ pub fn run_tests() {
     };
     assert_eq!(style.trim(), r#"p.test::before{content: "Read this: ";}"#);
 
-    println!("------------------Test-24------------------");
+    println!("------------------Test-24-----------------");
     let style = style_test! {"Hello",
         div:nth-child(2){
             background-color: green;
@@ -219,7 +219,7 @@ pub fn run_tests() {
         "div.test:nth-child(2){background-color: green;}"
     );
 
-    println!("------------------Test-25------------------");
+    println!("------------------Test-25-----------------");
     let style = style_test! {"Hello",
         p:lang(it){
             background: yellow;
