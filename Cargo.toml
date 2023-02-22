@@ -1,5 +1,6 @@
 [workspace]
-members = ["stylers", "examples", "stylers_test"]
+members = ["stylers", "stylers_test"]
+exclude = ["examples"]
 
 [workspace.package]
-version = "0.1.1"
+version = "0.2.0"

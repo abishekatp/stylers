@@ -4,8 +4,12 @@
 
 ### Installtion
 ```cargo add stylers```
+### Exported macros
+- style! macro is for writing css inside rust functions.
+- style_sheet! macro is for writing css in external file and including that file.
 
 ## Leptos Example
+### style!
 ```rust
 #[component]
 fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
@@ -45,7 +49,20 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
     }
 }
 ```
-
+### style_sheet!
+```rust
+#[component]
+fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
+    let class_name = style_sheet!("./hello.css");
+    view! {cx, class = class_name,
+        <div class="one">
+            <h1 id="two">"Hello"</h1>
+            <h2>"World"</h2>
+        </div>
+    }
+}
+```
+- Here ```hello.css``` file should be located inside the root directory of the project.
 ## How it works:
 
 - Style macro generates a css file with the given name inside the css directory.
@@ -59,7 +76,7 @@ style!{"mystyle",
 }
 ```
 
-## Edge cases
+## Edge cases for style! macro
 - By default double quotes ( " ) around css property values will be removed. If user wants to retain the double quotes they have to wrap it using ```raw_str``` as given below:
 #### Input
 ```rust

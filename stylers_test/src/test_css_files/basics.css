@@ -1,0 +1,42 @@
+.two {
+    color: yellow;
+}
+
+.two.one {
+    color: yellow;
+}
+
+.two .one {
+    color: yellow;
+}
+
+#firstname {
+    background-color: yellow;
+}
+
+* {
+    background-color: yellow;
+}
+
+div {
+    border: 1px solid black;
+    margin: 25px 50px 75px 100px;
+    background-color: lightblue;
+}
+
+div .one p {
+    color: blue;
+}
+
+div.one p div {
+    color: blue;
+}
+
+div #two {
+    color: blue;
+}
+
+h2,
+a {
+    color: purple;
+}

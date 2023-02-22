@@ -1,22 +1,22 @@
 use proc_macro2::{Delimiter, TokenStream, TokenTree};
 use std::collections::HashMap;
 
-use crate::css_style_declar::CSSStyleDeclaration;
-use crate::utils::{add_spaces, parse_group};
+use crate::style::css_style_declar::CSSStyleDeclaration;
+use crate::style::utils::{add_spaces, parse_group};
 
 // ref: https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleRule
 // CSSStyleRule is one kind of CSSRule which will contain two parts.
 // One is selector text and another one is style declaration for that selector.
 #[derive(Debug)]
-pub struct CSSStyleRule {
-    selector_text: String,
-    style: CSSStyleDeclaration,
+pub(crate) struct CSSStyleRule {
+    pub(crate) selector_text: String,
+    pub(crate) style: CSSStyleDeclaration,
 }
 
 impl CSSStyleRule {
     // This function will take the token stream of one CSSStyleRule and parse it.
     // Note that we the calling function will be responsible for passing token stream of single style-rule at a time.
-    pub fn new(ts: TokenStream, random_class: &str) -> (CSSStyleRule, HashMap<String, ()>) {
+    pub(crate) fn new(ts: TokenStream, random_class: &str) -> (CSSStyleRule, HashMap<String, ()>) {
         let mut css_style_rule = CSSStyleRule {
             selector_text: String::new(),
             style: CSSStyleDeclaration::empty(),
@@ -27,7 +27,7 @@ impl CSSStyleRule {
     }
 
     // This css_text method will give the whole style-rule as single string value.
-    pub fn css_text(&self) -> String {
+    pub(crate) fn css_text(&self) -> String {
         let mut text = self.selector_text.clone();
         text.push_str(&self.style.style_css_text());
         text
@@ -84,7 +84,11 @@ impl CSSStyleRule {
     }
 
     //parse_selector method will parse the all parts of selector and add random class to them
-    fn parse_selector(&mut self, selector_text: &str, random_class: &str) -> HashMap<String, ()> {
+    pub(crate) fn parse_selector(
+        &mut self,
+        selector_text: &str,
+        random_class: &str,
+    ) -> HashMap<String, ()> {
         let mut sel_map: HashMap<String, ()> = HashMap::new();
         let mut source = String::new();
         let sel_len = selector_text.len();
@@ -95,7 +99,10 @@ impl CSSStyleRule {
         let mut i = 0;
         for c in selector_text.chars() {
             i += 1;
-
+            //when reading external files in h2,h1{} selector will be splitted into multiple lines
+            if c == '\n' {
+                continue;
+            }
             //ignore everything between square brackets.
             //todo:handle the case when brackets inside attribute.
             if is_bracket_open {

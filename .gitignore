@@ -1,5 +1,5 @@
 .DS_Store
-/target
-examples/dist
+target
+dist
 main.css
 css

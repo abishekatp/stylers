@@ -1,13 +1,8 @@
 #![feature(proc_macro_span)]
 #![feature(extend_one)]
 //! This crate provides style macro for scoped css in rust web frameworks which follows component like architecture e.g Leptos.
-mod build;
-mod css_at_rule;
-mod css_style_declar;
-mod css_style_rule;
-mod css_style_sheet;
-mod utils;
-
+mod style;
+mod style_sheet;
 use proc_macro::TokenStream;
 use proc_macro2::{self, TokenTree};
 use quote::quote;
@@ -17,11 +12,11 @@ use std::fs::{self, File, OpenOptions};
 use std::hash::{BuildHasher, Hasher};
 use std::io::Write;
 
-use crate::build::build_style;
+use crate::style::build_style;
 
-/// style macro take token stream as input and returns Rust string as token stream.
+/// style macro take token stream as input and returns a unique class name.
 /// The first two Tokens of the token stream must be component name and comma punctuation.
-/// This function will create css file named same as component name in the css folder of the root directory.
+/// This function will create css file named same as component name in the css folder of the root directory of the project.
 /// For examples see: <https://github.com/abishekatp/stylers>
 #[proc_macro]
 pub fn style(ts: TokenStream) -> TokenStream {
@@ -33,6 +28,44 @@ pub fn style(ts: TokenStream) -> TokenStream {
         #random_class
     };
     write_to_file(&style, &comp_name);
+    TokenStream::from(expanded)
+}
+
+/// style_sheet macro take css file path as input and returns a unique class name.
+/// This function will create css file in the css folder of the root directoy of the project.
+/// CSS file will be named same as css file name passed as the input.
+/// For examples see: <https://github.com/abishekatp/stylers>
+#[proc_macro]
+pub fn style_sheet(ts: TokenStream) -> TokenStream {
+    let file_path = ts.to_string();
+    let file_path = file_path.trim_matches('"');
+    let css_content = std::fs::read_to_string(&file_path).expect("Expected to read file");
+    let random_class = rand_class();
+    let style = style_sheet::build_style(&css_content, &random_class);
+    let random_class = random_class[1..].to_string();
+    let expanded = quote! {
+        #random_class
+    };
+    let file_name = file_path
+        .split("/")
+        .last()
+        .expect("Expecting file name from file path");
+    let file_name = file_name.split(".css").next().expect("Expecting file name");
+    write_to_file(&style, file_name);
+    TokenStream::from(expanded)
+}
+
+///This style_sheet_test macro will return the style string. Note:created for testing purpose only.
+#[proc_macro]
+pub fn style_sheet_test(ts: TokenStream) -> TokenStream {
+    let file_path = ts.to_string();
+    let file_path = file_path.trim_matches('"');
+    let css_content = std::fs::read_to_string(&file_path).expect("Expected to read file");
+    let random_class = String::from(".test");
+    let style = style_sheet::build_style(&css_content, &random_class);
+    let expanded = quote! {
+        #style
+    };
     TokenStream::from(expanded)
 }
 

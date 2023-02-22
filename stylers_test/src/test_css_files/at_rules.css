@@ -1,0 +1,42 @@
+@charset "UTF-8";
+@import url("landscape.css") screen and (orientation: landscape);
+@namespace svg url("http://www.w3.org/2000/svg");
+@layer theme,
+layout,
+utilities;
+
+@supports (display: flex) {
+    @media screen and (min-width: 900px) {
+        article {
+            display: flex;
+        }
+    }
+}
+
+@supports (display: flex) {
+    .flex-container>* {
+        text-shadow: 0 0 2px blue;
+        float: none;
+    }
+
+    .flex-container {
+        display: flex;
+    }
+}
+
+@document url("https://www.example.com/") {
+    h1 {
+        color: green;
+    }
+}
+
+@layer framework {
+    @layer layout {
+        p {
+            margin-block: 1rem;
+            font: 0.9em/1.2 Arial, Helvetica, sans-serif;
+            content: "\hello";
+            content: "\hello";
+        }
+    }
+}
