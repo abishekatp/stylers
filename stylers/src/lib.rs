@@ -42,6 +42,7 @@ pub fn style_sheet(ts: TokenStream) -> TokenStream {
     let css_content = std::fs::read_to_string(&file_path).expect("Expected to read file");
     let random_class = rand_class();
     let style = style_sheet::build_style(&css_content, &random_class);
+    let random_class = random_class[1..].to_string();
     let expanded = quote! {
         #random_class
     };

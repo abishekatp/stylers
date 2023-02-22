@@ -3,7 +3,6 @@ use stylers::{style, style_sheet};
 
 #[component]
 fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
-    //note: we will trim all double quotes by default unless it is wrapped with raw_str()
     let class_name = style_sheet!("./src/hello.css");
 
     view! {cx, class = class_name,
