@@ -6,6 +6,7 @@ use stylers::style_test;
 pub fn run_tests() {
     println!("------------------Test-1------------------");
     let style = style_test! {"Hello",.two{
+            // this comment should be ignored
             color: yellow;
         }
     };

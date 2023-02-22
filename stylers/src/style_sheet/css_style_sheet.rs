@@ -5,6 +5,18 @@ use crate::style::{CSSRule, CSSStyleSheet};
 impl CSSStyleSheet {
     //This function will take the whole stylesheet content as string and return CSSStyleSheet structure
     pub(crate) fn from_str(style_str: &str, random_class: &str) -> CSSStyleSheet {
+        //removing all the comments in the css content.
+        let mut style_str = style_str.to_string();
+        while let Some((first, last)) = style_str.split_once("/*") {
+            let mut temp = String::new();
+            temp.push_str(first);
+            let (_, end) = last
+                .split_once("*/")
+                .expect("Expecting to split the comment");
+            temp.push_str(end);
+            style_str = temp;
+        }
+
         let mut css_style_sheet = CSSStyleSheet { css_rules: vec![] };
         let mut is_at_rule = false;
         let mut style = String::new();

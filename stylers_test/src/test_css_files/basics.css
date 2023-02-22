@@ -2,12 +2,14 @@
     color: yellow;
 }
 
+/* This comment should be ignored */
 .two.one {
     color: yellow;
 }
 
 .two .one {
     color: yellow;
+    /* This comment is also should be ignored */
 }
 
 #firstname {
