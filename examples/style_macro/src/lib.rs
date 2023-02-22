@@ -5,8 +5,9 @@ use stylers::style;
 fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
     //note: we will trim all double quotes by default unless it is wrapped with raw_str()
     let class_name = style! {"Hello",
+        // this comment will be ignored
         div {
-            border: 1px solid black;
+            border: 1px solid black;/*This comment also will be ignored */
             margin: 25px 50px 75px 100px;
             background-color: lightblue;
             content: raw_str(r#"\hello"#);
