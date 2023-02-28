@@ -89,8 +89,8 @@ fn rand_class() -> String {
 
 //append if file exists or write it into the new file
 fn write_to_file(data: &str, file_name: &str) {
-    let dir_path = String::from("./css");
-    let mut file_path = String::from("./css/");
+    let dir_path = String::from("./target/stylers/css");
+    let mut file_path = String::from("./target/stylers/css/");
     file_path.push_str(&file_name.to_lowercase());
     file_path.push_str(".css");
 
@@ -104,7 +104,7 @@ fn write_to_file(data: &str, file_name: &str) {
 }
 
 fn cat(dir: &str) {
-    let out_path = "./main.css";
+    let out_path = "./target/stylers/main.css";
     let _ = File::create(out_path).expect("Problem creating main.css file");
     let mut buffer = OpenOptions::new()
         .append(true)
