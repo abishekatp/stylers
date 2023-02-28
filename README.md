@@ -62,12 +62,11 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
     }
 }
 ```
-- Here ```hello.css``` file should be located inside the root directory of the project.
+- In this case ```hello.css``` file should be located inside the root directory of the project.
 ## How it works:
 
-- Style macro generates a css file with the given name inside the css directory.
-- For e.g. below code generates mystyle.css in ./css directory and also generates
-one combined main.css with all css files.
+- Both style and style_sheet macros generate a css file with the given name inside the `./target/stylers/css` directory.
+- For e.g. below code generates mystyle.css in `./target/stylers/css` directory and also generates one combined `./target/stylers/main.css` with all css files.
 ```rust
 style!{"mystyle",
     h2 {
@@ -97,12 +96,15 @@ style!(
 
 ## Optional build process using Trunk
 - You have to include generated main.css in the index.html
-(e.g ```<link data-trunk rel="css" href="./main.css">```).
+(e.g ```<link rel="stylesheet" href="/main.css">```).
 
 - In ```Trunk.toml``` you have to add the below lines to prevent infinite loop
 ```toml
-[watch]
-ignore = ["./css"]
+[[hooks]]
+stage = "post_build"
+command = "sh"
+command_arguments = ["-c", "cp ./target/stylers/main.css $TRUNK_STAGING_DIR/"]
 ```
-- if something is odd, delete the css directory and rebuild your package. If the problem persists please raise an issue here.
+- The above hook will move the main.css file from `./target/stylers/` directory to `./dist/` directory.
+- if something is odd with styling, delete the `./target/stylers` directory and rebuild your package. If the problem persists please raise an issue here.
 
