@@ -3,4 +3,4 @@ members = ["stylers", "stylers_test"]
 exclude = ["examples"]
 
 [workspace.package]
-version = "0.2.1"
+version = "0.2.2"

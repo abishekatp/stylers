@@ -1,12 +1,10 @@
 # Stylers
 - Scoped CSS for Rust web frameworks like Leptos.
-- style! macro validates css properties as well.
+- style! macro is for writing css inside rust functions directly. It will validates css properties as well.
+- style_sheet! macro is for writing css in external css file and importing that.
 
 ### Installtion
 ```cargo add stylers```
-### Exported macros
-- style! macro is for writing css inside rust functions.
-- style_sheet! macro is for writing css in external file and including that file.
 
 ## Leptos Example
 ### style!
@@ -98,13 +96,12 @@ style!(
 - You have to include generated main.css in the index.html
 (e.g ```<link rel="stylesheet" href="/main.css">```).
 
-- In ```Trunk.toml``` you have to add the below lines to prevent infinite loop
+- In ```Trunk.toml``` you have to add the below lines to move the the `main.css` file from `./target/stylers/` directory to `./dist/` directory.
 ```toml
 [[hooks]]
 stage = "post_build"
 command = "sh"
 command_arguments = ["-c", "cp ./target/stylers/main.css $TRUNK_STAGING_DIR/"]
 ```
-- The above hook will move the main.css file from `./target/stylers/` directory to `./dist/` directory.
 - if something is odd with styling, delete the `./target/stylers` directory and rebuild your package. If the problem persists please raise an issue here.
 
