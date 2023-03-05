@@ -1029,7 +1029,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a507befe795404456341dfab10cef66ead4c041f62b8b11bbb92bffe5d0953e0"
 
 [[package]]
-name = "style_sheet_macro"
+name = "style_macro"
 version = "0.1.0"
 dependencies = [
  "leptos",
@@ -1038,7 +1038,7 @@ dependencies = [
 
 [[package]]
 name = "stylers"
-version = "0.2.2"
+version = "0.3.0"
 dependencies = [
  "proc-macro2",
  "quote",
