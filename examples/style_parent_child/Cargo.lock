@@ -591,7 +591,7 @@ checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 [[package]]
 name = "leptos"
 version = "0.2.0"
-source = "git+https://github.com/leptos-rs/leptos.git#34aa0e014b0c194be4459360fba256f3ba4de0c2"
+source = "git+https://github.com/leptos-rs/leptos.git#08d98691a3b24ab2de9da1a3e61bfd0ec2103a8b"
 dependencies = [
  "cfg-if",
  "leptos_config",
@@ -607,7 +607,7 @@ dependencies = [
 [[package]]
 name = "leptos_config"
 version = "0.2.0"
-source = "git+https://github.com/leptos-rs/leptos.git#34aa0e014b0c194be4459360fba256f3ba4de0c2"
+source = "git+https://github.com/leptos-rs/leptos.git#08d98691a3b24ab2de9da1a3e61bfd0ec2103a8b"
 dependencies = [
  "config",
  "fs",
@@ -620,7 +620,7 @@ dependencies = [
 [[package]]
 name = "leptos_dom"
 version = "0.2.0"
-source = "git+https://github.com/leptos-rs/leptos.git#34aa0e014b0c194be4459360fba256f3ba4de0c2"
+source = "git+https://github.com/leptos-rs/leptos.git#08d98691a3b24ab2de9da1a3e61bfd0ec2103a8b"
 dependencies = [
  "async-recursion",
  "cfg-if",
@@ -647,7 +647,7 @@ dependencies = [
 [[package]]
 name = "leptos_hot_reload"
 version = "0.2.0"
-source = "git+https://github.com/leptos-rs/leptos.git#34aa0e014b0c194be4459360fba256f3ba4de0c2"
+source = "git+https://github.com/leptos-rs/leptos.git#08d98691a3b24ab2de9da1a3e61bfd0ec2103a8b"
 dependencies = [
  "anyhow",
  "camino",
@@ -664,7 +664,7 @@ dependencies = [
 [[package]]
 name = "leptos_macro"
 version = "0.2.0"
-source = "git+https://github.com/leptos-rs/leptos.git#34aa0e014b0c194be4459360fba256f3ba4de0c2"
+source = "git+https://github.com/leptos-rs/leptos.git#08d98691a3b24ab2de9da1a3e61bfd0ec2103a8b"
 dependencies = [
  "attribute-derive",
  "cfg-if",
@@ -688,7 +688,7 @@ dependencies = [
 [[package]]
 name = "leptos_reactive"
 version = "0.2.0"
-source = "git+https://github.com/leptos-rs/leptos.git#34aa0e014b0c194be4459360fba256f3ba4de0c2"
+source = "git+https://github.com/leptos-rs/leptos.git#08d98691a3b24ab2de9da1a3e61bfd0ec2103a8b"
 dependencies = [
  "base64 0.21.0",
  "cfg-if",
@@ -708,7 +708,7 @@ dependencies = [
 [[package]]
 name = "leptos_server"
 version = "0.2.0"
-source = "git+https://github.com/leptos-rs/leptos.git#34aa0e014b0c194be4459360fba256f3ba4de0c2"
+source = "git+https://github.com/leptos-rs/leptos.git#08d98691a3b24ab2de9da1a3e61bfd0ec2103a8b"
 dependencies = [
  "ciborium",
  "form_urlencoded",
@@ -885,9 +885,9 @@ checksum = "478c572c3d73181ff3c2539045f6eb99e5491218eae919370993b890cdbdd98e"
 
 [[package]]
 name = "pest"
-version = "2.5.5"
+version = "2.5.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "028accff104c4e513bad663bbcd2ad7cfd5304144404c31ed0a77ac103d00660"
+checksum = "8cbd939b234e95d72bc393d51788aec68aeeb5d51e748ca08ff3aad58cb722f7"
 dependencies = [
  "thiserror",
  "ucd-trie",
@@ -895,9 +895,9 @@ dependencies = [
 
 [[package]]
 name = "pest_derive"
-version = "2.5.5"
+version = "2.5.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2ac3922aac69a40733080f53c1ce7f91dcf57e1a5f6c52f421fadec7fbdc4b69"
+checksum = "a81186863f3d0a27340815be8f2078dd8050b14cd71913db9fbda795e5f707d7"
 dependencies = [
  "pest",
  "pest_generator",
@@ -905,9 +905,9 @@ dependencies = [
 
 [[package]]
 name = "pest_generator"
-version = "2.5.5"
+version = "2.5.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d06646e185566b5961b4058dd107e0a7f56e77c3f484549fb119867773c0f202"
+checksum = "75a1ef20bf3193c15ac345acb32e26b3dc3223aff4d77ae4fc5359567683796b"
 dependencies = [
  "pest",
  "pest_meta",
@@ -918,9 +918,9 @@ dependencies = [
 
 [[package]]
 name = "pest_meta"
-version = "2.5.5"
+version = "2.5.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e6f60b2ba541577e2a0c307c8f39d1439108120eb7903adeb6497fa880c59616"
+checksum = "5e3b284b1f13a20dc5ebc90aff59a51b8d7137c221131b52a7260c08cbc1cc80"
 dependencies = [
  "once_cell",
  "pest",
@@ -1180,7 +1180,7 @@ dependencies = [
 [[package]]
 name = "server_fn"
 version = "0.2.0"
-source = "git+https://github.com/leptos-rs/leptos.git#34aa0e014b0c194be4459360fba256f3ba4de0c2"
+source = "git+https://github.com/leptos-rs/leptos.git#08d98691a3b24ab2de9da1a3e61bfd0ec2103a8b"
 dependencies = [
  "cfg-if",
  "ciborium",
@@ -1203,7 +1203,7 @@ dependencies = [
 [[package]]
 name = "server_fn_macro"
 version = "0.2.0"
-source = "git+https://github.com/leptos-rs/leptos.git#34aa0e014b0c194be4459360fba256f3ba4de0c2"
+source = "git+https://github.com/leptos-rs/leptos.git#08d98691a3b24ab2de9da1a3e61bfd0ec2103a8b"
 dependencies = [
  "const_format",
  "proc-macro-error",
@@ -1219,7 +1219,7 @@ dependencies = [
 [[package]]
 name = "server_fn_macro_default"
 version = "0.2.0"
-source = "git+https://github.com/leptos-rs/leptos.git#34aa0e014b0c194be4459360fba256f3ba4de0c2"
+source = "git+https://github.com/leptos-rs/leptos.git#08d98691a3b24ab2de9da1a3e61bfd0ec2103a8b"
 dependencies = [
  "proc-macro2",
  "server_fn_macro",
