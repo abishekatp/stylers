@@ -2,8 +2,8 @@
 - Scoped CSS for Rust web frameworks like Leptos.
 - `style!` macro is for writing css inside rust functions directly. It will validates css properties as well.
 - `style_sheet!` macro is for writing css in external css file and importing that inside rust functions.
-- `style_str!` macro is same as `style!` macro but it will return the tuple `(class_name, style_val)` instead of saving the style_val to the separate file.
-- `style_sheet_str!` this same as `style_sheet!` macro but returns `(class_name, style_val)` instead of saving the style_val to the separate file.
+- `style_str!` macro is same as `style!` macro but returns the tuple `(class_name, style_val)` instead of saving the style_val to the separate file.
+- `style_sheet_str!` this same as `style_sheet!` macro but returns the tuple `(class_name, style_val)` instead of saving the style_val to the separate file.
 
 ## Installtion
 ```cargo add stylers```
@@ -61,7 +61,7 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
     }
 }
 ```
-- In this case you should be place the ```hello.css``` file inside the `root` directory of the project.
+- In this case you should place the ```hello.css``` file inside the `root` directory of the project.
 
 ### style_str!
 - Note that in `style_str!` macro we don't need to pass the component name as we do in `style!` macro.
@@ -108,7 +108,7 @@ pub fn GreenButton(cx: Scope) -> impl IntoView {
 ```
 
 ### style_sheet_str!
-```rusr
+```rust
 #[component]
 pub fn BlueButton(cx: Scope) -> impl IntoView {
     let (class_name, style_val) = style_sheet_str!("./src/button.css");
@@ -119,12 +119,12 @@ pub fn BlueButton(cx: Scope) -> impl IntoView {
     }
 }
 ```
-- In this case you should be place the ```button.css``` file inside the `src` directory of the project.
+- In this case you should place the ```button.css``` file inside the `src` directory of the project.
 
 ## How it works:
 
 - Both `style!` and `style_sheet!` macros generate a css file with the given name inside the `./target/stylers/css` directory.
-- For e.g. below code generates mystyle.css in `./target/stylers/css` directory and also generates one combined `./target/stylers/main.css` with all css files.
+- For e.g. below code generates `mystyle.css` in `./target/stylers/css` directory and also generates one combined `./target/stylers/main.css` with all css files.
 ```rust
 style!{"mystyle",
     h2 {
@@ -133,9 +133,9 @@ style!{"mystyle",
 }
 ```
 
-## Edge cases handled for `style` and `style_sheet` macros
+## Edge cases handled for `style!` macros
 - By default double quotes ( " ) around css property values will be removed. If user wants to retain the double quotes they have to wrap it using ```raw_str``` as given below:
-- these rules apply for both `style` and `style_sheet` macros
+- these rules apply for both `style!` and `style_str!` macros
 #### Input
 ```rust
 style!(
@@ -153,7 +153,7 @@ style!(
     }
 ```
 
-## Optional build process using Trunk(Only when you use `style` or `style_sheet` macro )
+## Optional build process using Trunk(Only when you use `style!` or `style_sheet!` macro )
 - You have to include generated main.css in the index.html
 (e.g ```<link rel="stylesheet" href="/main.css">```).
 
@@ -164,5 +164,6 @@ stage = "post_build"
 command = "sh"
 command_arguments = ["-c", "cp ./target/stylers/main.css $TRUNK_STAGING_DIR/"]
 ```
+- when you are including external css file using `style_sheet!` macro, whenever you make some changes in your css file you have to save corresponding rust file(*.rs) for css to be updated on the browser. For more info about trunk refer [here](https://trunkrs.dev/commands/).
 - if something is odd with styling, delete the `./target/stylers` directory and rebuild your package. If the problem persists please raise an issue here.
 
