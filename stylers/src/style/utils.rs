@@ -55,8 +55,8 @@ pub(crate) fn add_spaces(
     pre_line: &mut usize,
     pre_col: &mut usize,
 ) {
-    let start = span.unwrap().start();
-    let end = span.unwrap().end();
+    let start = span.start();
+    let end = span.end();
     let cur_col = start.column;
     let cur_line = start.line;
     if *pre_line == cur_line && cur_col > *pre_col {

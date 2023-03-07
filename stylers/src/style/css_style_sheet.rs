@@ -32,7 +32,7 @@ impl CSSStyleSheet {
         loop {
             if let Some(tt) = ts_iter.next() {
                 count += 1;
-                css_rule_tt.extend_one(tt.clone());
+                css_rule_tt.extend(Some(tt.clone()));
                 match tt {
                     TokenTree::Group(t) => {
                         if t.delimiter() == Delimiter::Brace {

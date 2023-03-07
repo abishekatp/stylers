@@ -1,5 +1,3 @@
-#![feature(proc_macro_span)]
-#![feature(extend_one)]
 //! This crate provides style macro for scoped css in rust web frameworks which follows component like architecture e.g Leptos.
 mod style;
 mod style_sheet;
