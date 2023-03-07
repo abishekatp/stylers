@@ -69,7 +69,7 @@ impl CSSStyleRule {
                             if ch == '.' || ch == '#' {
                                 add_spaces(&mut selector, t.span(), &mut pre_line, &mut pre_col);
                             } else {
-                                let end = t.span().unwrap().end();
+                                let end = t.span().end();
                                 pre_col = end.column;
                                 pre_line = end.line;
                             }
