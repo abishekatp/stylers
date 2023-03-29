@@ -154,7 +154,7 @@ impl CSSStyleRule {
 
             //this condition ignores the unwanted white space after comma, >, +, ~ punctuations.
             if is_punct_start {
-                if c == ' ' {
+                if c.is_whitespace() {
                     continue;
                 } else {
                     is_punct_start = false;
