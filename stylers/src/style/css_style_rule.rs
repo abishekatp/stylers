@@ -148,9 +148,13 @@ impl CSSStyleRule {
             if is_deep_directive && c != '(' {
                 continue;
             }
-            if c == ':' && source.ends_with(' ') {
-                is_deep_directive = true;
-                continue;
+            if c == ':' {
+                if let Some(sub) = selector_text.get(i..i + 4) {
+                    if sub == "deep" {
+                        is_deep_directive = true;
+                        continue;
+                    }
+                }
             }
 
             //ignore everything until we reach to whitespace or end of the line after encountering pseudo class selector(:).

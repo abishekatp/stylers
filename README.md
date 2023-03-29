@@ -9,7 +9,7 @@
 ```cargo add stylers```
 
 ## Leptos Example
-### style!
+#### style!
 ```rust
 #[component]
 fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
@@ -48,7 +48,7 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
     }
 }
 ```
-### style_sheet!
+#### style_sheet!
 ```rust
 #[component]
 fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
@@ -63,7 +63,7 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
 ```
 - In this case you should place the ```hello.css``` file inside the `root` directory of the project.
 
-### style_str!
+#### style_str!
 - Note that in `style_str!` macro we don't need to pass the component name as we do in `style!` macro.
 ```rust
 #[component]
@@ -107,7 +107,7 @@ pub fn GreenButton(cx: Scope) -> impl IntoView {
 }
 ```
 
-### style_sheet_str!
+#### style_sheet_str!
 ```rust
 #[component]
 pub fn BlueButton(cx: Scope) -> impl IntoView {
@@ -120,6 +120,31 @@ pub fn BlueButton(cx: Scope) -> impl IntoView {
 }
 ```
 - In this case you should place the ```button.css``` file inside the `src` directory of the project.
+
+## Custom pseudo classes
+- In some situations we may need our css to affect `deep down` the dom tree. To achieve this we have custom pseudo class called `:deep()`. For example below css is valid one.
+#### Input
+```css
+div :deep(h3) {
+    color: orange;
+}
+```
+#### Output
+```css
+div.l-243433 h3{color: orange;}
+```
+
+- If you want your particular css to be `global` you can use `:deep()` directive without any selector preceding it.
+#### Input
+```css
+:deep(h3 div) {
+    color: orange;
+}
+```
+#### Ouput
+```css
+h3 div{color: orange;}
+```
 
 ## How it works:
 
