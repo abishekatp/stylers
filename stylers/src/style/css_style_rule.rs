@@ -183,9 +183,13 @@ impl CSSStyleRule {
             }
 
             //this condition ignores the unwanted white space after comma, >, +, ~ punctuations.
-            if is_punct_start && c == ' ' {
-                is_punct_start = false;
-                continue;
+            if is_punct_start {
+                // this will remove newline charactors following comma(,) in selectors.
+                if c.is_whitespace() {
+                    continue;
+                } else {
+                    is_punct_start = false;
+                }
             }
             if c == ',' || c == '+' || c == '~' || c == '>' || c == '|' {
                 source.push_str(random_class);

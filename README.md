@@ -134,7 +134,7 @@ div :deep(h3) {
 div.l-243433 h3{color: orange;}
 ```
 
-- If you want your particular css to be `global` you can use `:deep()` directive without any selector preceding it.
+- If you want your particular css to be `global` you can use `:deep()` directive without any  prceding selectors it.
 #### Input
 ```css
 :deep(h3 div) {
