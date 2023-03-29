@@ -39,4 +39,11 @@ pub fn run_tests() {
         style.trim(),
         r#"@page {size: A4;margin: 10%;@top-left-corner {content: "Page " counter(page);}}@font-face {font-family: "Trickster";src: local("Trickster"),url("trickster-COLRv1.otf") format("opentype") tech(color-COLRv1), url("trickster-outline.otf") format("opentype"), url("trickster-outline.woff") format("woff");}@keyframes spin1 {to {-webkit-transform: rotate(360deg);}}@-webkit-keyframes spin2 {to {-webkit-transform: rotate(360deg);}}@counter-style thumbs {system: cyclic;symbols: "\1F44D";suffix: " ";}@font-feature-values Font One {@styleset {nice-style: 12;}}@property --property-name {syntax: "<color>";inherits: false;initial-value: #c0ffee;}"#
     );
+
+    println!("--------------Custom Pseudo Class Tests------------");
+    let style = style_sheet_test!("./stylers_test/src/test_css_files/custom_pseudo.css");
+    assert_eq!(
+        style.trim(),
+        r#"h3 div{color: orange;}div.test h3{color: orange;}div.test>h3{color: orange;}"#
+    );
 }

@@ -66,7 +66,8 @@ impl CSSStyleRule {
                         TokenTree::Punct(t) => {
                             let ch = t.as_char();
                             //only when ch is dot or hash we need space information. because space will mean direct child.
-                            if ch == '.' || ch == '#' {
+                            //colon also need space info because it may be custom directive like :deep(p)
+                            if ch == '.' || ch == '#' || ch == ':' {
                                 add_spaces(&mut selector, t.span(), &mut pre_line, &mut pre_col);
                             } else {
                                 let end = t.span().unwrap().end();
@@ -95,6 +96,8 @@ impl CSSStyleRule {
         let mut is_punct_start = false;
         let mut is_pseudo_class_start = false;
         let mut is_bracket_open = false;
+        let mut is_deep_directive = false;
+        let mut is_deep_directive_open = false;
         let mut temp = String::new();
         let mut i = 0;
         for c in selector_text.chars() {
@@ -127,6 +130,33 @@ impl CSSStyleRule {
                 continue;
             }
 
+            // if current char is colon and previous char is space means that is custom :deep directive.
+            // then just use whatever values inside :deep() directive.
+            if is_deep_directive_open && c != ')' {
+                source.push(c);
+                continue;
+            }
+            if is_deep_directive_open && c == ')' {
+                is_deep_directive = false;
+                is_deep_directive_open = false;
+                continue;
+            }
+            if is_deep_directive && c == '(' {
+                is_deep_directive_open = true;
+                continue;
+            }
+            if is_deep_directive && c != '(' {
+                continue;
+            }
+            if c == ':' {
+                if let Some(sub) = selector_text.get(i..i + 4) {
+                    if sub == "deep" {
+                        is_deep_directive = true;
+                        continue;
+                    }
+                }
+            }
+
             //ignore everything until we reach to whitespace or end of the line after encountering pseudo class selector(:).
             if is_pseudo_class_start {
                 if c == ' ' || i == sel_len {
@@ -154,6 +184,7 @@ impl CSSStyleRule {
 
             //this condition ignores the unwanted white space after comma, >, +, ~ punctuations.
             if is_punct_start {
+                // this will remove newline charactors following comma(,) in selectors.
                 if c.is_whitespace() {
                     continue;
                 } else {

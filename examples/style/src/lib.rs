@@ -54,8 +54,9 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
 #[component]
 pub fn Abi(cx: Scope) -> impl IntoView {
     let class_name = style! {"Abi",
-        h3{
-            background-color: yellow;
+        // we can use this :deep() pseudo class in external css file as well.
+        div :deep(h3){
+            color: orange;
         }
         @media only screen and (max-width: 1000px) {
             h3 {
@@ -65,7 +66,9 @@ pub fn Abi(cx: Scope) -> impl IntoView {
         }
     };
     view! {cx, class = class_name,
-        <Hello name="hello"/>
-        <h3 >"Hai"</h3>
+        <div>
+            <Hello name="hello"/>
+            <h3 >"Hai"</h3>
+        </div>
     }
 }

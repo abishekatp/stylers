@@ -1,0 +1,11 @@
+:deep(h3 div) {
+    color: orange;
+}
+
+div :deep(h3) {
+    color: orange;
+}
+
+div>:deep(h3) {
+    color: orange;
+}

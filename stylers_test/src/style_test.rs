@@ -479,4 +479,29 @@ pub fn run_tests() {
         style.trim(),
         "table.test th.test,table.test td.test{color: red;}"
     );
+
+    // Custom pseudo class.
+    println!("------------------Test-45-----------------");
+    let style = style_test! {"Hello",
+        div :deep(h3) {
+            color: orange;
+        }
+    };
+    assert_eq!(style.trim(), "div.test h3{color: orange;}");
+
+    println!("------------------Test-46-----------------");
+    let style = style_test! {"Hello",
+        :deep(h3 div) {
+            color: orange;
+        }
+    };
+    assert_eq!(style.trim(), "h3 div{color: orange;}");
+
+    println!("------------------Test-47-----------------");
+    let style = style_test! {"Hello",
+        div> :deep(h3) {
+            color: orange;
+        }
+    };
+    assert_eq!(style.trim(), "div.test>h3{color: orange;}");
 }
