@@ -467,4 +467,12 @@ pub fn run_tests() {
         style.trim(),
         "#container.test{--first-color: #290;}#thirdParagraph.test{background-color: var(--first-color);color: var(--second-color);}"
     );
+
+    println!("------------------Test-44-----------------");
+    let style = style_test! {"Hello",
+        div :deep(h3) {
+            color: orange;
+        }
+    };
+    assert_eq!(style.trim(), "div.test h3{color: orange;}");
 }
