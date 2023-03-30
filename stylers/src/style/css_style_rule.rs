@@ -194,10 +194,10 @@ impl CSSStyleRule {
             if c == ',' || c == '+' || c == '~' || c == '>' || c == '|' {
                 // The end of source is not a whitespace, push random_class
                 if let Some(ch) = source.chars().rev().next() {
-                    if !ch.is_whitespace() {
-                        source.push_str(random_class);
-                    } else {
+                    if ch.is_whitespace() {
                         source = source.trim_end().to_string();
+                    } else {
+                        source.push_str(random_class);
                     }
                 }
                 source.push(c);
