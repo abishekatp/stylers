@@ -409,7 +409,7 @@ impl CSSStyleDeclaration {
                 //this will check if user added the semicolon or not.
                 //since we are validating using colon actual line which is missing semicolon will be pre_line-1.
                 if is_property_start && ch == ':' {
-                    panic!("Missing simicolon in line {}", pre_line - 1)
+                    panic!("Missing semicolon in line {}", pre_line - 1)
                 } else if ch == ':' {
                     is_property_start = true;
                     let (is_valid, suggest) = validate_property(&property, &property_map);
