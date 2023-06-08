@@ -1,0 +1,13 @@
+[package]
+name = "stylers_core"
+version = { workspace = true }
+edition = "2021"
+authors = ["Abishek P"]
+license = "MIT"
+repository = "https://github.com/abishekatp/stylers"
+description = "Scoped CSS implementation in Rust"
+readme = "../README.md"
+
+[dependencies]
+quote = "1.0"
+proc-macro2 = { version = "1.0" }

@@ -1,5 +1,5 @@
 [workspace]
-members = ["stylers", "stylers_test"]
+members = ["stylers_core", "stylers", "stylers_test"]
 exclude = ["examples"]
 
 [workspace.package]

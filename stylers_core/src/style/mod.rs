@@ -20,7 +20,10 @@ pub(crate) use crate::style::css_style_sheet::{CSSRule, CSSStyleSheet};
 /// random_class: &String is random class to be appended for each selector.
 /// This function will return tuple with two fields (style string, map of unique keys of selectors.)
 /// style string: is the parsed style sheet as a string
-pub(crate) fn build_style(ts: TokenStream, random_class: &String) -> (String, HashMap<String, ()>) {
+pub fn build_style_from_ts(
+    ts: TokenStream,
+    random_class: &String,
+) -> (String, HashMap<String, ()>) {
     let mut style = String::new();
     let (style_sheet, sel_map) = CSSStyleSheet::new(ts, random_class);
     style_sheet.css_rules.iter().for_each(|rule| match rule {
