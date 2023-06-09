@@ -502,6 +502,9 @@ pub fn run_tests() {
         div> :deep(h3) {
             color: orange;
         }
+        div > :deep(h3) {
+            color: orange;
+        }
     };
-    assert_eq!(style.trim(), "div.test>h3{color: orange;}");
+    assert_eq!(style.trim(), "div.test>h3{color: orange;}div.test>h3{color: orange;}");
 }

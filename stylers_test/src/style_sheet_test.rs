@@ -44,6 +44,6 @@ pub fn run_tests() {
     let style = style_sheet_test!("./stylers_test/src/test_css_files/custom_pseudo.css");
     assert_eq!(
         style.trim(),
-        r#"h3 div{color: orange;}div.test h3{color: orange;}div.test>h3{color: orange;}"#
+        r#"h3 div{color: orange;}div.test h3{color: orange;}div.test>h3{color: orange;}div.test>h3{color: orange;}"#
     );
 }
