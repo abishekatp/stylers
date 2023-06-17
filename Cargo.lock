@@ -3,6 +3,12 @@
 version = 3
 
 [[package]]
+name = "glob"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d2fabcfbdc87f4758337ca535fb41a6d701b65693ce38287d856d1674551ec9b"
+
+[[package]]
 name = "proc-macro2"
 version = "1.0.60"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -30,6 +36,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "stylers_build"
+version = "0.3.1"
+dependencies = [
+ "glob",
+ "proc-macro2",
+ "stylers",
+ "syn",
+]
+
+[[package]]
 name = "stylers_core"
 version = "0.3.1"
 dependencies = [
@@ -42,6 +58,17 @@ name = "stylers_test"
 version = "0.1.0"
 dependencies = [
  "stylers",
+]
+
+[[package]]
+name = "syn"
+version = "2.0.18"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "32d41677bcbe24c20c52e7c70b0d8db04134c5d1066bf98662e2871ad200ea3e"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "unicode-ident",
 ]
 
 [[package]]

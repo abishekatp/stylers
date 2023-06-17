@@ -7,7 +7,7 @@ use std::collections::hash_map::RandomState;
 use std::fs::{self, File, OpenOptions};
 use std::hash::{BuildHasher, Hasher};
 use std::io::Write;
-use stylers_core::{build_style_from_str, build_style_from_ts};
+use stylers_core::{from_str, from_ts};
 
 /// style macro take any valid css as input and returns a unique class name.
 /// The first two Tokens of the token stream must be component name and comma punctuation.
@@ -17,7 +17,7 @@ use stylers_core::{build_style_from_str, build_style_from_ts};
 pub fn style(ts: TokenStream) -> TokenStream {
     let (comp_name, ts) = get_component_name(ts);
     let random_class = rand_class();
-    let (style, _sel_map) = build_style_from_ts(ts, &random_class);
+    let (style, _sel_map) = from_ts(ts, &random_class);
     let random_class = random_class[1..].to_string();
     let expanded = quote! {
         #random_class
@@ -36,7 +36,7 @@ pub fn style_sheet(ts: TokenStream) -> TokenStream {
     let file_path = file_path.trim_matches('"');
     let css_content = std::fs::read_to_string(&file_path).expect("Expected to read file");
     let random_class = rand_class();
-    let style = build_style_from_str(&css_content, &random_class);
+    let style = from_str(&css_content, &random_class);
     let random_class = random_class[1..].to_string();
     let expanded = quote! {
         #random_class
@@ -56,7 +56,7 @@ pub fn style_sheet(ts: TokenStream) -> TokenStream {
 #[proc_macro]
 pub fn style_str(ts: TokenStream) -> TokenStream {
     let random_class = rand_class();
-    let (style, _sel_map) = build_style_from_ts(ts.into(), &random_class);
+    let (style, _sel_map) = from_ts(ts.into(), &random_class);
     let random_class = random_class[1..].to_string();
     let expanded = quote! {
         (#random_class,#style)
@@ -72,10 +72,20 @@ pub fn style_sheet_str(ts: TokenStream) -> TokenStream {
     let file_path = file_path.trim_matches('"');
     let css_content = std::fs::read_to_string(&file_path).expect("Expected to read file");
     let random_class = rand_class();
-    let style = build_style_from_str(&css_content, &random_class);
+    let style = from_str(&css_content, &random_class);
     let random_class = random_class[1..].to_string();
     let expanded = quote! {
         (#random_class,#style)
+    };
+    TokenStream::from(expanded)
+}
+
+#[proc_macro]
+pub fn style_build(_ts: TokenStream) -> TokenStream {
+    let random_class = rand_class();
+    let random_class = random_class[1..].to_string();
+    let expanded = quote! {
+        #random_class
     };
     TokenStream::from(expanded)
 }
@@ -87,7 +97,7 @@ pub fn style_sheet_test(ts: TokenStream) -> TokenStream {
     let file_path = file_path.trim_matches('"');
     let css_content = std::fs::read_to_string(&file_path).expect("Expected to read file");
     let random_class = String::from(".test");
-    let style = build_style_from_str(&css_content, &random_class);
+    let style = from_str(&css_content, &random_class);
     let expanded = quote! {
         #style
     };
@@ -99,7 +109,7 @@ pub fn style_sheet_test(ts: TokenStream) -> TokenStream {
 pub fn style_test(ts: TokenStream) -> TokenStream {
     let (_comp_name, ts) = get_component_name(ts);
     let random_class = String::from(".test");
-    let (style, _sel_map) = build_style_from_ts(ts.into(), &random_class);
+    let (style, _sel_map) = from_ts(ts.into(), &random_class);
     let expanded = quote! {
         #style
     };
