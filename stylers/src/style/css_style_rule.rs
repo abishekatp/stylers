@@ -71,8 +71,8 @@ impl CSSStyleRule {
                                 add_spaces(&mut selector, t.span(), &mut pre_line, &mut pre_col);
                             } else {
                                 let end = t.span().unwrap().end();
-                                pre_col = end.column;
-                                pre_line = end.line;
+                                pre_col = end.column();
+                                pre_line = end.line();
                             }
                             selector.push(t.as_char());
                         }
