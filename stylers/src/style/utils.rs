@@ -57,11 +57,11 @@ pub(crate) fn add_spaces(
 ) {
     let start = span.unwrap().start();
     let end = span.unwrap().end();
-    let cur_col = start.column;
-    let cur_line = start.line;
+    let cur_col = start.column();
+    let cur_line = start.line();
     if *pre_line == cur_line && cur_col > *pre_col {
         source.push(' ');
     }
-    *pre_col = end.column;
-    *pre_line = end.line;
+    *pre_col = end.column();
+    *pre_line = end.line();
 }
