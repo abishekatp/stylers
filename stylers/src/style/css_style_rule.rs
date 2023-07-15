@@ -112,7 +112,10 @@ impl CSSStyleRule {
                 if c == ']' {
                     is_bracket_open = false;
                     source.push(c);
-                    source.push_str(random_class);
+                    
+                    if !is_deep_directive_open {
+                       source.push_str(random_class);
+                    }
 
                     temp.push(c);
                     sel_map.insert(temp.clone(), ());

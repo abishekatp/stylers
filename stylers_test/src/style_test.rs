@@ -504,4 +504,21 @@ pub fn run_tests() {
         }
     };
     assert_eq!(style.trim(), "div.test>h3{color: orange;}");
+
+
+    println!("------------------Test-48-----------------");
+    let style = style_test! {"Hello",
+        :deep([data-custom]) {
+            color: orange;
+        }
+    };
+    assert_eq!(style.trim(), "[data-custom]{color: orange;}");
+
+    println!("------------------Test-49-----------------");
+    let style = style_test! {"Hello",
+        .nested> :deep([data-custom]) {
+            color: orange;
+        }
+    };
+    assert_eq!(style.trim(), ".nested.test>[data-custom]{color: orange;}");
 }
