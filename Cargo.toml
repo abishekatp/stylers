@@ -6,7 +6,9 @@ authors = ["Abishek P"]
 license = "MIT"
 repository = "https://github.com/abishekatp/stylers"
 description = "Scoped CSS for Rust web frameworks like leptos"
-readme = "../README.md"
+keywords = ["web", "css", "leptos"]
+categories = ["web-programming"]
+readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

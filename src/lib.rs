@@ -3,7 +3,7 @@
 //! See <https://github.com/abishekatp/stylers/tree/main/examples> for examples.
 
 #![feature(proc_macro_span)]
-#![warn(clippy::panic)]
+#![warn(clippy::panic, clippy::cargo)]
 
 mod style;
 mod style_sheet;
