@@ -7,7 +7,7 @@ impl CSSStyleRule {
     pub(crate) fn from_str(style_block: &str, random_class: &str) -> CSSStyleRule {
         let mut css_style_rule = CSSStyleRule {
             selector_text: String::new(),
-            style: CSSStyleDeclaration::empty(),
+            style: CSSStyleDeclaration::default(),
         };
         css_style_rule.parse_str(style_block, random_class);
 
@@ -21,7 +21,7 @@ impl CSSStyleRule {
         let selector_text = selector_text.trim();
         let _ = self.parse_selector(selector_text, random_class);
         let mut style_declar = String::from("{");
-        style_declar.push_str(&body);
+        style_declar.push_str(body);
         self.style = CSSStyleDeclaration::from_str(style_declar);
     }
 }

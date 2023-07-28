@@ -3,7 +3,7 @@ use crate::style::CSSStyleRule;
 use crate::style::{CSSRule, CSSStyleSheet};
 
 impl CSSStyleSheet {
-    //This function will take the whole stylesheet content as string and return CSSStyleSheet structure
+    // This function will take the whole stylesheet content as string and return CSSStyleSheet structure
     pub(crate) fn from_str(style_str: &str, random_class: &str) -> CSSStyleSheet {
         //removing all the comments in the css content.
         let mut style_str = style_str.to_string();
@@ -24,7 +24,7 @@ impl CSSStyleSheet {
         let mut no_of_closings = 0;
         for ch in style_str.chars() {
             //trimming the style because empty spaces at the beginning are not significant.
-            if style.trim_start().len() <= 0 && ch == '@' {
+            if style.trim_start().is_empty() && ch == '@' {
                 is_at_rule = true;
             }
             if ch == '{' {

@@ -1,9 +1,9 @@
 use crate::style::utils::add_spaces;
+use levenshtein::levenshtein;
 use proc_macro2::{Delimiter, Group, TokenTree};
-use std::cmp::min;
 use std::collections::HashMap;
 
-//ref: https://www.w3schools.com/cssref/index.php
+/// See <https://www.w3schools.com/cssref/index.php>
 static ALL_PROPERTIES: [&str; 328] = [
     "accent-color",
     "align-content",
@@ -335,34 +335,24 @@ static ALL_PROPERTIES: [&str; 328] = [
     "z-index",
 ];
 
-//ref: https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleDeclaration
-//CSSStyleDeclaration is actual style declaration for each selectors
-#[derive(Debug)]
+/// See: <https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleDeclaration>
+#[derive(Debug, Default)]
 pub(crate) struct CSSStyleDeclaration {
-    //e.g {color:red;}
+    // e.g. `{color:red;}`
     pub(crate) style_css_text: String,
 }
 
 impl CSSStyleDeclaration {
-    pub(crate) fn empty() -> CSSStyleDeclaration {
-        CSSStyleDeclaration {
-            style_css_text: "".to_string(),
-        }
-    }
-    //new method parse the style declaration group
     pub(crate) fn new(group: Group) -> CSSStyleDeclaration {
-        let mut css_style_declar = CSSStyleDeclaration {
-            style_css_text: "".to_string(),
-        };
-        css_style_declar.parse(group);
-        css_style_declar
-    }
-    //style_css_text style declaration as text
-    pub(crate) fn style_css_text(&self) -> String {
-        self.style_css_text.clone()
+        let mut declaration = CSSStyleDeclaration::default();
+        declaration.parse(group);
+        declaration
     }
 
-    //parse and validate the style declaration group and store it in style_css_text.
+    pub(crate) fn style_css_text(&self) -> &str {
+        &self.style_css_text
+    }
+
     pub(crate) fn parse(&mut self, group: Group) {
         let mut body = String::new();
         let mut property_map = HashMap::new();
@@ -437,65 +427,30 @@ impl CSSStyleDeclaration {
     }
 }
 
-//this function will check if property key exists or not. if not it will suggest the most relevent property.
 fn validate_property(prop_key: &str, prop_map: &HashMap<&str, ()>) -> (bool, Option<String>) {
     let property = prop_key.trim_start_matches("-webkit-");
+
     if prop_map.contains_key(property) {
         return (true, None);
-    } else if property.starts_with("--") {
-        //this will check if the property is custom css property.
+    } else if let Some(_css_prop_name) = property.strip_prefix("--") {
+        // TODO: check if the property is custom css property
         return (true, None);
     }
-    let mut most_relevent = String::new();
+
+    let mut most_relevant = String::new();
     let mut min_distance = 1000;
+
     ALL_PROPERTIES.iter().for_each(|key| {
         let dist = levenshtein(prop_key, key);
         if dist < min_distance {
             min_distance = dist;
-            most_relevent = key.to_string();
+            most_relevant = key.to_string();
         }
     });
-    (false, Some(most_relevent))
+
+    (false, Some(most_relevant))
 }
 
-//levenshtein edit distance will give number inserterion or deletion or substitution needed to get string t from string s.
-//ref: https://github.com/mbrlabs/distance/blob/master/src/levenshtein.rs, https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#Rust
-pub fn levenshtein(s: &str, t: &str) -> usize {
-    // get length of unicode chars
-    let len_s = s.chars().count();
-    let len_t = t.chars().count();
-
-    // initialize the matrix
-    let mut mat: Vec<Vec<usize>> = vec![vec![0; len_t + 1]; len_s + 1];
-    for i in 1..(len_s + 1) {
-        mat[i][0] = i;
-    }
-    for i in 1..(len_t + 1) {
-        mat[0][i] = i;
-    }
-
-    //It will compare upper cell, left side cell and left digonal cell for minimum value.
-    for (i, s_char) in s.chars().enumerate() {
-        for (j, t_char) in t.chars().enumerate() {
-            let substitution = if s_char == t_char { 0 } else { 1 };
-            mat[i + 1][j + 1] = min3(
-                mat[i][j + 1] + 1,        // deletion
-                mat[i + 1][j] + 1,        // insertion
-                mat[i][j] + substitution, // substitution
-            );
-        }
-    }
-
-    return mat[len_s][len_t];
-}
-
-pub fn min3(a: usize, b: usize, c: usize) -> usize {
-    return min(min(a, b), c);
-}
-
-// This parse_property_group function will parse the TokenTree::Group and return a string.
-// This parse group will handle some property specific conitions.
-// when parseing group itself raw_str("hell0"), we will pass raw_str argument as true.
 fn parse_property_group(group: Group, raw_str: bool) -> String {
     let mut body = String::new();
     let mut pre_col: usize = 0;

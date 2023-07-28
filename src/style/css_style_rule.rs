@@ -19,7 +19,7 @@ impl CSSStyleRule {
     pub(crate) fn new(ts: TokenStream, random_class: &str) -> (CSSStyleRule, HashMap<String, ()>) {
         let mut css_style_rule = CSSStyleRule {
             selector_text: String::new(),
-            style: CSSStyleDeclaration::empty(),
+            style: CSSStyleDeclaration::default(),
         };
         let sel_map = css_style_rule.parse(ts, random_class);
 
@@ -29,7 +29,7 @@ impl CSSStyleRule {
     // This css_text method will give the whole style-rule as single string value.
     pub(crate) fn css_text(&self) -> String {
         let mut text = self.selector_text.clone();
-        text.push_str(&self.style.style_css_text());
+        text.push_str(self.style.style_css_text());
         text
     }
 
@@ -39,46 +39,40 @@ impl CSSStyleRule {
         let mut pre_line: usize = 0;
         //selector will just store current selector of the style rule.
         let mut selector = String::new();
-        let mut ts_iter = ts.into_iter();
         let mut sel_map = HashMap::new();
-        loop {
-            match ts_iter.next() {
-                Some(tt) => {
-                    match tt {
-                        TokenTree::Group(t) => {
-                            //only if the delimiter is brace it will be style definition.
-                            if t.delimiter() == Delimiter::Brace {
-                                sel_map = self.parse_selector(&selector, random_class);
-                                self.style = CSSStyleDeclaration::new(t);
-                            } else {
-                                add_spaces(&mut selector, t.span(), &mut pre_line, &mut pre_col);
-                                selector.push_str(&parse_group(t));
-                            }
-                        }
-                        TokenTree::Ident(t) => {
-                            add_spaces(&mut selector, t.span(), &mut pre_line, &mut pre_col);
-                            selector.push_str(&t.to_string());
-                        }
-                        TokenTree::Literal(t) => {
-                            add_spaces(&mut selector, t.span(), &mut pre_line, &mut pre_col);
-                            selector.push_str(t.to_string().trim_matches('"'));
-                        }
-                        TokenTree::Punct(t) => {
-                            let ch = t.as_char();
-                            //only when ch is dot or hash we need space information. because space will mean direct child.
-                            //colon also need space info because it may be custom directive like :deep(p)
-                            if ch == '.' || ch == '#' || ch == ':' {
-                                add_spaces(&mut selector, t.span(), &mut pre_line, &mut pre_col);
-                            } else {
-                                let end = t.span().unwrap().end();
-                                pre_col = end.column();
-                                pre_line = end.line();
-                            }
-                            selector.push(t.as_char());
-                        }
+        for tt in ts {
+            match tt {
+                TokenTree::Group(t) => {
+                    //only if the delimiter is brace it will be style definition.
+                    if t.delimiter() == Delimiter::Brace {
+                        sel_map = self.parse_selector(&selector, random_class);
+                        self.style = CSSStyleDeclaration::new(t);
+                    } else {
+                        add_spaces(&mut selector, t.span(), &mut pre_line, &mut pre_col);
+                        selector.push_str(&parse_group(t));
                     }
                 }
-                None => break,
+                TokenTree::Ident(t) => {
+                    add_spaces(&mut selector, t.span(), &mut pre_line, &mut pre_col);
+                    selector.push_str(&t.to_string());
+                }
+                TokenTree::Literal(t) => {
+                    add_spaces(&mut selector, t.span(), &mut pre_line, &mut pre_col);
+                    selector.push_str(t.to_string().trim_matches('"'));
+                }
+                TokenTree::Punct(t) => {
+                    let ch = t.as_char();
+                    //only when ch is dot or hash we need space information. because space will mean direct child.
+                    //colon also need space info because it may be custom directive like :deep(p)
+                    if ch == '.' || ch == '#' || ch == ':' {
+                        add_spaces(&mut selector, t.span(), &mut pre_line, &mut pre_col);
+                    } else {
+                        let end = t.span().unwrap().end();
+                        pre_col = end.column();
+                        pre_line = end.line();
+                    }
+                    selector.push(t.as_char());
+                }
             }
         }
         sel_map
@@ -112,9 +106,9 @@ impl CSSStyleRule {
                 if c == ']' {
                     is_bracket_open = false;
                     source.push(c);
-                    
+
                     if !is_deep_directive_open {
-                       source.push_str(random_class);
+                        source.push_str(random_class);
                     }
 
                     temp.push(c);

@@ -1,8 +1,10 @@
-#![feature(proc_macro_span)]
-#![feature(extend_one)]
 //! This crate provides style macro for scoped css in rust web frameworks which follows component like architecture e.g Leptos.
+
+#![feature(proc_macro_span)]
+
 mod style;
 mod style_sheet;
+
 use proc_macro::TokenStream;
 use proc_macro2::{self, TokenTree};
 use quote::quote;
@@ -24,11 +26,10 @@ pub fn style(ts: TokenStream) -> TokenStream {
     let random_class = rand_class();
     let (style, _sel_map) = build_style(ts, &random_class);
     let random_class = random_class[1..].to_string();
-    let expanded = quote! {
-        #random_class
-    };
+
     write_to_file(&style, &comp_name);
-    TokenStream::from(expanded)
+
+    TokenStream::from(quote! { #random_class })
 }
 
 /// style_sheet macro take css file path as a string input and returns a unique class name.
@@ -39,7 +40,7 @@ pub fn style(ts: TokenStream) -> TokenStream {
 pub fn style_sheet(ts: TokenStream) -> TokenStream {
     let file_path = ts.to_string();
     let file_path = file_path.trim_matches('"');
-    let css_content = std::fs::read_to_string(&file_path).expect("Expected to read file");
+    let css_content = std::fs::read_to_string(file_path).expect("Expected to read file");
     let random_class = rand_class();
     let style = style_sheet::build_style(&css_content, &random_class);
     let random_class = random_class[1..].to_string();
@@ -47,7 +48,7 @@ pub fn style_sheet(ts: TokenStream) -> TokenStream {
         #random_class
     };
     let file_name = file_path
-        .split("/")
+        .split('/')
         .last()
         .expect("Expecting file name from file path");
     let file_name = file_name.split(".css").next().expect("Expecting file name");
@@ -75,7 +76,7 @@ pub fn style_str(ts: TokenStream) -> TokenStream {
 pub fn style_sheet_str(ts: TokenStream) -> TokenStream {
     let file_path = ts.to_string();
     let file_path = file_path.trim_matches('"');
-    let css_content = std::fs::read_to_string(&file_path).expect("Expected to read file");
+    let css_content = std::fs::read_to_string(file_path).expect("Expected to read file");
     let random_class = rand_class();
     let style = style_sheet::build_style(&css_content, &random_class);
     let random_class = random_class[1..].to_string();
@@ -90,7 +91,7 @@ pub fn style_sheet_str(ts: TokenStream) -> TokenStream {
 pub fn style_sheet_test(ts: TokenStream) -> TokenStream {
     let file_path = ts.to_string();
     let file_path = file_path.trim_matches('"');
-    let css_content = std::fs::read_to_string(&file_path).expect("Expected to read file");
+    let css_content = std::fs::read_to_string(file_path).expect("Expected to read file");
     let random_class = String::from(".test");
     let style = style_sheet::build_style(&css_content, &random_class);
     let expanded = quote! {
@@ -104,7 +105,7 @@ pub fn style_sheet_test(ts: TokenStream) -> TokenStream {
 pub fn style_test(ts: TokenStream) -> TokenStream {
     let (_comp_name, ts) = get_component_name(ts);
     let random_class = String::from(".test");
-    let (style, _sel_map) = build_style(ts.into(), &random_class);
+    let (style, _sel_map) = build_style(ts, &random_class);
     let expanded = quote! {
         #style
     };
@@ -113,8 +114,8 @@ pub fn style_test(ts: TokenStream) -> TokenStream {
 
 fn rand_class() -> String {
     let hash = RandomState::new().build_hasher().finish().to_string();
-    let k = &hash[0..6];
-    format!(".l-{}", k.to_string())
+
+    format!(".l-{}", &hash[0..6])
 }
 
 //append if file exists or write it into the new file
@@ -156,13 +157,16 @@ fn cat(dir: &str) {
 //first two tokens are for component name and comma. we extract those info in this function
 fn get_component_name(ts: TokenStream) -> (String, proc_macro2::TokenStream) {
     let mut ts_iter = proc_macro2::TokenStream::from(ts).into_iter();
-    let TokenTree::Literal(comp_name) = ts_iter.next().expect("Expected value of type token tree") else {
-        panic!(r#"Expected component name at the start like style!("component_name", your css comes here)"#)
+    let TokenTree::Literal(comp_name) = ts_iter.next().expect("Expected value of type token tree")
+    else {
+        panic!(
+            r#"Expected component name at the start like style!("component_name", your css comes here)"#
+        )
     };
     let comp_name = comp_name.to_string().trim_matches('"').to_string();
 
     let TokenTree::Punct(comma) = ts_iter.next().expect("Expected value of type token tree") else {
-        panic!("Expected comma(,) after component name");   
+        panic!("Expected comma(,) after component name");
     };
     if comma.as_char() != ',' {
         panic!("Expected comma(,) after component name")
