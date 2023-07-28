@@ -4,8 +4,8 @@ use crate::Class;
 use crate::style::StyleSheet;
 
 impl AtRule {
-    // This method will parse the at-rule block string and return the CSSAtRule
-    // note: this is string version of the parse method in CSSAtRule struct.
+    // This method will parse the at-rule block string and return the AtRule
+    // note: this is string version of the parse method in AtRule struct.
     pub(crate) fn from_str(at_block: &str, class: &Class) -> AtRule {
         let mut css_at_rule = AtRule {
             rules: vec![],
@@ -17,7 +17,7 @@ impl AtRule {
     }
 
     // This parse method will parse the at-rule block string.
-    // note: this is string version of the parse method in CSSAtRule struct.
+    // note: this is string version of the parse method in AtRule struct.
     fn parse_from_str(&mut self, at_block: &str, class: &Class) {
         if at_block.trim().ends_with(';') {
             self.at_rules.push(parse_at_rule_declaration(at_block));

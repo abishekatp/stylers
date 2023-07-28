@@ -1,25 +1,24 @@
 use proc_macro2::{Delimiter, TokenStream, TokenTree};
 use std::collections::HashSet;
 
-use crate::style::css_style_declar::CSSStyleDeclaration;
+use crate::style::css_style_declar::StyleDeclaration;
 use crate::style::utils::{add_spaces, parse_group};
 use crate::Class;
 
-// ref: https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleRule
-// CSSStyleRule is one kind of CSSRule which will contain two parts.
-// One is selector text and another one is style declaration for that selector.
+/// StyleRule is one kind of Rule which contains a selector text and a style declaration.
+/// Ressource: <https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleRule>
 #[derive(Debug, Default)]
 pub(crate) struct StyleRule {
     pub(crate) selector_text: String,
-    pub(crate) style: CSSStyleDeclaration,
+    pub(crate) style: StyleDeclaration,
 }
 
 impl StyleRule {
-    // This function will take the token stream of one CSSStyleRule and parse it.
     // Note that we the calling function will be responsible for passing token stream of single style-rule at a time.
-    pub(crate) fn new(ts: TokenStream, class: &Class) -> (StyleRule, HashSet<String>) {
+    pub(crate) fn new(token_stream: TokenStream, class: &Class) -> (StyleRule, HashSet<String>) {
         let mut css_style_rule = StyleRule::default();
-        let selectors = css_style_rule.parse(ts, class);
+
+        let selectors = css_style_rule.parse(token_stream, class);
 
         (css_style_rule, selectors)
     }
@@ -44,7 +43,7 @@ impl StyleRule {
                     //only if the delimiter is brace it will be style definition.
                     if t.delimiter() == Delimiter::Brace {
                         sel_map = self.parse_selector(&selector, class);
-                        self.style = CSSStyleDeclaration::new(t);
+                        self.style = StyleDeclaration::new(t);
                     } else {
                         add_spaces(&mut selector, t.span(), &mut pre_line, &mut pre_col);
                         selector.push_str(&parse_group(t));

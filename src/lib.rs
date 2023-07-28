@@ -3,7 +3,7 @@
 //! See <https://github.com/abishekatp/stylers/tree/main/examples> for examples.
 
 #![feature(proc_macro_span)]
-#![warn(clippy::panic, clippy::cargo)]
+#![warn(clippy::panic, clippy::unwrap_used, clippy::expect_used, clippy::cargo)]
 
 mod style;
 mod style_sheet;
@@ -15,7 +15,7 @@ use quote::{quote, ToTokens};
 use std::collections::hash_map::RandomState;
 use std::fs::{self, File, OpenOptions};
 use std::hash::{BuildHasher, Hasher};
-use std::io::Write;
+use std::io::{self, Write};
 use std::path::Path;
 
 use crate::style::build_style;
@@ -33,7 +33,8 @@ fn style_(mut token_stream: impl Iterator<Item = TokenTree>) -> Result<TokenStre
     let class = Class::random();
     let (style, _sel_map) = build_style(token_stream, &class);
 
-    write_to_file(&style, &component_name);
+    write_css(&component_name, &style).map_err(|err| format!("Failed to write css: {}", err))?;
+    aggregate_css().map_err(|err| format!("Failed to write css: {}", err))?;
 
     Ok(quote! { #class })
 }
@@ -60,16 +61,17 @@ fn style_sheet_(token_stream: impl Iterator<Item = TokenTree>) -> Result<TokenSt
     let class = Class::random();
     let style = style_sheet::build_style(&style_sheet_content, &class);
 
-    let file_name = path
+    let filename = path
         .file_name()
         .ok_or("Path is suppose to point to a file, not a folder".to_string())?
         .to_string_lossy()
         .into_owned();
-    let file_name = file_name
+    let filename = filename
         .strip_suffix(".css")
         .ok_or("The file you are trying to load is not a `.css` one".to_string())?;
 
-    write_to_file(&style, file_name);
+    write_css(filename, &style).map_err(|err| format!("Failed to write css: {}", err))?;
+    aggregate_css().map_err(|err| format!("Failed to write css: {}", err))?;
 
     Ok(quote! { #class })
 }
@@ -190,42 +192,46 @@ impl ToTokens for Class {
     }
 }
 
-fn write_to_file(data: &str, file_name: &str) {
-    let dir_path = String::from("./target/stylers/css");
-    let mut file_path = String::from("./target/stylers/css/");
-    file_path.push_str(&file_name.to_lowercase());
-    file_path.push_str(".css");
+const OUTPUT_DIR: &str = "./target/stylers";
 
-    fs::create_dir_all(&dir_path)
-        .expect("Problem creating css directory in the root directory of the project.");
-    let mut buffer = File::create(file_path).expect("Problem creating css file");
-    let _ = buffer.write_all(data.as_bytes());
-    buffer.flush().expect("Problem closing css file");
+/// Writes the styles in its own file and appends itself to the main.css file
+fn write_css(filename: &str, content: &str) -> io::Result<()> {
+    let output_dir = Path::new(OUTPUT_DIR).join("css");
 
-    cat(&dir_path)
+    let filename = Path::new(&filename.to_lowercase()).with_extension(".css");
+    let filepath = output_dir.join(filename);
+
+    fs::create_dir_all(&output_dir)?;
+
+    let mut buffer = File::create(filepath)?;
+    buffer.write_all(content.as_bytes())?;
+    buffer.flush()?;
+
+    Ok(())
 }
 
-fn cat(dir: &str) {
-    let out_path = "./target/stylers/main.css";
-    let _ = File::create(out_path).expect("Problem creating main.css file");
-    let mut buffer = OpenOptions::new()
-        .append(true)
-        .open(out_path)
-        .expect("Problem opening main.css file");
+// TODO: this may scale poorly, maybe find a way to aggregate the css files only once per compilation.
+/// Aggregates the output from all CSS files into a single main.css file
+fn aggregate_css() -> io::Result<()> {
+    let output_dir = Path::new(OUTPUT_DIR);
+    let output_file = output_dir.join("main.css");
 
-    let files = fs::read_dir(dir).expect("Problem reading css directory");
-    for file in files {
-        let data = fs::read_to_string(
-            file.expect("Problem getting css file path inside css dir")
-                .path(),
-        )
-        .expect("Problem reading css file in css dir");
-        let _ = buffer.write(data.as_bytes());
+    File::create(&output_file)?;
+    let mut buffer = OpenOptions::new().append(true).open(&output_file)?;
+
+    let files = fs::read_dir(output_dir.join("css"))?;
+
+    for file in files.filter_map(|file| file.ok()) {
+        let data = fs::read_to_string(file.path())?;
+        buffer.write_all(data.as_bytes())?;
     }
-    buffer.flush().expect("Problem closing main.css file");
+
+    buffer.flush()?;
+
+    Ok(())
 }
 
-//first two tokens are for component name and comma. we extract those info in this function
+/// Eats the first two tokens of the macro input, checks is this is a component name and a comma.
 fn extract_component_name(stream: &mut impl Iterator<Item = TokenTree>) -> Result<String, String> {
     let Some(TokenTree::Literal(name_literal)) = stream.next() else {
         return Err(String::from(
@@ -236,11 +242,11 @@ fn extract_component_name(stream: &mut impl Iterator<Item = TokenTree>) -> Resul
     let component_name = StringLit::try_from(name_literal).map_err(|err| err.to_string())?;
 
     let Some(TokenTree::Punct(punctuation)) = stream.next() else {
-        return Err("Expected comma(,) after component name".to_string());
+        return Err("Expected comma `,` after component name".to_string());
     };
 
     if punctuation.as_char() != ',' {
-        return Err("Expected comma(,) after component name".to_string());
+        return Err("Expected comma `,` after component name".to_string());
     }
 
     Ok(component_name.value().to_owned())

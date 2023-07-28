@@ -5,8 +5,8 @@ use crate::style::css_at_rule::AtRule;
 use crate::style::css_style_rule::StyleRule;
 use crate::Class;
 
-//ref: https://developer.mozilla.org/en-US/docs/Web/API/CSSRule
-// CSSRule is enum which will have two kinds style-rule and at-rule(which begins with @)
+// Rule is enum which will have two kinds style-rule and at-rule(which begins with @)
+/// Ressource: <https://developer.mozilla.org/en-US/docs/Web/API/CSSRule>
 #[derive(Debug)]
 pub(crate) enum Rule {
     StyleRule(StyleRule),

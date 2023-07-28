@@ -8,7 +8,7 @@ mod css_style_sheet;
 mod utils;
 
 pub(crate) use crate::style::css_at_rule::AtRule;
-pub(crate) use crate::style::css_style_declar::CSSStyleDeclaration;
+pub(crate) use crate::style::css_style_declar::StyleDeclaration;
 pub(crate) use crate::style::css_style_rule::StyleRule;
 pub(crate) use crate::style::css_style_sheet::{Rule, StyleSheet};
 use crate::Class;

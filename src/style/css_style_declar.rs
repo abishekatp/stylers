@@ -337,14 +337,14 @@ static ALL_PROPERTIES: [&str; 328] = [
 
 /// See: <https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleDeclaration>
 #[derive(Debug, Default)]
-pub(crate) struct CSSStyleDeclaration {
+pub(crate) struct StyleDeclaration {
     // e.g. `{color:red;}`
     pub(crate) style_css_text: String,
 }
 
-impl CSSStyleDeclaration {
-    pub(crate) fn new(group: Group) -> CSSStyleDeclaration {
-        let mut declaration = CSSStyleDeclaration::default();
+impl StyleDeclaration {
+    pub(crate) fn new(group: Group) -> StyleDeclaration {
+        let mut declaration = StyleDeclaration::default();
         declaration.parse(group);
         declaration
     }

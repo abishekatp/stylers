@@ -75,14 +75,13 @@ impl AtRule {
                             || at_rule.contains("@font-feature-values")
                             || at_rule.contains("@property")
                         {
-                            //these at-rules will not contain any nested css-rules. so we just parse that group as a string.
+                            // At-rules will not contain any nested css-rules. so we just parse that group as a string.
                             at_rule.push_str(&parse_group(t));
                         } else if is_at_rule {
-                            //if there is another inner at-rule
+                            // If there is another inner at-rule
                             self.parse(t.stream(), class);
                         } else {
-                            //each at-rule may contain one or more css rules nested inside of it.
-                            //it is like another small style sheet inside of it. So we use CSSStyleSheet here.
+                            // Each at-rule may contain one or more css rules nested inside of it.
                             let (mut style_sheet, new_map) = StyleSheet::new(t.stream(), class);
                             self.rules.append(&mut style_sheet.rules);
                             selectors = new_map;
@@ -106,7 +105,7 @@ impl AtRule {
                     let ch = t.as_char();
                     add_spaces(&mut at_rule, t.span(), &mut pre_line, &mut pre_col);
                     at_rule.push(ch);
-                    //regular at rule ends with semicolon. there won't be any style declaration for this.
+                    // Regular at-rule ends with semicolon. there won't be any style declaration for this.
                     if ch == ';' {
                         self.at_rules.push(at_rule.clone());
                     }
