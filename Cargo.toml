@@ -17,3 +17,4 @@ proc_macro = true
 quote = "1.0"
 proc-macro2 = { version = "1.0" }
 levenshtein = "1.0.5"
+litrs = "0.4.0"

@@ -1,124 +1,195 @@
 //! This crate provides style macro for scoped css in rust web frameworks which follows component like architecture e.g Leptos.
+//!
+//! See <https://github.com/abishekatp/stylers/tree/main/examples> for examples.
 
 #![feature(proc_macro_span)]
+#![warn(clippy::panic)]
 
 mod style;
 mod style_sheet;
 
-use proc_macro::TokenStream;
-use proc_macro2::{self, TokenTree};
-use quote::quote;
+use litrs::StringLit;
+use proc_macro2::{self, TokenStream, TokenTree};
+use quote::{quote, ToTokens};
 
 use std::collections::hash_map::RandomState;
 use std::fs::{self, File, OpenOptions};
 use std::hash::{BuildHasher, Hasher};
 use std::io::Write;
+use std::path::Path;
 
 use crate::style::build_style;
 
-/// style macro take any valid css as input and returns a unique class name.
-/// The first two Tokens of the token stream must be component name and comma punctuation.
-/// This function will create css file named same as component name in the css folder of the root directory of the project.
-/// For examples see: <https://github.com/abishekatp/stylers>
 #[proc_macro]
-pub fn style(ts: TokenStream) -> TokenStream {
-    let (comp_name, ts) = get_component_name(ts);
-    let random_class = rand_class();
-    let (style, _sel_map) = build_style(ts, &random_class);
-    let random_class = random_class[1..].to_string();
-
-    write_to_file(&style, &comp_name);
-
-    TokenStream::from(quote! { #random_class })
+pub fn style(token_stream: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    let token_stream = TokenStream::from(token_stream).into_iter();
+    let expanded = style_(token_stream).unwrap_or_else(|err| quote! { compile_error!(#err) });
+    proc_macro::TokenStream::from(expanded)
 }
 
-/// style_sheet macro take css file path as a string input and returns a unique class name.
-/// This function will create css file in the css folder of the root directoy of the project.
-/// CSS file will be named same as css file name passed as the input.
-/// For examples see: <https://github.com/abishekatp/stylers>
+fn style_(mut token_stream: impl Iterator<Item = TokenTree>) -> Result<TokenStream, String> {
+    let component_name = extract_component_name(&mut token_stream)?;
+
+    let class = Class::random();
+    let (style, _sel_map) = build_style(token_stream, &class);
+
+    write_to_file(&style, &component_name);
+
+    Ok(quote! { #class })
+}
+
 #[proc_macro]
-pub fn style_sheet(ts: TokenStream) -> TokenStream {
-    let file_path = ts.to_string();
-    let file_path = file_path.trim_matches('"');
-    let css_content = std::fs::read_to_string(file_path).expect("Expected to read file");
-    let random_class = rand_class();
-    let style = style_sheet::build_style(&css_content, &random_class);
-    let random_class = random_class[1..].to_string();
-    let expanded = quote! {
-        #random_class
+pub fn style_sheet(token_stream: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    let token_stream = TokenStream::from(token_stream).into_iter();
+    let expanded = style_sheet_(token_stream).unwrap_or_else(|err| quote! { compile_error!(#err) });
+    proc_macro::TokenStream::from(expanded)
+}
+
+fn style_sheet_(token_stream: impl Iterator<Item = TokenTree>) -> Result<TokenStream, String> {
+    let tokens = &token_stream.collect::<Vec<_>>();
+    let &[TokenTree::Literal(path_literal)] = &tokens.as_slice() else {
+        return Err("Expected only string literal".to_string());
     };
-    let file_name = file_path
-        .split('/')
-        .last()
-        .expect("Expecting file name from file path");
-    let file_name = file_name.split(".css").next().expect("Expecting file name");
+
+    let path = StringLit::try_from(path_literal)
+        .map_err(|err| format!("Expected a string literal: {}", err))?;
+    let path = Path::new(path.value());
+
+    let style_sheet_content = fs::read_to_string(path).map_err(|_| "Expected to read file")?;
+
+    let class = Class::random();
+    let style = style_sheet::build_style(&style_sheet_content, &class);
+
+    let file_name = path
+        .file_name()
+        .ok_or("Path is suppose to point to a file, not a folder".to_string())?
+        .to_string_lossy()
+        .into_owned();
+    let file_name = file_name
+        .strip_suffix(".css")
+        .ok_or("The file you are trying to load is not a `.css` one".to_string())?;
+
     write_to_file(&style, file_name);
-    TokenStream::from(expanded)
+
+    Ok(quote! { #class })
 }
 
-/// style_str macro any valid css as input and returns a tuple (unique_class_name,style_string).
-/// note: this macro does not require a component name like style macro
-/// For examples see: <https://github.com/abishekatp/stylers>
 #[proc_macro]
-pub fn style_str(ts: TokenStream) -> TokenStream {
-    let random_class = rand_class();
-    let (style, _sel_map) = build_style(ts.into(), &random_class);
-    let random_class = random_class[1..].to_string();
-    let expanded = quote! {
-        (#random_class,#style)
-    };
-    TokenStream::from(expanded)
+pub fn style_str(token_stream: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    let token_stream = TokenStream::from(token_stream).into_iter();
+    let expanded = style_str_(token_stream).unwrap_or_else(|err| quote! { compile_error!(#err) });
+    proc_macro::TokenStream::from(expanded)
 }
 
-/// style_sheet_str macro take css file path as a string input and returns a tuple (unique_class_name,style_string).
-/// For examples see: <https://github.com/abishekatp/stylers>
+fn style_str_(token_stream: impl Iterator<Item = TokenTree>) -> Result<TokenStream, String> {
+    let class = Class::random();
+    let (style, _selectors) = build_style(token_stream, &class);
+
+    Ok(quote! { (#class, #style) })
+}
+
 #[proc_macro]
-pub fn style_sheet_str(ts: TokenStream) -> TokenStream {
-    let file_path = ts.to_string();
-    let file_path = file_path.trim_matches('"');
-    let css_content = std::fs::read_to_string(file_path).expect("Expected to read file");
-    let random_class = rand_class();
-    let style = style_sheet::build_style(&css_content, &random_class);
-    let random_class = random_class[1..].to_string();
-    let expanded = quote! {
-        (#random_class,#style)
-    };
-    TokenStream::from(expanded)
+pub fn style_sheet_str(token_stream: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    let token_stream = TokenStream::from(token_stream).into_iter();
+    let expanded =
+        style_sheet_str_(token_stream).unwrap_or_else(|err| quote! { compile_error!(#err) });
+    proc_macro::TokenStream::from(expanded)
 }
 
-///This style_sheet_test macro will return the style string. Note:created for testing purpose only.
+fn style_sheet_str_(token_stream: impl Iterator<Item = TokenTree>) -> Result<TokenStream, String> {
+    let tokens = &token_stream.collect::<Vec<_>>();
+    let &[TokenTree::Literal(path_literal)] = &tokens.as_slice() else {
+        return Err("Expected only a string literal".to_string());
+    };
+
+    let path = StringLit::try_from(path_literal)
+        .map_err(|err| format!("Expected a string literal: {}", err))?;
+    let path = Path::new(path.value());
+
+    let style_sheet_content = fs::read_to_string(path).map_err(|_| "Expected to read file")?;
+
+    let class = Class::random();
+    let style = style_sheet::build_style(&style_sheet_content, &class);
+
+    Ok(quote! { (#class, #style) })
+}
+
+#[doc(hidden)]
 #[proc_macro]
-pub fn style_sheet_test(ts: TokenStream) -> TokenStream {
-    let file_path = ts.to_string();
-    let file_path = file_path.trim_matches('"');
-    let css_content = std::fs::read_to_string(file_path).expect("Expected to read file");
-    let random_class = String::from(".test");
-    let style = style_sheet::build_style(&css_content, &random_class);
-    let expanded = quote! {
-        #style
-    };
-    TokenStream::from(expanded)
+pub fn style_sheet_test(token_stream: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    let token_stream = TokenStream::from(token_stream).into_iter();
+    let expanded =
+        style_sheet_test_(token_stream).unwrap_or_else(|err| quote! { compile_error!(#err) });
+    proc_macro::TokenStream::from(expanded)
 }
 
-///This style_test macro will return the style string. Note:created for testing purpose only.
+fn style_sheet_test_(token_stream: impl Iterator<Item = TokenTree>) -> Result<TokenStream, String> {
+    let tokens = &token_stream.collect::<Vec<_>>();
+    let &[TokenTree::Literal(path_literal)] = &tokens.as_slice() else {
+        return Err("Expected only a string literal".to_string());
+    };
+
+    let path = StringLit::try_from(path_literal)
+        .map_err(|err| format!("Expected a string literal: {}", err))?;
+    let path = Path::new(path.value());
+
+    let style_sheet_content = fs::read_to_string(path).map_err(|_| "Expected to read file")?;
+
+    let class = Class::new("test".into());
+    let style = style_sheet::build_style(&style_sheet_content, &class);
+
+    Ok(quote! { #style })
+}
+
+#[doc(hidden)]
 #[proc_macro]
-pub fn style_test(ts: TokenStream) -> TokenStream {
-    let (_comp_name, ts) = get_component_name(ts);
-    let random_class = String::from(".test");
-    let (style, _sel_map) = build_style(ts, &random_class);
-    let expanded = quote! {
-        #style
-    };
-    TokenStream::from(expanded)
+pub fn style_test(token_stream: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    let token_stream = TokenStream::from(token_stream).into_iter();
+    let expanded = style_test_(token_stream).unwrap_or_else(|err| quote! { compile_error!(#err) });
+    proc_macro::TokenStream::from(expanded)
 }
 
-fn rand_class() -> String {
-    let hash = RandomState::new().build_hasher().finish().to_string();
+fn style_test_(token_stream: impl Iterator<Item = TokenTree>) -> Result<TokenStream, String> {
+    let mut token_stream = token_stream.into_iter();
 
-    format!(".l-{}", &hash[0..6])
+    let _component_name = extract_component_name(&mut token_stream)?;
+
+    let class = Class::new("test".into());
+    let (style, _selectors) = build_style(token_stream, &class);
+
+    Ok(quote! { #style })
 }
 
-//append if file exists or write it into the new file
+#[derive(Debug)]
+struct Class(String);
+
+impl Class {
+    fn new(class: String) -> Self {
+        Self(class)
+    }
+
+    fn random() -> Self {
+        let hash = RandomState::new().build_hasher().finish();
+
+        Self(format!("l-{}", &hash.to_string()[0..6]))
+    }
+
+    fn as_name(&self) -> &str {
+        &self.0
+    }
+
+    fn as_selector(&self) -> String {
+        format!(".{}", self.0)
+    }
+}
+
+impl ToTokens for Class {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        let class = self.as_name();
+        tokens.extend(quote! { #class })
+    }
+}
+
 fn write_to_file(data: &str, file_name: &str) {
     let dir_path = String::from("./target/stylers/css");
     let mut file_path = String::from("./target/stylers/css/");
@@ -155,21 +226,22 @@ fn cat(dir: &str) {
 }
 
 //first two tokens are for component name and comma. we extract those info in this function
-fn get_component_name(ts: TokenStream) -> (String, proc_macro2::TokenStream) {
-    let mut ts_iter = proc_macro2::TokenStream::from(ts).into_iter();
-    let TokenTree::Literal(comp_name) = ts_iter.next().expect("Expected value of type token tree")
-    else {
-        panic!(
-            r#"Expected component name at the start like style!("component_name", your css comes here)"#
-        )
+fn extract_component_name(stream: &mut impl Iterator<Item = TokenTree>) -> Result<String, String> {
+    let Some(TokenTree::Literal(name_literal)) = stream.next() else {
+        return Err(String::from(
+            r#"Expected component name at the start like style!("component_name", your css comes here)"#,
+        ));
     };
-    let comp_name = comp_name.to_string().trim_matches('"').to_string();
 
-    let TokenTree::Punct(comma) = ts_iter.next().expect("Expected value of type token tree") else {
-        panic!("Expected comma(,) after component name");
+    let component_name = StringLit::try_from(name_literal).map_err(|err| err.to_string())?;
+
+    let Some(TokenTree::Punct(punctuation)) = stream.next() else {
+        return Err("Expected comma(,) after component name".to_string());
     };
-    if comma.as_char() != ',' {
-        panic!("Expected comma(,) after component name")
+
+    if punctuation.as_char() != ',' {
+        return Err("Expected comma(,) after component name".to_string());
     }
-    (comp_name, ts_iter.collect())
+
+    Ok(component_name.value().to_owned())
 }

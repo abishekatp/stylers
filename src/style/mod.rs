@@ -1,28 +1,32 @@
-//! This create as of now only exposes one function named build_style.
-//! The main focus of this function is to provide scoped css for Rust components(for the framework which provides component like architecture e.g leptos).
-//! This function can be used parse the style sheet in rust.
+use proc_macro2::TokenTree;
+use std::collections::HashSet;
+
 mod css_at_rule;
 mod css_style_declar;
 mod css_style_rule;
 mod css_style_sheet;
 mod utils;
-use proc_macro2::TokenStream;
-use std::collections::HashMap;
 
-pub(crate) use crate::style::css_at_rule::CSSAtRule;
+pub(crate) use crate::style::css_at_rule::AtRule;
 pub(crate) use crate::style::css_style_declar::CSSStyleDeclaration;
-pub(crate) use crate::style::css_style_rule::CSSStyleRule;
-pub(crate) use crate::style::css_style_sheet::{CSSRule, CSSStyleSheet};
+pub(crate) use crate::style::css_style_rule::StyleRule;
+pub(crate) use crate::style::css_style_sheet::{Rule, StyleSheet};
+use crate::Class;
 
-pub(crate) fn build_style(ts: TokenStream, random_class: &str) -> (String, HashMap<String, ()>) {
+pub(crate) fn build_style(
+    token_stream: impl Iterator<Item = TokenTree>,
+    class: &Class,
+) -> (String, HashSet<String>) {
     let mut style = String::new();
-    let (style_sheet, sel_map) = CSSStyleSheet::new(ts, random_class);
-    style_sheet.css_rules.iter().for_each(|rule| match rule {
-        CSSRule::AtRule(at_rule) => style.push_str(&at_rule.css_text()),
-        CSSRule::StyleRule(style_rule) => style.push_str(&style_rule.css_text()),
+
+    let (style_sheet, selectors) = StyleSheet::new(token_stream, class);
+
+    style_sheet.rules.iter().for_each(|rule| match rule {
+        Rule::AtRule(at_rule) => style.push_str(&at_rule.css_text()),
+        Rule::StyleRule(style_rule) => style.push_str(&style_rule.css_text()),
     });
 
-    (style, sel_map)
+    (style, selectors)
 }
 
 #[cfg(test)]
@@ -43,7 +47,8 @@ mod tests {
             }
         };
 
-        let (style, _) = build_style(input, "sty");
-        assert_eq!(style,"div.sty {border: 1px solid black;margin: 25px 50px 75px 100px;background-color: lightblue;}");
+        let class = Class::new("test".into());
+        let (style, _) = build_style(input.into_iter(), &class);
+        assert_eq!(style,"div.test {border: 1px solid black;margin: 25px 50px 75px 100px;background-color: lightblue;}");
     }
 }
