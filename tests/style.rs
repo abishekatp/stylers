@@ -11,7 +11,7 @@ fn test_1() {
             color: yellow;
         }
     };
-    assert_eq!(style.trim(), ".two.test{color: yellow;}");
+    assert_eq!(style, ".two.test{color: yellow;}");
 }
 
 #[test]
@@ -21,7 +21,7 @@ fn test_2() {
             color: yellow;
         }
     };
-    assert_eq!(style.trim(), ".two.one.test{color: yellow;}");
+    assert_eq!(style, ".two.one.test{color: yellow;}");
 }
 
 #[test]
@@ -31,7 +31,7 @@ fn test_3() {
             color: yellow;
         }
     };
-    assert_eq!(style.trim(), ".two.test .one.test{color: yellow;}");
+    assert_eq!(style, ".two.test .one.test{color: yellow;}");
 }
 
 #[test]
@@ -41,7 +41,7 @@ fn test_4() {
             background-color: yellow;
         }
     };
-    assert_eq!(style.trim(), "#firstname.test{background-color: yellow;}");
+    assert_eq!(style, "#firstname.test{background-color: yellow;}");
 }
 
 #[test]
@@ -52,7 +52,7 @@ fn test_5() {
             background-color: yellow;
         }
     };
-    assert_eq!(style.trim(), ".test{background-color: yellow;}");
+    assert_eq!(style, ".test{background-color: yellow;}");
 }
 
 #[test]
@@ -64,7 +64,7 @@ fn test_6() {
             background-color: lightblue;
         }
     };
-    assert_eq!(style.trim(),"div.test{border: 1px solid black;margin: 25px 50px 75px 100px;background-color: lightblue;}");
+    assert_eq!(style,"div.test{border: 1px solid black;margin: 25px 50px 75px 100px;background-color: lightblue;}");
 }
 #[test]
 fn test_7() {
@@ -73,7 +73,7 @@ fn test_7() {
             color: blue;
         }
     };
-    assert_eq!(style.trim(), "div.test .one.test p.test{color: blue;}");
+    assert_eq!(style, "div.test .one.test p.test{color: blue;}");
 }
 
 #[test]
@@ -83,7 +83,7 @@ fn test_8() {
             color: blue;
         }
     };
-    assert_eq!(style.trim(), "div.one.test p.test div.test{color: blue;}");
+    assert_eq!(style, "div.one.test p.test div.test{color: blue;}");
 }
 
 #[test]
@@ -93,7 +93,7 @@ fn test_9() {
             color: blue;
         }
     };
-    assert_eq!(style.trim(), "div.test #two.test{color: blue;}");
+    assert_eq!(style, "div.test #two.test{color: blue;}");
 }
 
 #[test]
@@ -103,7 +103,7 @@ fn test_10() {
             color: purple;
         }
     };
-    assert_eq!(style.trim(), "h2.test,a.test{color: purple;}");
+    assert_eq!(style, "h2.test,a.test{color: purple;}");
 }
 
 #[test]
@@ -113,7 +113,7 @@ fn test_11() {
             background-color: yellow;
         }
     };
-    assert_eq!(style.trim(), "div.test>p.test{background-color: yellow;}");
+    assert_eq!(style, "div.test>p.test{background-color: yellow;}");
 }
 
 #[test]
@@ -123,7 +123,7 @@ fn test_12() {
             background-color: yellow;
         }
     };
-    assert_eq!(style.trim(), "div.test+p.test{background-color: yellow;}");
+    assert_eq!(style, "div.test+p.test{background-color: yellow;}");
 }
 
 #[test]
@@ -133,7 +133,7 @@ fn test_13() {
             background: #ff0000;
         }
     };
-    assert_eq!(style.trim(), "p.test~ul.test{background: #ff0000;}");
+    assert_eq!(style, "p.test~ul.test{background: #ff0000;}");
 }
 
 #[test]
@@ -143,7 +143,7 @@ fn test_14() {
             background-color: yellow;
         }
     };
-    assert_eq!(style.trim(), "a[target].test{background-color: yellow;}");
+    assert_eq!(style, "a[target].test{background-color: yellow;}");
 }
 
 #[test]
@@ -154,7 +154,7 @@ fn test_15() {
         }
     };
     assert_eq!(
-        style.trim(),
+        style,
         r#"a[title="I am ,testing"].test{background-color: yellow;}"#
     );
 }
@@ -166,10 +166,7 @@ fn test_16() {
             background-color: yellow;
         }
     };
-    assert_eq!(
-        style.trim(),
-        "[title~=flower].test{background-color: yellow;}"
-    );
+    assert_eq!(style, "[title~=flower].test{background-color: yellow;}");
 }
 
 #[test]
@@ -179,7 +176,7 @@ fn test_17() {
             background-color: yellow;
         }
     };
-    assert_eq!(style.trim(), "[lang|=en].test{background-color: yellow;}");
+    assert_eq!(style, "[lang|=en].test{background-color: yellow;}");
 }
 
 #[test]
@@ -190,7 +187,7 @@ fn test_18() {
         }
     };
     assert_eq!(
-        style.trim(),
+        style,
         r#"div[class^="test"].test{background-color: yellow;}"#
     );
 }
@@ -202,10 +199,7 @@ fn test_19() {
             background-color: yellow;
         }
     };
-    assert_eq!(
-        style.trim(),
-        "div[class$=test].test{background-color: yellow;}"
-    );
+    assert_eq!(style, "div[class$=test].test{background-color: yellow;}");
 }
 
 #[test]
@@ -216,7 +210,7 @@ fn test_20() {
         }
     };
     assert_eq!(
-        style.trim(),
+        style,
         "div.test [class$=test].test{background-color: yellow;}"
     );
 }
@@ -229,7 +223,7 @@ fn test_21() {
         }
     };
     assert_eq!(
-        style.trim(),
+        style,
         r#"div[class*="test"].test{background-color: yellow;}"#
     );
 }
@@ -241,7 +235,7 @@ fn test_22() {
             background-color: green;
         }
     };
-    assert_eq!(style.trim(), ".one.test:hover{background-color: green;}");
+    assert_eq!(style, ".one.test:hover{background-color: green;}");
 }
 
 #[test]
@@ -251,7 +245,7 @@ fn test_23() {
             content: raw_str("Read this: ");
         }
     };
-    assert_eq!(style.trim(), r#"p.test::before{content: "Read this: ";}"#);
+    assert_eq!(style, r#"p.test::before{content: "Read this: ";}"#);
 }
 
 #[test]
@@ -261,10 +255,7 @@ fn test_24() {
             background-color: green;
         }
     };
-    assert_eq!(
-        style.trim(),
-        "div.test:nth-child(2){background-color: green;}"
-    );
+    assert_eq!(style, "div.test:nth-child(2){background-color: green;}");
 }
 
 #[test]
@@ -274,7 +265,7 @@ fn test_25() {
             background: yellow;
         }
     };
-    assert_eq!(style.trim(), "p.test:lang(it){background: yellow;}");
+    assert_eq!(style, "p.test:lang(it){background: yellow;}");
 }
 
 #[test]
@@ -283,7 +274,7 @@ fn test_26() {
         svg|a {
         }
     };
-    assert_eq!(style.trim(), "svg.test|a.test{}");
+    assert_eq!(style, "svg.test|a.test{}");
 
     //Regular at-rules
 }
@@ -293,7 +284,7 @@ fn test_27() {
     let style = style_test! {"Hello",
         @charset "UTF-8";
     };
-    assert_eq!(style.trim(), r#"@charset "UTF-8";"#);
+    assert_eq!(style, r#"@charset "UTF-8";"#);
 }
 
 #[test]
@@ -302,7 +293,7 @@ fn test_28() {
         @import url("landscape.css") screen and (orientation: landscape);
     };
     assert_eq!(
-        style.trim(),
+        style,
         r#"@import url("landscape.css") screen and (orientation: landscape);"#
     );
 
@@ -315,7 +306,7 @@ fn test_29() {
         @namespace svg url("http://www.w3.org/2000/svg");
     };
     assert_eq!(
-        style.trim(),
+        style,
         r#"@namespace svg url("http://www.w3.org/2000/svg");"#
     );
 
@@ -334,7 +325,7 @@ fn test_30() {
         }
     };
     assert_eq!(
-        style.trim(),
+        style,
         "@supports (display: flex){@media screen and (min-width: 900px){article.test{display: flex;}}}"
     );
 }
@@ -350,7 +341,7 @@ fn test_31() {
         }
     };
     assert_eq!(
-        style.trim(),
+        style,
         r#"@document url("https://www.example.com/"){h1.test{color: green;}}"#
     );
 }
@@ -368,7 +359,7 @@ fn test_32() {
         }
     };
     assert_eq!(
-        style.trim(),
+        style,
         r#"@page{size: A4;margin: 10%;@top-left-corner {content: "Page " counter(page);}}"#
     );
 }
@@ -384,7 +375,7 @@ fn test_33() {
         }
     };
     assert_eq!(
-        style.trim(),
+        style,
         r#"@font-face{font-family: "Trickster";src: local("Trickster"),url("trickster-COLRv1.otf") format("opentype") tech(color-COLRv1), url("trickster-outline.otf")format("opentype"), url("trickster-outline.woff") format("woff");}"#
     );
 
@@ -402,7 +393,7 @@ fn test_34() {
         }
     };
     assert_eq!(
-        style.trim(),
+        style,
         "@keyframes spin1{to {-webkit-transform: rotate(360deg);}}"
     );
 }
@@ -417,7 +408,7 @@ fn test_35() {
         }
     };
     assert_eq!(
-        style.trim(),
+        style,
         "@-webkit-keyframes spin2{to {-webkit-transform: rotate(360deg);}}"
     );
 
@@ -434,7 +425,7 @@ fn test_36() {
         }
     };
     assert_eq!(
-        style.trim(),
+        style,
         r#"@counter-style thumbs{system: cyclic;symbols: "\1F44D";suffix: " ";}"#
     );
 }
@@ -449,7 +440,7 @@ fn test_37() {
         }
     };
     assert_eq!(
-        style.trim(),
+        style,
         r#"@font-feature-values Font One{@styleset {nice-style: 12;}}"#
     );
 
@@ -466,7 +457,7 @@ fn test_38() {
         }
     };
     assert_eq!(
-        style.trim(),
+        style,
         r#"@property --property-name{syntax: "<color>";inherits: false;initial-value: #c0ffee;}"#
     );
 
@@ -488,7 +479,7 @@ fn test_39() {
         }
     };
     assert_eq!(
-        style.trim(),
+        style,
         r#"@layer framework{@layer layout{p.test{margin-block: 1rem;font: 0.9em/1.2 Arial, Helvetica, sans-serif;content: "\hello";content: "\hello";}}}"#
     );
 }
@@ -498,7 +489,7 @@ fn test_40() {
     let style = style_test! {"Hello",
         @layer theme, layout, utilities;
     };
-    assert_eq!(style.trim(), r#"@layer theme, layout, utilities;"#);
+    assert_eq!(style, r#"@layer theme, layout, utilities;"#);
 }
 
 #[test]
@@ -508,7 +499,7 @@ fn test_41() {
             background: #ff0000;
         }
     };
-    assert_eq!(style.trim(), ".test:not(body){background: #ff0000;}");
+    assert_eq!(style, ".test:not(body){background: #ff0000;}");
 }
 
 #[test]
@@ -521,7 +512,7 @@ fn test_42() {
         body { background-color: var(--blue); }
     };
     assert_eq!(
-        style.trim(),
+        style,
         ":root{--blue: #1e90ff;}body.test{background-color: var(--blue);}"
     );
 }
@@ -538,7 +529,7 @@ fn test_43() {
         }
     };
     assert_eq!(
-        style.trim(),
+        style,
         "#container.test{--first-color: #290;}#thirdParagraph.test{background-color: var(--first-color);color: var(--second-color);}"
     );
 }
@@ -551,10 +542,7 @@ fn test_44() {
             color: red;
         }
     };
-    assert_eq!(
-        style.trim(),
-        "table.test th.test,table.test td.test{color: red;}"
-    );
+    assert_eq!(style, "table.test th.test,table.test td.test{color: red;}");
 
     // Custom pseudo class.
 }
@@ -566,7 +554,7 @@ fn test_45() {
             color: orange;
         }
     };
-    assert_eq!(style.trim(), "div.test h3{color: orange;}");
+    assert_eq!(style, "div.test h3{color: orange;}");
 }
 
 #[test]
@@ -576,7 +564,7 @@ fn test_46() {
             color: orange;
         }
     };
-    assert_eq!(style.trim(), "h3 div{color: orange;}");
+    assert_eq!(style, "h3 div{color: orange;}");
 }
 
 #[test]
@@ -586,7 +574,7 @@ fn test_47() {
             color: orange;
         }
     };
-    assert_eq!(style.trim(), "div.test>h3{color: orange;}");
+    assert_eq!(style, "div.test>h3{color: orange;}");
 }
 
 #[test]
@@ -596,7 +584,7 @@ fn test_48() {
             color: orange;
         }
     };
-    assert_eq!(style.trim(), "[data-custom]{color: orange;}");
+    assert_eq!(style, "[data-custom]{color: orange;}");
 }
 
 #[test]
@@ -606,7 +594,7 @@ fn test_49() {
             color: orange;
         }
     };
-    assert_eq!(style.trim(), ".nested.test>[data-custom]{color: orange;}");
+    assert_eq!(style, ".nested.test>[data-custom]{color: orange;}");
 }
 
 #[test]
@@ -624,7 +612,7 @@ fn test_50() {
         }
     };
     assert_eq!(
-        style.trim(),
+        style,
         "@supports (display: flex){.flex-container.test>.test{text-shadow: 0 0 2px blue;float: none;}.flex-container.test{display: flex;}}"
     );
 }
