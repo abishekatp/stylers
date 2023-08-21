@@ -17,7 +17,7 @@ macro_rules! p {
     }
 }
 
-pub fn build() {
+pub fn build(output_path: Option<String>) {
     let pattern = format!("{}/src/**/*.rs", current_dir().unwrap().to_str().unwrap());
     let mut output_css = String::from("");
     p!(
@@ -59,10 +59,10 @@ pub fn build() {
         }
     }
 
-    let dir_path = String::from("./target/stylers");
-    fs::create_dir_all(&dir_path)
-        .expect("Problem creating css directory in the root directory of the project.");
-    let out_path = "./target/stylers/main.css";
+    let mut out_path = String::from("./target/stylers_out.css");
+    if let Some(path) = output_path {
+        out_path = path;
+    }
     let mut file = File::create(out_path).expect("Problem creating main.css file");
     file.write_all(output_css.as_bytes())
         .expect("Error writing to the file");

@@ -4,7 +4,7 @@ use stylers::style;
 #[component]
 fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
     //note: we will trim all double quotes by default unless it is wrapped with raw_str()
-    let class_name = style! {"Hello",
+    let class_name = style! {
         // this comment will be ignored
         div {
             border: 1px solid black;/*This comment also will be ignored */
@@ -14,7 +14,7 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
             font: "1.3em/1.2" Arial, Helvetica, sans-serif;
         }
         .two{
-            color: yellow;
+            color: orange;
         }
         div .one p{
             color: blue;
@@ -26,10 +26,10 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
             color: blue;
         }
         h2,a {
-            color: purple;
+            color: red;
         }
         .one:hover{
-            background-color: green;
+            background-color: yellow;
         }
         p:lang(it){
             background: yellow;
@@ -53,7 +53,7 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
 
 #[component]
 pub fn Abi(cx: Scope) -> impl IntoView {
-    let class_name = style! {"Abi",
+    let class_name = style! {
         // we can use this :deep() pseudo class in external css file as well.
         div :deep(h3){
             color: orange;
