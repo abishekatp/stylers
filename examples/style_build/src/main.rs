@@ -1,7 +1,8 @@
+use gloo::console;
 use leptos::*;
-use style_macro::*;
+// use style_build::*;
 
 pub fn main() {
-    println!["Hello, stylers!"];
-    mount_to_body(|cx| view! { cx,  <Abi/> });
+    console::log!("Hello, stylers1!");
+    mount_to_body(|cx| view! { cx,  <div>"Hello"</div> })
 }

@@ -1,4 +1,4 @@
-use stylers_build::build;
+use stylers::build;
 
 fn main() {
     build();

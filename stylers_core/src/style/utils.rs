@@ -49,14 +49,15 @@ pub(crate) fn parse_group(group: Group) -> String {
 //check if spaces needed to be appended
 //note: this function also reset the pre_line and pre_col to the cureent token's end line and column
 //note: this function convert proc_macro2::Span to proc_macro::Span
+// https://docs.rs/proc-macro2/latest/proc_macro2/struct.Span.html#method.start
 pub(crate) fn add_spaces(
     source: &mut String,
     span: proc_macro2::Span,
     pre_line: &mut usize,
     pre_col: &mut usize,
 ) {
-    let start = span.unwrap().start();
-    let end = span.unwrap().end();
+    let start = span.start();
+    let end = span.end();
     let cur_col = start.column;
     let cur_line = start.line;
     if *pre_line == cur_line && cur_col > *pre_col {

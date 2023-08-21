@@ -10,4 +10,6 @@ readme = "../README.md"
 
 [dependencies]
 quote = "1.0"
-proc-macro2 = { version = "1.0" }
+proc-macro2 = { version = "1.0", features = ["span-locations"] }
+rand = "0.8.5"
+rand_chacha = "0.3.1"

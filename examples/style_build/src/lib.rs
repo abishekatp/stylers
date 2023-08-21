@@ -1,10 +1,12 @@
+use gloo::console;
 use leptos::*;
-use stylers::style_build;
+use stylers::style;
 
 #[component]
 fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
+    console::log!("From Hello");
     //note: we will trim all double quotes by default unless it is wrapped with raw_str()
-    let class_name = style_build! {
+    let class_name = style! {
         // this comment will be ignored
         div {
             border: 1px solid black;/*This comment also will be ignored */
@@ -14,7 +16,7 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
             font: "1.3em/1.2" Arial, Helvetica, sans-serif;
         }
         .two{
-            color: yellow;
+            color: blue;
         }
         div .one p{
             color: blue;
@@ -53,13 +55,14 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
 
 #[component]
 pub fn Abi(cx: Scope) -> impl IntoView {
-    let class_name = style_build! {
+    console::log!("From Abi");
+    let class_name = style! {
         // we can use this :deep() pseudo class in external css file as well.
         div :deep(h3){
             color: orange;
         }
         @media only screen and (max-width: 1000px) {
-            h3 {
+            h4 {
                 background-color: lightblue;
                 color: blue
             }
@@ -68,7 +71,7 @@ pub fn Abi(cx: Scope) -> impl IntoView {
     view! {cx, class = class_name,
         <div>
             <Hello name="hello"/>
-            <h3 >"Hai"</h3>
+            <h4 >"Hai"</h4>
         </div>
     }
 }
