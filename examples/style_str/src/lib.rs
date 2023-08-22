@@ -33,10 +33,17 @@ pub fn GreenButton(cx: Scope) -> impl IntoView {
             background-color: yellow;
             color: green;
         }
+        .one .tow{
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
     };
 
     view! {cx, class = class_name,
         <style>{style_val}</style>
         <button>"I am green button"</button>
+        <div class="one">
+            <span class="two"> Two</span>
+        </div>
     }
 }

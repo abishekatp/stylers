@@ -2,8 +2,7 @@ use stylers_macro::style_test;
 
 //todo: make them into separate test cases.
 // Ref: https://www.w3schools.com/cssref/css_selectors.php
-#[test]
-fn test_style() {
+pub fn run_tests() {
     println!("------------------Test-1------------------");
     let style = style_test! {.two{
             // this comment should be ignored
