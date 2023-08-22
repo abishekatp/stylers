@@ -44,7 +44,7 @@ pub fn BlueButton(cx: Scope) -> impl IntoView {
 pub fn button_style() -> String {
     //note: we can even use style_str and get the style string wherever we use this style
     // but that will populate same style in multiple places at the DOM.
-    style! {"ButtonStyle",
+    let class_name = style! {
         button {
             background-color: #EA4C89;
             border-radius: 8px;
@@ -73,5 +73,7 @@ pub fn button_style() -> String {
         button:hover{
             background-color: yellow;
         }
-    }.to_string()
+    };
+
+    class_name.to_string()
 }

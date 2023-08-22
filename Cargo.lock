@@ -87,7 +87,7 @@ dependencies = [
 
 [[package]]
 name = "stylers"
-version = "0.3.1"
+version = "1.0.0-alpha"
 dependencies = [
  "glob",
  "proc-macro2",
@@ -98,7 +98,7 @@ dependencies = [
 
 [[package]]
 name = "stylers_core"
-version = "0.3.1"
+version = "1.0.0-alpha"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -108,18 +108,10 @@ dependencies = [
 
 [[package]]
 name = "stylers_macro"
-version = "0.3.1"
+version = "1.0.0-alpha"
 dependencies = [
- "proc-macro2",
  "quote",
  "stylers_core",
-]
-
-[[package]]
-name = "stylers_test"
-version = "0.1.0"
-dependencies = [
- "stylers",
 ]
 
 [[package]]

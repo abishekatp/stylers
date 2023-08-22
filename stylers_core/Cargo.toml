@@ -1,6 +1,6 @@
 [package]
 name = "stylers_core"
-version = { workspace = true }
+version = "1.0.0-alpha"
 edition = "2021"
 authors = ["Abishek P"]
 license = "MIT"

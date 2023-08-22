@@ -1,6 +1,7 @@
 [workspace]
-members = ["stylers_core", "stylers", "stylers_macro", "stylers_test"]
+members = ["stylers_core", "stylers", "stylers_macro"]
 exclude = ["examples"]
+resolver = "2"
 
 [workspace.package]
 version = "0.3.1"

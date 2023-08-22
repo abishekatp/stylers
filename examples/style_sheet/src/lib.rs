@@ -19,7 +19,7 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
 
 #[component]
 pub fn Abi(cx: Scope) -> impl IntoView {
-    let class_name = style! {"Abi",
+    let class_name = style! {
         h3{
             background-color: yellow;
         }
