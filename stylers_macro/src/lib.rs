@@ -41,7 +41,7 @@ pub fn style_sheet(ts: TokenStream) -> TokenStream {
 #[proc_macro]
 pub fn style_str(ts: TokenStream) -> TokenStream {
     let random_class = rand_class();
-    let (style, _sel_map) = from_ts(ts.into(), &random_class);
+    let (style, _sel_map) = from_ts(ts.into(), &random_class, true);
     let random_class = random_class[1..].to_string();
     let expanded = quote! {
         (#random_class,#style)
@@ -85,7 +85,7 @@ pub fn style_sheet_test(ts: TokenStream) -> TokenStream {
 #[proc_macro]
 pub fn style_test(ts: TokenStream) -> TokenStream {
     let random_class = String::from(".test");
-    let (style, _sel_map) = from_ts(ts.into(), &random_class);
+    let (style, _sel_map) = from_ts(ts.into(), &random_class, true);
     let expanded = quote! {
         #style
     };

@@ -33,9 +33,9 @@ pub fn GreenButton(cx: Scope) -> impl IntoView {
             background-color: yellow;
             color: green;
         }
-        .one .tow{
-            font-size: 1.5rem;
-            font-weight: 600;
+        .one .two{
+            font-size: 2.5rem;
+            font-weight: 900;
         }
     };
 
@@ -43,7 +43,7 @@ pub fn GreenButton(cx: Scope) -> impl IntoView {
         <style>{style_val}</style>
         <button>"I am green button"</button>
         <div class="one">
-            <span class="two"> Two</span>
+            <span class="two">"This is Large Text"</span>
         </div>
     }
 }

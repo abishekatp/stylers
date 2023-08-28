@@ -22,7 +22,11 @@ pub(crate) struct CSSStyleSheet {
 
 impl CSSStyleSheet {
     //This function will take the whole stylesheet content as token stream and return CSSStyleSheet structure
-    pub(crate) fn new(ts: TokenStream, random_class: &str) -> (CSSStyleSheet, HashMap<String, ()>) {
+    pub(crate) fn new(
+        ts: TokenStream,
+        random_class: &str,
+        is_proc_macro: bool,
+    ) -> (CSSStyleSheet, HashMap<String, ()>) {
         let mut css_style_sheet = CSSStyleSheet { css_rules: vec![] };
         let mut ts_iter = ts.into_iter();
         let mut css_rule_tt = TokenStream::new();
@@ -38,13 +42,14 @@ impl CSSStyleSheet {
                         if t.delimiter() == Delimiter::Brace {
                             count = 0;
                             if is_at_rule {
-                                let (at_rule, new_map) = CSSAtRule::new(css_rule_tt, random_class);
+                                let (at_rule, new_map) =
+                                    CSSAtRule::new(css_rule_tt, random_class, is_proc_macro);
                                 css_style_sheet.css_rules.push(CSSRule::AtRule(at_rule));
                                 sel_map.extend(new_map.into_iter());
                                 is_at_rule = false;
                             } else {
                                 let (style_rule, new_map) =
-                                    CSSStyleRule::new(css_rule_tt, random_class);
+                                    CSSStyleRule::new(css_rule_tt, random_class, is_proc_macro);
                                 css_style_sheet
                                     .css_rules
                                     .push(CSSRule::StyleRule(style_rule));
@@ -60,7 +65,8 @@ impl CSSStyleSheet {
                         }
                         //in regular at-rule css rule ends with semicolon without any style declaration.
                         if is_at_rule && ch == ';' {
-                            let (at_rule, new_map) = CSSAtRule::new(css_rule_tt, random_class);
+                            let (at_rule, new_map) =
+                                CSSAtRule::new(css_rule_tt, random_class, is_proc_macro);
                             css_style_sheet.css_rules.push(CSSRule::AtRule(at_rule));
                             sel_map.extend(new_map.into_iter());
                             is_at_rule = false;

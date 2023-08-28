@@ -23,9 +23,10 @@ pub(crate) use crate::style::css_style_sheet::{CSSRule, CSSStyleSheet};
 pub fn build_style_from_ts(
     ts: TokenStream,
     random_class: &String,
+    is_proc_macro: bool,
 ) -> (String, HashMap<String, ()>) {
     let mut style = String::new();
-    let (style_sheet, sel_map) = CSSStyleSheet::new(ts, random_class);
+    let (style_sheet, sel_map) = CSSStyleSheet::new(ts, random_class, is_proc_macro);
     style_sheet.css_rules.iter().for_each(|rule| match rule {
         CSSRule::AtRule(at_rule) => style.push_str(&at_rule.css_text()),
         CSSRule::StyleRule(style_rule) => style.push_str(&style_rule.css_text()),

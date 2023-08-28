@@ -1,4 +1,5 @@
 #![feature(extend_one)]
+#![feature(proc_macro_span)]
 mod style;
 mod style_sheet;
 

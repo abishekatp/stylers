@@ -21,7 +21,7 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
 pub fn Abi(cx: Scope) -> impl IntoView {
     let class_name = style! {
         h3{
-            background-color: yellow;
+            background-color: blue;
         }
         @media only screen and (max-width: 1000px) {
             h3 {

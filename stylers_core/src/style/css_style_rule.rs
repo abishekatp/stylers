@@ -16,12 +16,16 @@ pub(crate) struct CSSStyleRule {
 impl CSSStyleRule {
     // This function will take the token stream of one CSSStyleRule and parse it.
     // Note that we the calling function will be responsible for passing token stream of single style-rule at a time.
-    pub(crate) fn new(ts: TokenStream, random_class: &str) -> (CSSStyleRule, HashMap<String, ()>) {
+    pub(crate) fn new(
+        ts: TokenStream,
+        random_class: &str,
+        is_proc_macro: bool,
+    ) -> (CSSStyleRule, HashMap<String, ()>) {
         let mut css_style_rule = CSSStyleRule {
             selector_text: String::new(),
             style: CSSStyleDeclaration::empty(),
         };
-        let sel_map = css_style_rule.parse(ts, random_class);
+        let sel_map = css_style_rule.parse(ts, random_class, is_proc_macro);
 
         (css_style_rule, sel_map)
     }
@@ -34,7 +38,12 @@ impl CSSStyleRule {
     }
 
     // parse method will extract the selector part of the style-rule and parse that selector using parse_selector method.
-    fn parse(&mut self, ts: TokenStream, random_class: &str) -> HashMap<String, ()> {
+    fn parse(
+        &mut self,
+        ts: TokenStream,
+        random_class: &str,
+        is_proc_macro: bool,
+    ) -> HashMap<String, ()> {
         let mut pre_col: usize = 0;
         let mut pre_line: usize = 0;
         //selector will just store current selector of the style rule.
@@ -49,18 +58,36 @@ impl CSSStyleRule {
                             //only if the delimiter is brace it will be style definition.
                             if t.delimiter() == Delimiter::Brace {
                                 sel_map = self.parse_selector(&selector, random_class);
-                                self.style = CSSStyleDeclaration::new(t);
+                                self.style = CSSStyleDeclaration::new(t, is_proc_macro);
                             } else {
-                                add_spaces(&mut selector, t.span(), &mut pre_line, &mut pre_col);
-                                selector.push_str(&parse_group(t));
+                                add_spaces(
+                                    &mut selector,
+                                    t.span(),
+                                    &mut pre_line,
+                                    &mut pre_col,
+                                    is_proc_macro,
+                                );
+                                selector.push_str(&parse_group(t, is_proc_macro));
                             }
                         }
                         TokenTree::Ident(t) => {
-                            add_spaces(&mut selector, t.span(), &mut pre_line, &mut pre_col);
+                            add_spaces(
+                                &mut selector,
+                                t.span(),
+                                &mut pre_line,
+                                &mut pre_col,
+                                is_proc_macro,
+                            );
                             selector.push_str(&t.to_string());
                         }
                         TokenTree::Literal(t) => {
-                            add_spaces(&mut selector, t.span(), &mut pre_line, &mut pre_col);
+                            add_spaces(
+                                &mut selector,
+                                t.span(),
+                                &mut pre_line,
+                                &mut pre_col,
+                                is_proc_macro,
+                            );
                             selector.push_str(t.to_string().trim_matches('"'));
                         }
                         TokenTree::Punct(t) => {
@@ -68,7 +95,13 @@ impl CSSStyleRule {
                             //only when ch is dot or hash we need space information. because space will mean direct child.
                             //colon also need space info because it may be custom directive like :deep(p)
                             if ch == '.' || ch == '#' || ch == ':' {
-                                add_spaces(&mut selector, t.span(), &mut pre_line, &mut pre_col);
+                                add_spaces(
+                                    &mut selector,
+                                    t.span(),
+                                    &mut pre_line,
+                                    &mut pre_col,
+                                    is_proc_macro,
+                                );
                             } else {
                                 let end = t.span().end();
                                 pre_col = end.column;

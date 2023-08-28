@@ -4,12 +4,12 @@ use stylers_macro::style_test;
 // Ref: https://www.w3schools.com/cssref/css_selectors.php
 pub fn run_tests() {
     println!("------------------Test-1------------------");
-    let style = style_test! {.two{
+    let style = style_test! {.two .one{
             // this comment should be ignored
             color: yellow;
         }
     };
-    assert_eq!(style.trim(), ".two.test{color: yellow;}");
+    assert_eq!(style.trim(), ".two.test .one.test{color: yellow;}");
     println!("------------------Test-2------------------");
     let style = style_test! {
         .two.one  {

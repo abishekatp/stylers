@@ -47,7 +47,7 @@ pub fn build(output_path: Option<String>) {
                                     if macro_name == String::from("style") {
                                         let ts = expr_mac.mac.tokens.clone();
                                         let class_name = rand_class_from_seed(ts.to_string());
-                                        let (scoped_css, _) = from_ts(ts, &class_name);
+                                        let (scoped_css, _) = from_ts(ts, &class_name, false);
                                         output_css += &scoped_css;
                                     }
 

@@ -19,12 +19,16 @@ pub(crate) struct CSSAtRule {
 impl CSSAtRule {
     // This method will parse the at-rule tokenstream and return teh CSSAtRule
     // HashMap will contain all unique selectors which may be nested inside at-rule.
-    pub(crate) fn new(ts: TokenStream, random_class: &str) -> (CSSAtRule, HashMap<String, ()>) {
+    pub(crate) fn new(
+        ts: TokenStream,
+        random_class: &str,
+        is_proc_macro: bool,
+    ) -> (CSSAtRule, HashMap<String, ()>) {
         let mut css_at_rule = CSSAtRule {
             css_rules: vec![],
             at_rules: vec![],
         };
-        css_at_rule.parse(ts, random_class);
+        css_at_rule.parse(ts, random_class, is_proc_macro);
 
         (css_at_rule, HashMap::new())
     }
@@ -57,7 +61,12 @@ impl CSSAtRule {
 
     // This parse method will parse the at-rule tokn stream.
     // Note: this is recursive function it will handle nested at-rules.
-    fn parse(&mut self, ts: TokenStream, random_class: &str) -> HashMap<String, ()> {
+    fn parse(
+        &mut self,
+        ts: TokenStream,
+        random_class: &str,
+        is_proc_macro: bool,
+    ) -> HashMap<String, ()> {
         let mut at_rule = String::new();
         let mut pre_line = 0;
         let mut pre_col = 0;
@@ -87,36 +96,60 @@ impl CSSAtRule {
                                     || at_rule.contains("@property")
                                 {
                                     //these at-rules will not contain any nested css-rules. so we just parse that group as a string.
-                                    at_rule.push_str(&parse_group(t));
+                                    at_rule.push_str(&parse_group(t, is_proc_macro));
                                 } else if is_at_rule {
                                     //if there is another inner at-rule
-                                    self.parse(t.stream(), random_class);
+                                    self.parse(t.stream(), random_class, is_proc_macro);
                                 } else {
                                     //each at-rule may contain one or more css rules nested inside of it.
                                     //it is like another small style sheet inside of it. So we use CSSStyleSheet here.
                                     let (mut style_sheet, new_map) =
-                                        CSSStyleSheet::new(t.stream(), random_class);
+                                        CSSStyleSheet::new(t.stream(), random_class, is_proc_macro);
                                     self.css_rules.append(&mut style_sheet.css_rules);
                                     sel_map = new_map;
                                 }
                                 self.at_rules.push(at_rule);
                                 at_rule = String::new();
                             } else {
-                                add_spaces(&mut at_rule, t.span(), &mut pre_line, &mut pre_col);
-                                at_rule.push_str(&parse_group(t));
+                                add_spaces(
+                                    &mut at_rule,
+                                    t.span(),
+                                    &mut pre_line,
+                                    &mut pre_col,
+                                    is_proc_macro,
+                                );
+                                at_rule.push_str(&parse_group(t, is_proc_macro));
                             }
                         }
                         TokenTree::Ident(t) => {
-                            add_spaces(&mut at_rule, t.span(), &mut pre_line, &mut pre_col);
+                            add_spaces(
+                                &mut at_rule,
+                                t.span(),
+                                &mut pre_line,
+                                &mut pre_col,
+                                is_proc_macro,
+                            );
                             at_rule.push_str(&t.to_string());
                         }
                         TokenTree::Literal(t) => {
-                            add_spaces(&mut at_rule, t.span(), &mut pre_line, &mut pre_col);
+                            add_spaces(
+                                &mut at_rule,
+                                t.span(),
+                                &mut pre_line,
+                                &mut pre_col,
+                                is_proc_macro,
+                            );
                             at_rule.push_str(&t.to_string());
                         }
                         TokenTree::Punct(t) => {
                             let ch = t.as_char();
-                            add_spaces(&mut at_rule, t.span(), &mut pre_line, &mut pre_col);
+                            add_spaces(
+                                &mut at_rule,
+                                t.span(),
+                                &mut pre_line,
+                                &mut pre_col,
+                                is_proc_macro,
+                            );
                             at_rule.push(ch);
                             //regular at rule ends with semicolon. there won't be any style declaration for this.
                             if ch == ';' {
