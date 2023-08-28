@@ -6,7 +6,7 @@ use stylers::style_sheet_test;
 // Ref: https://www.w3schools.com/cssref/css_selectors.php
 #[test]
 pub fn basic() {
-    let style = style_sheet_test!("tests/samples/basics.css");
+    let style = style_sheet_test!("stylers/tests/samples/basics.css");
 
     assert_eq!(
             style,
@@ -16,7 +16,7 @@ pub fn basic() {
 
 #[test]
 pub fn relation() {
-    let style = style_sheet_test!("tests/samples/relations.css");
+    let style = style_sheet_test!("stylers/tests/samples/relations.css");
 
     assert_eq!(
         style,
@@ -26,7 +26,7 @@ pub fn relation() {
 
 #[test]
 fn pseudo() {
-    let style = style_sheet_test!("tests/samples/pseudo.css");
+    let style = style_sheet_test!("stylers/tests/samples/pseudo.css");
 
     assert_eq!(
         style,
@@ -36,7 +36,7 @@ fn pseudo() {
 
 #[test]
 fn at_rules() {
-    let style = style_sheet_test!("tests/samples/at_rules.css");
+    let style = style_sheet_test!("stylers/tests/samples/at_rules.css");
     assert_eq!(
         style,
         r#"@charset "UTF-8";@import url("landscape.css") screen and (orientation: landscape);@namespace svg url("http://www.w3.org/2000/svg");@layer theme,layout,utilities;@supports (display: flex) {@media screen and (min-width: 900px) {article.test{display: flex;}}}@supports (display: flex) {.flex-container.test>.test{text-shadow: 0 0 2px blue;float: none;}.flex-container.test{display: flex;}}@document url("https://www.example.com/") {h1.test{color: green;}}@layer framework {@layer layout {p.test{margin-block: 1rem;font: 0.9em/1.2 Arial, Helvetica, sans-serif;content: "\hello";content: "\hello";}}}"#
@@ -45,7 +45,7 @@ fn at_rules() {
 
 #[test]
 fn special_at_rules() {
-    let style = style_sheet_test!("tests/samples/special_at_rules.css");
+    let style = style_sheet_test!("stylers/tests/samples/special_at_rules.css");
 
     assert_eq!(
         style,
@@ -55,7 +55,7 @@ fn special_at_rules() {
 
 #[test]
 fn custom_pseudo_class() {
-    let style = style_sheet_test!("tests/samples/custom_pseudo.css");
+    let style = style_sheet_test!("stylers/tests/samples/custom_pseudo.css");
 
     assert_eq!(
         style,
