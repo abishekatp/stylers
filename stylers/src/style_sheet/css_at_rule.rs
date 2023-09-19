@@ -1,23 +1,24 @@
-use crate::style::CSSAtRule;
+use crate::style::AtRule;
+use crate::Class;
 
-use crate::style::CSSStyleSheet;
+use crate::style::StyleSheet;
 
-impl CSSAtRule {
-    // This method will parse the at-rule block string and return the CSSAtRule
-    // note: this is string version of the parse method in CSSAtRule struct.
-    pub(crate) fn from_str(at_block: &str, random_class: &str) -> CSSAtRule {
-        let mut css_at_rule = CSSAtRule {
-            css_rules: vec![],
+impl AtRule {
+    // This method will parse the at-rule block string and return the AtRule
+    // note: this is string version of the parse method in AtRule struct.
+    pub(crate) fn from_str(at_block: &str, class: &Class) -> AtRule {
+        let mut css_at_rule = AtRule {
+            rules: vec![],
             at_rules: vec![],
         };
-        css_at_rule.parse_from_str(at_block, random_class);
+        css_at_rule.parse_from_str(at_block, class);
 
         css_at_rule
     }
 
     // This parse method will parse the at-rule block string.
-    // note: this is string version of the parse method in CSSAtRule struct.
-    fn parse_from_str(&mut self, at_block: &str, random_class: &str) {
+    // note: this is string version of the parse method in AtRule struct.
+    fn parse_from_str(&mut self, at_block: &str, class: &Class) {
         if at_block.trim().ends_with(';') {
             self.at_rules.push(parse_at_rule_declaration(at_block));
         } else {
@@ -51,8 +52,8 @@ impl CSSAtRule {
                     continue;
                 } else {
                     self.at_rules.push(at_rule.to_string());
-                    let style_sheet = CSSStyleSheet::from_str(declaration, random_class);
-                    self.css_rules = style_sheet.css_rules;
+                    let style_sheet = StyleSheet::from_str(declaration, class);
+                    self.rules = style_sheet.rules;
                     break;
                 }
             }

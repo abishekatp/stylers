@@ -1,6 +1,6 @@
 [workspace]
-members = ["stylers", "stylers_test"]
-exclude = ["examples"]
+members = ["stylers"]
+resolver = "2"
 
-[workspace.package]
-version = "0.3.1"
+[workspace.dependencies]
+stylers = { path = "./stylers" }
