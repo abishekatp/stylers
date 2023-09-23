@@ -64,8 +64,9 @@ fn test_6() {
             background-color: lightblue;
         }
     };
-    assert_eq!(style,"div.test{border: 1px solid black;margin: 25px 50px 75px 100px;background-color: lightblue;}");
+    assert_eq!(style, "div.test{border: 1px solid black;margin: 25px 50px 75px 100px;background-color: lightblue;}");
 }
+
 #[test]
 fn test_7() {
     let style = style_test! {"Hello",
@@ -615,4 +616,17 @@ fn test_50() {
         style,
         "@supports (display: flex){.flex-container.test>.test{text-shadow: 0 0 2px blue;float: none;}.flex-container.test{display: flex;}}"
     );
+}
+
+#[test]
+fn test_51() {
+    // st( ":deep(.rollUp) .unlockSplash {
+    //         max-height: 0;
+    //     }", &Class::new(String::from("test")));
+    let style = style_test! {"Hello",
+        :deep(.rollUp) .unlockSplash {
+            max-height: 0;
+        }
+    };
+    assert_eq!(style, ".rollUp .unlockSplash.test{max-height: 0;}");
 }
