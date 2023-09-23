@@ -85,6 +85,7 @@ impl StyleRule {
         let mut is_bracket_open = false;
         let mut is_deep_directive = false;
         let mut is_deep_directive_open = false;
+        let mut was_deep_directive = false;
         let mut temp = String::new();
         let mut i = 0;
         for c in selector_text.chars() {
@@ -129,6 +130,7 @@ impl StyleRule {
             if is_deep_directive_open && c == ')' {
                 is_deep_directive = false;
                 is_deep_directive_open = false;
+                was_deep_directive = true;
                 continue;
             }
             if is_deep_directive && c == '(' {
@@ -211,7 +213,11 @@ impl StyleRule {
 
             //check for direct child selector
             if c == ' ' {
-                source.push_str(&class.as_selector());
+                if !was_deep_directive {
+                    source.push_str(&class.as_selector());
+                }else {
+                    was_deep_directive = false;
+                }
                 source.push(' ');
 
                 sel_map.insert(temp.clone());
