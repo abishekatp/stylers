@@ -85,6 +85,7 @@ impl StyleRule {
         let mut is_bracket_open = false;
         let mut is_deep_directive = false;
         let mut is_deep_directive_open = false;
+        let mut was_deep_directive = false;
         let mut temp = String::new();
         let mut i = 0;
         for c in selector_text.chars() {
@@ -101,7 +102,11 @@ impl StyleRule {
                     source.push(c);
 
                     if !is_deep_directive_open {
-                        source.push_str(&class.as_selector());
+                        if !was_deep_directive {
+                            source.push_str(&class.as_selector());
+                        } else {
+                            was_deep_directive = false;
+                        }
                     }
 
                     temp.push(c);
@@ -129,6 +134,7 @@ impl StyleRule {
             if is_deep_directive_open && c == ')' {
                 is_deep_directive = false;
                 is_deep_directive_open = false;
+                was_deep_directive = true;
                 continue;
             }
             if is_deep_directive && c == '(' {
@@ -166,7 +172,11 @@ impl StyleRule {
             }
             if c == ':' {
                 is_pseudo_class_start = true;
-                source.push_str(&class.as_selector());
+                if !was_deep_directive {
+                    source.push_str(&class.as_selector());
+                } else {
+                    was_deep_directive = false;
+                }
                 source.push(c);
                 temp.push(c);
                 continue;
@@ -182,7 +192,11 @@ impl StyleRule {
                 }
             }
             if c == ',' || c == '+' || c == '~' || c == '>' || c == '|' {
-                source.push_str(&class.as_selector());
+                if !was_deep_directive {
+                    source.push_str(&class.as_selector());
+                } else {
+                    was_deep_directive = false;
+                }
                 source.push(c);
                 is_punct_start = true;
 
@@ -193,7 +207,11 @@ impl StyleRule {
 
             //check for universal selector.
             if c == '*' {
-                source.push_str(&class.as_selector());
+                if !was_deep_directive {
+                    source.push_str(&class.as_selector());
+                } else {
+                    was_deep_directive = false;
+                }
                 sel_map.insert("*".to_string());
                 continue;
             }
@@ -201,7 +219,11 @@ impl StyleRule {
             //append random class if we reach end of the line.
             if i == sel_len {
                 source.push(c);
-                source.push_str(&class.as_selector());
+                if !was_deep_directive {
+                    source.push_str(&class.as_selector());
+                } else {
+                    was_deep_directive = false;
+                }
 
                 temp.push(c);
                 sel_map.insert(temp.clone());
@@ -211,7 +233,11 @@ impl StyleRule {
 
             //check for direct child selector
             if c == ' ' {
-                source.push_str(&class.as_selector());
+                if !was_deep_directive {
+                    source.push_str(&class.as_selector());
+                } else {
+                    was_deep_directive = false;
+                }
                 source.push(' ');
 
                 sel_map.insert(temp.clone());
