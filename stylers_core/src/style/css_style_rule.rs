@@ -1,31 +1,32 @@
 use proc_macro2::{Delimiter, TokenStream, TokenTree};
-use std::collections::HashMap;
+use std::collections::HashSet;
 
-use crate::style::css_style_declar::CSSStyleDeclaration;
+use crate::style::css_style_declar::StyleDeclaration;
 use crate::style::utils::{add_spaces, parse_group};
+use crate::Class;
 
-// ref: https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleRule
-// CSSStyleRule is one kind of CSSRule which will contain two parts.
+// ref: https://developer.mozilla.org/en-US/docs/Web/API/StyleRule
+// StyleRule is one kind of CSSRule which will contain two parts.
 // One is selector text and another one is style declaration for that selector.
 #[derive(Debug)]
-pub(crate) struct CSSStyleRule {
+pub(crate) struct StyleRule {
     pub(crate) selector_text: String,
-    pub(crate) style: CSSStyleDeclaration,
+    pub(crate) style: StyleDeclaration,
 }
 
-impl CSSStyleRule {
-    // This function will take the token stream of one CSSStyleRule and parse it.
+impl StyleRule {
+    // This function will take the token stream of one StyleRule and parse it.
     // Note that we the calling function will be responsible for passing token stream of single style-rule at a time.
     pub(crate) fn new(
         ts: TokenStream,
-        random_class: &str,
+        class: &Class,
         is_proc_macro: bool,
-    ) -> (CSSStyleRule, HashMap<String, ()>) {
-        let mut css_style_rule = CSSStyleRule {
+    ) -> (StyleRule, HashSet<String>) {
+        let mut css_style_rule = StyleRule {
             selector_text: String::new(),
-            style: CSSStyleDeclaration::empty(),
+            style: StyleDeclaration::empty(),
         };
-        let sel_map = css_style_rule.parse(ts, random_class, is_proc_macro);
+        let sel_map = css_style_rule.parse(ts, class, is_proc_macro);
 
         (css_style_rule, sel_map)
     }
@@ -38,18 +39,13 @@ impl CSSStyleRule {
     }
 
     // parse method will extract the selector part of the style-rule and parse that selector using parse_selector method.
-    fn parse(
-        &mut self,
-        ts: TokenStream,
-        random_class: &str,
-        is_proc_macro: bool,
-    ) -> HashMap<String, ()> {
+    fn parse(&mut self, ts: TokenStream, class: &Class, is_proc_macro: bool) -> HashSet<String> {
         let mut pre_col: usize = 0;
         let mut pre_line: usize = 0;
         //selector will just store current selector of the style rule.
         let mut selector = String::new();
         let mut ts_iter = ts.into_iter();
-        let mut sel_map = HashMap::new();
+        let mut sel_map = HashSet::new();
         loop {
             match ts_iter.next() {
                 Some(tt) => {
@@ -57,8 +53,8 @@ impl CSSStyleRule {
                         TokenTree::Group(t) => {
                             //only if the delimiter is brace it will be style definition.
                             if t.delimiter() == Delimiter::Brace {
-                                sel_map = self.parse_selector(&selector, random_class);
-                                self.style = CSSStyleDeclaration::new(t, is_proc_macro);
+                                sel_map = self.parse_selector(&selector, class);
+                                self.style = StyleDeclaration::new(t, is_proc_macro);
                             } else {
                                 add_spaces(
                                     &mut selector,
@@ -118,12 +114,8 @@ impl CSSStyleRule {
     }
 
     //parse_selector method will parse the all parts of selector and add random class to them
-    pub(crate) fn parse_selector(
-        &mut self,
-        selector_text: &str,
-        random_class: &str,
-    ) -> HashMap<String, ()> {
-        let mut sel_map: HashMap<String, ()> = HashMap::new();
+    pub(crate) fn parse_selector(&mut self, selector_text: &str, class: &Class) -> HashSet<String> {
+        let mut sel_map: HashSet<String> = HashSet::new();
         let mut source = String::new();
         let sel_len = selector_text.len();
         let mut is_punct_start = false;
@@ -131,6 +123,7 @@ impl CSSStyleRule {
         let mut is_bracket_open = false;
         let mut is_deep_directive = false;
         let mut is_deep_directive_open = false;
+        // let mut was_deep_directive_open = false;
         let mut temp = String::new();
         let mut i = 0;
         for c in selector_text.chars() {
@@ -139,16 +132,30 @@ impl CSSStyleRule {
             if c == '\n' {
                 continue;
             }
+            //ignore all white spaces after :deep directive.
+            // if was_deep_directive_open {
+            //     if c.is_whitespace() {
+            //         source.push(' ');
+            //         continue;
+            //     } else {
+            //         source.push(c);
+            //         was_deep_directive_open = false;
+            //         continue;
+            //     }
+            // }
             //ignore everything between square brackets.
             //todo:handle the case when brackets inside attribute.
             if is_bracket_open {
                 if c == ']' {
                     is_bracket_open = false;
                     source.push(c);
-                    source.push_str(random_class);
+
+                    if !is_deep_directive_open {
+                        source.push_str(&class.as_selector());
+                    }
 
                     temp.push(c);
-                    sel_map.insert(temp.clone(), ());
+                    sel_map.insert(temp.clone());
                     temp = String::new();
                 } else {
                     source.push(c);
@@ -172,6 +179,7 @@ impl CSSStyleRule {
             if is_deep_directive_open && c == ')' {
                 is_deep_directive = false;
                 is_deep_directive_open = false;
+                // was_deep_directive_open = true;
                 continue;
             }
             if is_deep_directive && c == '(' {
@@ -199,7 +207,7 @@ impl CSSStyleRule {
                     if c != ' ' {
                         temp.push(c);
                     }
-                    sel_map.insert(temp.clone(), ());
+                    sel_map.insert(temp.clone());
                     temp = String::new();
                 } else {
                     source.push(c);
@@ -209,7 +217,7 @@ impl CSSStyleRule {
             }
             if c == ':' {
                 is_pseudo_class_start = true;
-                source.push_str(random_class);
+                source.push_str(&class.as_selector());
                 source.push(c);
                 temp.push(c);
                 continue;
@@ -225,39 +233,39 @@ impl CSSStyleRule {
                 }
             }
             if c == ',' || c == '+' || c == '~' || c == '>' || c == '|' {
-                source.push_str(random_class);
+                source.push_str(&class.as_selector());
                 source.push(c);
                 is_punct_start = true;
 
-                sel_map.insert(temp.clone(), ());
+                sel_map.insert(temp.clone());
                 temp = String::new();
                 continue;
             }
 
             //check for universal selector.
             if c == '*' {
-                source.push_str(random_class);
-                sel_map.insert("*".to_string(), ());
+                source.push_str(&class.as_selector());
+                sel_map.insert("*".to_string());
                 continue;
             }
 
             //append random class if we reach end of the line.
             if i == sel_len {
                 source.push(c);
-                source.push_str(random_class);
+                source.push_str(&class.as_selector());
 
                 temp.push(c);
-                sel_map.insert(temp.clone(), ());
+                sel_map.insert(temp.clone());
                 temp = String::new();
                 continue;
             }
 
             //check for direct child selector
             if c == ' ' {
-                source.push_str(random_class);
+                source.push_str(&class.as_selector());
                 source.push(' ');
 
-                sel_map.insert(temp.clone(), ());
+                sel_map.insert(temp.clone());
                 temp = String::new();
             } else {
                 source.push(c);

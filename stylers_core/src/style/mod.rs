@@ -7,12 +7,13 @@ mod css_style_rule;
 mod css_style_sheet;
 mod utils;
 use proc_macro2::TokenStream;
-use std::collections::HashMap;
+use std::collections::HashSet;
 
-pub(crate) use crate::style::css_at_rule::CSSAtRule;
-pub(crate) use crate::style::css_style_declar::CSSStyleDeclaration;
-pub(crate) use crate::style::css_style_rule::CSSStyleRule;
-pub(crate) use crate::style::css_style_sheet::{CSSRule, CSSStyleSheet};
+pub(crate) use crate::style::css_at_rule::AtRule;
+pub(crate) use crate::style::css_style_declar::StyleDeclaration;
+pub(crate) use crate::style::css_style_rule::StyleRule;
+pub(crate) use crate::style::css_style_sheet::{Rule, StyleSheet};
+use crate::Class;
 
 /// This function will build the whole style text as rust TokenStream.
 /// This function will take two arguments.
@@ -22,14 +23,14 @@ pub(crate) use crate::style::css_style_sheet::{CSSRule, CSSStyleSheet};
 /// style string: is the parsed style sheet as a string
 pub fn build_style_from_ts(
     ts: TokenStream,
-    random_class: &String,
+    class: &Class,
     is_proc_macro: bool,
-) -> (String, HashMap<String, ()>) {
+) -> (String, HashSet<String>) {
     let mut style = String::new();
-    let (style_sheet, sel_map) = CSSStyleSheet::new(ts, random_class, is_proc_macro);
-    style_sheet.css_rules.iter().for_each(|rule| match rule {
-        CSSRule::AtRule(at_rule) => style.push_str(&at_rule.css_text()),
-        CSSRule::StyleRule(style_rule) => style.push_str(&style_rule.css_text()),
+    let (style_sheet, sel_map) = StyleSheet::new(ts, class, is_proc_macro);
+    style_sheet.rules.iter().for_each(|rule| match rule {
+        Rule::AtRule(at_rule) => style.push_str(&at_rule.css_text()),
+        Rule::StyleRule(style_rule) => style.push_str(&style_rule.css_text()),
     });
 
     (style, sel_map)

@@ -1,16 +1,16 @@
-use crate::style::CSSStyleDeclaration;
+use crate::style::StyleDeclaration;
 
-impl CSSStyleDeclaration {
-    // note: this is string version of the new method in CSSStyleDeclaration struct.
-    pub(crate) fn from_str(style_declar: String) -> CSSStyleDeclaration {
-        let mut css_style_declar = CSSStyleDeclaration {
+impl StyleDeclaration {
+    // note: this is string version of the new method in StyleDeclaration struct.
+    pub(crate) fn from_str(style_declar: String) -> StyleDeclaration {
+        let mut css_style_declar = StyleDeclaration {
             style_css_text: "".to_string(),
         };
         css_style_declar.parse_from_str(style_declar);
         css_style_declar
     }
 
-    // note: this is string version of the parse method in CSSStyleDeclaration struct.
+    // note: this is string version of the parse method in StyleDeclaration struct.
     fn parse_from_str(&mut self, style_delar: String) {
         //todo: what if newline is inside content property
         let mut declarations: Vec<&str> = style_delar.split('\n').collect();

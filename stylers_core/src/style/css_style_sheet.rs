@@ -1,38 +1,39 @@
 use proc_macro2::{Delimiter, TokenStream, TokenTree};
-use std::collections::HashMap;
+use std::collections::HashSet;
 
-use crate::style::css_at_rule::CSSAtRule;
-use crate::style::css_style_rule::CSSStyleRule;
+use crate::style::css_at_rule::AtRule;
+use crate::style::css_style_rule::StyleRule;
+use crate::Class;
 
 //ref: https://developer.mozilla.org/en-US/docs/Web/API/CSSRule
-// CSSRule is enum which will have two kinds style-rule and at-rule(which begins with @)
+// Rule is enum which will have two kinds style-rule and at-rule(which begins with @)
 #[derive(Debug)]
-pub(crate) enum CSSRule {
-    StyleRule(CSSStyleRule),
-    AtRule(CSSAtRule),
+pub(crate) enum Rule {
+    StyleRule(StyleRule),
+    AtRule(AtRule),
 }
 
 //ref: https://developer.mozilla.org/en-US/docs/Web/API/StyleSheet
-//ref: https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet
-//CSSStyleSheet is representation of single style sheet.
+//ref: https://developer.mozilla.org/en-US/docs/Web/API/StyleSheet
+//StyleSheet is representation of single style sheet.
 // It will contain list of CSSRule.
-pub(crate) struct CSSStyleSheet {
-    pub(crate) css_rules: Vec<CSSRule>,
+pub(crate) struct StyleSheet {
+    pub(crate) rules: Vec<Rule>,
 }
 
-impl CSSStyleSheet {
-    //This function will take the whole stylesheet content as token stream and return CSSStyleSheet structure
+impl StyleSheet {
+    //This function will take the whole stylesheet content as token stream and return StyleSheet structure
     pub(crate) fn new(
         ts: TokenStream,
-        random_class: &str,
+        class: &Class,
         is_proc_macro: bool,
-    ) -> (CSSStyleSheet, HashMap<String, ()>) {
-        let mut css_style_sheet = CSSStyleSheet { css_rules: vec![] };
+    ) -> (StyleSheet, HashSet<String>) {
+        let mut css_style_sheet = StyleSheet { rules: vec![] };
         let mut ts_iter = ts.into_iter();
         let mut css_rule_tt = TokenStream::new();
         let mut is_at_rule = false;
         let mut count = 0;
-        let mut sel_map = HashMap::new();
+        let mut sel_map = HashSet::new();
         loop {
             if let Some(tt) = ts_iter.next() {
                 count += 1;
@@ -43,17 +44,15 @@ impl CSSStyleSheet {
                             count = 0;
                             if is_at_rule {
                                 let (at_rule, new_map) =
-                                    CSSAtRule::new(css_rule_tt, random_class, is_proc_macro);
-                                css_style_sheet.css_rules.push(CSSRule::AtRule(at_rule));
+                                    AtRule::new(css_rule_tt, class, is_proc_macro);
+                                css_style_sheet.rules.push(Rule::AtRule(at_rule));
                                 sel_map.extend(new_map.into_iter());
                                 is_at_rule = false;
                             } else {
                                 let (style_rule, new_map) =
-                                    CSSStyleRule::new(css_rule_tt, random_class, is_proc_macro);
-                                css_style_sheet
-                                    .css_rules
-                                    .push(CSSRule::StyleRule(style_rule));
-                                sel_map.extend(new_map.into_iter());
+                                    StyleRule::new(css_rule_tt, class, is_proc_macro);
+                                css_style_sheet.rules.push(Rule::StyleRule(style_rule));
+                                sel_map.extend(new_map);
                             }
                             css_rule_tt = TokenStream::new();
                         }
@@ -65,9 +64,8 @@ impl CSSStyleSheet {
                         }
                         //in regular at-rule css rule ends with semicolon without any style declaration.
                         if is_at_rule && ch == ';' {
-                            let (at_rule, new_map) =
-                                CSSAtRule::new(css_rule_tt, random_class, is_proc_macro);
-                            css_style_sheet.css_rules.push(CSSRule::AtRule(at_rule));
+                            let (at_rule, new_map) = AtRule::new(css_rule_tt, class, is_proc_macro);
+                            css_style_sheet.rules.push(Rule::AtRule(at_rule));
                             sel_map.extend(new_map.into_iter());
                             is_at_rule = false;
                             css_rule_tt = TokenStream::new();

@@ -1,36 +1,37 @@
 use proc_macro2::{Delimiter, TokenStream, TokenTree};
-use std::collections::HashMap;
+use std::collections::HashSet;
 
-use crate::style::css_style_sheet::{CSSRule, CSSStyleSheet};
+use crate::style::css_style_sheet::{Rule, StyleSheet};
 use crate::style::utils::{add_spaces, parse_group};
+use crate::Class;
 
 // ref: https://developer.mozilla.org/en-US/docs/Web/CSS/At-rule
-// CSSAtRule is one kind of CSSRule. It will have two parts
+// AtRule is one kind of Rule. It will have two parts
 // at-rule may contain nested at-rules. style-rule will be the inner most nesting of nested at-rule
 // some ar-rules like @support may contain multiple style-rules nested inside.
 // So we store them in the css_rules list.
 #[derive(Debug)]
-pub(crate) struct CSSAtRule {
+pub(crate) struct AtRule {
     //nested at-rule may contain one or more css rule block inside it.
-    pub(crate) css_rules: Vec<CSSRule>,
+    pub(crate) rules: Vec<Rule>,
     pub(crate) at_rules: Vec<String>,
 }
 
-impl CSSAtRule {
-    // This method will parse the at-rule tokenstream and return teh CSSAtRule
+impl AtRule {
+    // This method will parse the at-rule tokenstream and return teh AtRule
     // HashMap will contain all unique selectors which may be nested inside at-rule.
     pub(crate) fn new(
         ts: TokenStream,
-        random_class: &str,
+        class: &Class,
         is_proc_macro: bool,
-    ) -> (CSSAtRule, HashMap<String, ()>) {
-        let mut css_at_rule = CSSAtRule {
-            css_rules: vec![],
+    ) -> (AtRule, HashSet<String>) {
+        let mut css_at_rule = AtRule {
+            rules: vec![],
             at_rules: vec![],
         };
-        css_at_rule.parse(ts, random_class, is_proc_macro);
+        css_at_rule.parse(ts, class, is_proc_macro);
 
-        (css_at_rule, HashMap::new())
+        (css_at_rule, HashSet::new())
     }
 
     // This css_text method will give the whole at-rule as single string value.
@@ -43,11 +44,11 @@ impl CSSAtRule {
             text.push('{');
         });
         //here we add the css_rules which are nested inside of at-rules one by one.
-        if self.css_rules.len() > 0 {
-            for css_rule in self.css_rules.iter() {
+        if !self.rules.is_empty() {
+            for css_rule in self.rules.iter() {
                 match css_rule {
-                    CSSRule::StyleRule(style_rule) => text.push_str(&style_rule.css_text()),
-                    CSSRule::AtRule(at_rule) => text.push_str(&at_rule.css_text()),
+                    Rule::StyleRule(style_rule) => text.push_str(&style_rule.css_text()),
+                    Rule::AtRule(at_rule) => text.push_str(&at_rule.css_text()),
                 }
             }
             for _ in 0..self.at_rules.len() {
@@ -61,17 +62,12 @@ impl CSSAtRule {
 
     // This parse method will parse the at-rule tokn stream.
     // Note: this is recursive function it will handle nested at-rules.
-    fn parse(
-        &mut self,
-        ts: TokenStream,
-        random_class: &str,
-        is_proc_macro: bool,
-    ) -> HashMap<String, ()> {
+    fn parse(&mut self, ts: TokenStream, class: &Class, is_proc_macro: bool) -> HashSet<String> {
         let mut at_rule = String::new();
         let mut pre_line = 0;
         let mut pre_col = 0;
         let mut ts_iter = ts.into_iter();
-        let mut sel_map = HashMap::new();
+        let mut sel_map = HashSet::new();
 
         loop {
             match ts_iter.next() {
@@ -99,13 +95,13 @@ impl CSSAtRule {
                                     at_rule.push_str(&parse_group(t, is_proc_macro));
                                 } else if is_at_rule {
                                     //if there is another inner at-rule
-                                    self.parse(t.stream(), random_class, is_proc_macro);
+                                    self.parse(t.stream(), class, is_proc_macro);
                                 } else {
                                     //each at-rule may contain one or more css rules nested inside of it.
                                     //it is like another small style sheet inside of it. So we use CSSStyleSheet here.
                                     let (mut style_sheet, new_map) =
-                                        CSSStyleSheet::new(t.stream(), random_class, is_proc_macro);
-                                    self.css_rules.append(&mut style_sheet.css_rules);
+                                        StyleSheet::new(t.stream(), class, is_proc_macro);
+                                    self.rules.append(&mut style_sheet.rules);
                                     sel_map = new_map;
                                 }
                                 self.at_rules.push(at_rule);

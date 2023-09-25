@@ -2,7 +2,7 @@ use glob::glob;
 use std::fs::File;
 use std::io::Write;
 use std::{borrow::Borrow, env::current_dir, fs};
-use stylers_core::rand_class_from_seed;
+use stylers_core::Class;
 use stylers_core::{from_str, from_ts};
 use syn::{Expr, Item, Stmt};
 
@@ -46,8 +46,8 @@ pub fn build(output_path: Option<String>) {
 
                                     if macro_name == String::from("style") {
                                         let ts = expr_mac.mac.tokens.clone();
-                                        let class_name = rand_class_from_seed(ts.to_string());
-                                        let (scoped_css, _) = from_ts(ts, &class_name, false);
+                                        let class = Class::rand_class_from_seed(ts.to_string());
+                                        let (scoped_css, _) = from_ts(ts, &class, false);
                                         output_css += &scoped_css;
                                     }
 
@@ -58,9 +58,9 @@ pub fn build(output_path: Option<String>) {
                                         let css_content = std::fs::read_to_string(&file_path)
                                             .expect("Expected to read file");
 
-                                        let random_class =
-                                            rand_class_from_seed(css_content.to_string());
-                                        let style = from_str(&css_content, &random_class);
+                                        let class =
+                                            Class::rand_class_from_seed(css_content.to_string());
+                                        let style = from_str(&css_content, &class);
                                         output_css += &style;
                                     }
                                 }

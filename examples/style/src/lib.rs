@@ -7,9 +7,10 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
     let class_name = style! {
         // this comment will be ignored
         div {
-            border: 1px solid black;/*This comment also will be ignored */
+            border: 1px solid black; /* This comment also will be ignored */
             margin: 25px 50px 75px 100px;
             background-color: lightblue;
+            // The macro trims all double quotes by default unless it is wrapped with raw_str()
             content: raw_str(r#"\hello"#);
             font: "1.3em/1.2" Arial, Helvetica, sans-serif;
         }
@@ -45,7 +46,7 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
             <h2>"World"</h2>
             <h2>{name}</h2>
             <h3>"Hello Kanna"</h3>
-            <p> "This is example conent"</p>
+            <p> "This is example content"</p>
             <a href="www.google.com">"Visit the link"</a>
         </div>
     }
