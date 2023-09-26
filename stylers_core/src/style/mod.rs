@@ -6,7 +6,7 @@ mod css_style_declar;
 mod css_style_rule;
 mod css_style_sheet;
 mod utils;
-use proc_macro2::TokenStream;
+use proc_macro2::TokenTree;
 use std::collections::HashSet;
 
 pub(crate) use crate::style::css_at_rule::AtRule;
@@ -22,12 +22,14 @@ use crate::Class;
 /// This function will return tuple with two fields (style string, map of unique keys of selectors.)
 /// style string: is the parsed style sheet as a string
 pub fn build_style_from_ts(
-    ts: TokenStream,
+    token_stream: impl Iterator<Item = TokenTree>,
     class: &Class,
     is_proc_macro: bool,
 ) -> (String, HashSet<String>) {
     let mut style = String::new();
-    let (style_sheet, sel_map) = StyleSheet::new(ts, class, is_proc_macro);
+
+    let (style_sheet, sel_map) = StyleSheet::new(token_stream, class, is_proc_macro);
+
     style_sheet.rules.iter().for_each(|rule| match rule {
         Rule::AtRule(at_rule) => style.push_str(&at_rule.css_text()),
         Rule::StyleRule(style_rule) => style.push_str(&style_rule.css_text()),
@@ -36,23 +38,26 @@ pub fn build_style_from_ts(
     (style, sel_map)
 }
 
-//todo: This test will only work when Span is available outside proceduaral macro crate.
-//https://docs.rs/proc-macro2/latest/proc_macro2/struct.Span.html#method.unwrap
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
-//     use quote::quote;
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use quote::quote;
 
-//     #[test]
-//     fn simple_tag() {
-//         let input = quote!{
-//             div {
-//                 border: 1px solid black;
-//                 margin: 25px 50px 75px 100px;
-//                 background-color: lightblue;
-//             }
-//         };
-//         let (style,_) = build_style(input.into(), &"sty".to_string());
-//         assert_eq!(style,"div.sty {border: 1px solid black;margin: 25px 50px 75px 100px;background-color: lightblue;}");
-//     }
-// }
+    // TODO: Span is only available outside procedural macro crate. workaround?
+    // https://docs.rs/proc-macro2/latest/proc_macro2/struct.Span.html#method.unwrap
+    #[test]
+    #[ignore]
+    fn simple_tag() {
+        let input = quote! {
+            div {
+                border: 1px solid black;
+                margin: 25px 50px 75px 100px;
+                background-color: lightblue;
+            }
+        };
+
+        let class = Class::new("test".into());
+        let (style, _) = build_style_from_ts(input.into_iter(), &class, true);
+        assert_eq!(style,"div.test {border: 1px solid black;margin: 25px 50px 75px 100px;background-color: lightblue;}");
+    }
+}

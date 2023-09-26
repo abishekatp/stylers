@@ -5,10 +5,9 @@ use crate::style::css_style_declar::StyleDeclaration;
 use crate::style::utils::{add_spaces, parse_group};
 use crate::Class;
 
-// ref: https://developer.mozilla.org/en-US/docs/Web/API/StyleRule
-// StyleRule is one kind of CSSRule which will contain two parts.
-// One is selector text and another one is style declaration for that selector.
-#[derive(Debug)]
+/// StyleRule is one kind of Rule which contains a selector text and a style declaration.
+/// Ressource: <https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleRule>
+#[derive(Debug, Default)]
 pub(crate) struct StyleRule {
     pub(crate) selector_text: String,
     pub(crate) style: StyleDeclaration,
@@ -22,10 +21,7 @@ impl StyleRule {
         class: &Class,
         is_proc_macro: bool,
     ) -> (StyleRule, HashSet<String>) {
-        let mut css_style_rule = StyleRule {
-            selector_text: String::new(),
-            style: StyleDeclaration::empty(),
-        };
+        let mut css_style_rule = StyleRule::default();
         let sel_map = css_style_rule.parse(ts, class, is_proc_macro);
 
         (css_style_rule, sel_map)
@@ -44,70 +40,70 @@ impl StyleRule {
         let mut pre_line: usize = 0;
         //selector will just store current selector of the style rule.
         let mut selector = String::new();
-        let mut ts_iter = ts.into_iter();
         let mut sel_map = HashSet::new();
-        loop {
-            match ts_iter.next() {
-                Some(tt) => {
-                    match tt {
-                        TokenTree::Group(t) => {
-                            //only if the delimiter is brace it will be style definition.
-                            if t.delimiter() == Delimiter::Brace {
-                                sel_map = self.parse_selector(&selector, class);
-                                self.style = StyleDeclaration::new(t, is_proc_macro);
-                            } else {
-                                add_spaces(
-                                    &mut selector,
-                                    t.span(),
-                                    &mut pre_line,
-                                    &mut pre_col,
-                                    is_proc_macro,
-                                );
-                                selector.push_str(&parse_group(t, is_proc_macro));
-                            }
-                        }
-                        TokenTree::Ident(t) => {
-                            add_spaces(
-                                &mut selector,
-                                t.span(),
-                                &mut pre_line,
-                                &mut pre_col,
-                                is_proc_macro,
-                            );
-                            selector.push_str(&t.to_string());
-                        }
-                        TokenTree::Literal(t) => {
-                            add_spaces(
-                                &mut selector,
-                                t.span(),
-                                &mut pre_line,
-                                &mut pre_col,
-                                is_proc_macro,
-                            );
-                            selector.push_str(t.to_string().trim_matches('"'));
-                        }
-                        TokenTree::Punct(t) => {
-                            let ch = t.as_char();
-                            //only when ch is dot or hash we need space information. because space will mean direct child.
-                            //colon also need space info because it may be custom directive like :deep(p)
-                            if ch == '.' || ch == '#' || ch == ':' {
-                                add_spaces(
-                                    &mut selector,
-                                    t.span(),
-                                    &mut pre_line,
-                                    &mut pre_col,
-                                    is_proc_macro,
-                                );
-                            } else {
-                                let end = t.span().end();
-                                pre_col = end.column;
-                                pre_line = end.line;
-                            }
-                            selector.push(t.as_char());
-                        }
+
+        for tt in ts {
+            match tt {
+                TokenTree::Group(t) => {
+                    //only if the delimiter is brace it will be style definition.
+                    if t.delimiter() == Delimiter::Brace {
+                        sel_map = self.parse_selector(&selector, class);
+                        self.style = StyleDeclaration::new(t, is_proc_macro);
+                    } else {
+                        add_spaces(
+                            &mut selector,
+                            t.span(),
+                            &mut pre_line,
+                            &mut pre_col,
+                            is_proc_macro,
+                        );
+                        selector.push_str(&parse_group(t, is_proc_macro));
                     }
                 }
-                None => break,
+                TokenTree::Ident(t) => {
+                    add_spaces(
+                        &mut selector,
+                        t.span(),
+                        &mut pre_line,
+                        &mut pre_col,
+                        is_proc_macro,
+                    );
+                    selector.push_str(&t.to_string());
+                }
+                TokenTree::Literal(t) => {
+                    add_spaces(
+                        &mut selector,
+                        t.span(),
+                        &mut pre_line,
+                        &mut pre_col,
+                        is_proc_macro,
+                    );
+                    selector.push_str(t.to_string().trim_matches('"'));
+                }
+                TokenTree::Punct(t) => {
+                    let ch = t.as_char();
+                    //only when ch is dot or hash we need space information. because space will mean direct child.
+                    //colon also need space info because it may be custom directive like :deep(p)
+                    if ch == '.' || ch == '#' || ch == ':' {
+                        add_spaces(
+                            &mut selector,
+                            t.span(),
+                            &mut pre_line,
+                            &mut pre_col,
+                            is_proc_macro,
+                        );
+                    } else {
+                        let end = t.span().end();
+                        pre_col = end.column;
+                        pre_line = end.line;
+                        if is_proc_macro {
+                            let end = t.span().unwrap().end();
+                            pre_col = end.column();
+                            pre_line = end.line();
+                        }
+                    }
+                    selector.push(t.as_char());
+                }
             }
         }
         sel_map
@@ -123,7 +119,6 @@ impl StyleRule {
         let mut is_bracket_open = false;
         let mut is_deep_directive = false;
         let mut is_deep_directive_open = false;
-        // let mut was_deep_directive_open = false;
         let mut temp = String::new();
         let mut i = 0;
         for c in selector_text.chars() {
@@ -132,17 +127,7 @@ impl StyleRule {
             if c == '\n' {
                 continue;
             }
-            //ignore all white spaces after :deep directive.
-            // if was_deep_directive_open {
-            //     if c.is_whitespace() {
-            //         source.push(' ');
-            //         continue;
-            //     } else {
-            //         source.push(c);
-            //         was_deep_directive_open = false;
-            //         continue;
-            //     }
-            // }
+
             //ignore everything between square brackets.
             //todo:handle the case when brackets inside attribute.
             if is_bracket_open {
@@ -179,7 +164,6 @@ impl StyleRule {
             if is_deep_directive_open && c == ')' {
                 is_deep_directive = false;
                 is_deep_directive_open = false;
-                // was_deep_directive_open = true;
                 continue;
             }
             if is_deep_directive && c == '(' {

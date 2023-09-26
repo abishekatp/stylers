@@ -5,11 +5,7 @@ use crate::style::css_style_sheet::{Rule, StyleSheet};
 use crate::style::utils::{add_spaces, parse_group};
 use crate::Class;
 
-// ref: https://developer.mozilla.org/en-US/docs/Web/CSS/At-rule
-// AtRule is one kind of Rule. It will have two parts
-// at-rule may contain nested at-rules. style-rule will be the inner most nesting of nested at-rule
-// some ar-rules like @support may contain multiple style-rules nested inside.
-// So we store them in the css_rules list.
+/// ref: https://developer.mozilla.org/en-US/docs/Web/CSS/At-rule
 #[derive(Debug)]
 pub(crate) struct AtRule {
     //nested at-rule may contain one or more css rule block inside it.
@@ -21,7 +17,7 @@ impl AtRule {
     // This method will parse the at-rule tokenstream and return teh AtRule
     // HashMap will contain all unique selectors which may be nested inside at-rule.
     pub(crate) fn new(
-        ts: TokenStream,
+        token_stream: TokenStream,
         class: &Class,
         is_proc_macro: bool,
     ) -> (AtRule, HashSet<String>) {
@@ -29,7 +25,7 @@ impl AtRule {
             rules: vec![],
             at_rules: vec![],
         };
-        css_at_rule.parse(ts, class, is_proc_macro);
+        css_at_rule.parse(token_stream, class, is_proc_macro);
 
         (css_at_rule, HashSet::new())
     }
@@ -62,102 +58,101 @@ impl AtRule {
 
     // This parse method will parse the at-rule tokn stream.
     // Note: this is recursive function it will handle nested at-rules.
-    fn parse(&mut self, ts: TokenStream, class: &Class, is_proc_macro: bool) -> HashSet<String> {
+    fn parse(
+        &mut self,
+        token_stream: TokenStream,
+        class: &Class,
+        is_proc_macro: bool,
+    ) -> HashSet<String> {
         let mut at_rule = String::new();
+        let mut selectors = HashSet::new();
+
         let mut pre_line = 0;
         let mut pre_col = 0;
-        let mut ts_iter = ts.into_iter();
-        let mut sel_map = HashSet::new();
 
-        loop {
-            match ts_iter.next() {
-                Some(tt) => {
-                    match tt {
-                        TokenTree::Group(t) => {
-                            //only if the delimiter is brace it will be either style-rule or at-rule definition
-                            if t.delimiter() == Delimiter::Brace {
-                                let mut new_ts = t.stream().into_iter().take(1);
-                                let mut is_at_rule = false;
-                                if let Some(TokenTree::Punct(at)) = new_ts.next() {
-                                    if at.as_char() == '@' {
-                                        is_at_rule = true;
-                                    }
-                                }
-
-                                if at_rule.contains("@page")
-                                    || at_rule.contains("@font-face")
-                                    || at_rule.contains("keyframes")
-                                    || at_rule.contains("@counter-style")
-                                    || at_rule.contains("@font-feature-values")
-                                    || at_rule.contains("@property")
-                                {
-                                    //these at-rules will not contain any nested css-rules. so we just parse that group as a string.
-                                    at_rule.push_str(&parse_group(t, is_proc_macro));
-                                } else if is_at_rule {
-                                    //if there is another inner at-rule
-                                    self.parse(t.stream(), class, is_proc_macro);
-                                } else {
-                                    //each at-rule may contain one or more css rules nested inside of it.
-                                    //it is like another small style sheet inside of it. So we use CSSStyleSheet here.
-                                    let (mut style_sheet, new_map) =
-                                        StyleSheet::new(t.stream(), class, is_proc_macro);
-                                    self.rules.append(&mut style_sheet.rules);
-                                    sel_map = new_map;
-                                }
-                                self.at_rules.push(at_rule);
-                                at_rule = String::new();
-                            } else {
-                                add_spaces(
-                                    &mut at_rule,
-                                    t.span(),
-                                    &mut pre_line,
-                                    &mut pre_col,
-                                    is_proc_macro,
-                                );
-                                at_rule.push_str(&parse_group(t, is_proc_macro));
+        for tt in token_stream {
+            match tt {
+                TokenTree::Group(t) => {
+                    //only if the delimiter is brace it will be either style-rule or at-rule definition
+                    if t.delimiter() == Delimiter::Brace {
+                        let mut new_ts = t.stream().into_iter().take(1);
+                        let mut is_at_rule = false;
+                        if let Some(TokenTree::Punct(at)) = new_ts.next() {
+                            if at.as_char() == '@' {
+                                is_at_rule = true;
                             }
                         }
-                        TokenTree::Ident(t) => {
-                            add_spaces(
-                                &mut at_rule,
-                                t.span(),
-                                &mut pre_line,
-                                &mut pre_col,
-                                is_proc_macro,
-                            );
-                            at_rule.push_str(&t.to_string());
+
+                        if at_rule.contains("@page")
+                            || at_rule.contains("@font-face")
+                            || at_rule.contains("keyframes")
+                            || at_rule.contains("@counter-style")
+                            || at_rule.contains("@font-feature-values")
+                            || at_rule.contains("@property")
+                        {
+                            // At-rules will not contain any nested css-rules. so we just parse that group as a string.
+                            at_rule.push_str(&parse_group(t, is_proc_macro));
+                        } else if is_at_rule {
+                            // If there is another inner at-rule
+                            self.parse(t.stream(), class, is_proc_macro);
+                        } else {
+                            // Each at-rule may contain one or more css rules nested inside of it.
+                            let (mut style_sheet, new_map) =
+                                StyleSheet::new(t.stream(), class, is_proc_macro);
+                            self.rules.append(&mut style_sheet.rules);
+                            selectors = new_map;
                         }
-                        TokenTree::Literal(t) => {
-                            add_spaces(
-                                &mut at_rule,
-                                t.span(),
-                                &mut pre_line,
-                                &mut pre_col,
-                                is_proc_macro,
-                            );
-                            at_rule.push_str(&t.to_string());
-                        }
-                        TokenTree::Punct(t) => {
-                            let ch = t.as_char();
-                            add_spaces(
-                                &mut at_rule,
-                                t.span(),
-                                &mut pre_line,
-                                &mut pre_col,
-                                is_proc_macro,
-                            );
-                            at_rule.push(ch);
-                            //regular at rule ends with semicolon. there won't be any style declaration for this.
-                            if ch == ';' {
-                                self.at_rules.push(at_rule.clone());
-                            }
-                        }
+                        self.at_rules.push(at_rule);
+                        at_rule = String::new();
+                    } else {
+                        add_spaces(
+                            &mut at_rule,
+                            t.span(),
+                            &mut pre_line,
+                            &mut pre_col,
+                            is_proc_macro,
+                        );
+                        at_rule.push_str(&parse_group(t, is_proc_macro));
                     }
                 }
-                None => break,
+                TokenTree::Ident(t) => {
+                    add_spaces(
+                        &mut at_rule,
+                        t.span(),
+                        &mut pre_line,
+                        &mut pre_col,
+                        is_proc_macro,
+                    );
+                    at_rule.push_str(&t.to_string());
+                }
+                TokenTree::Literal(t) => {
+                    add_spaces(
+                        &mut at_rule,
+                        t.span(),
+                        &mut pre_line,
+                        &mut pre_col,
+                        is_proc_macro,
+                    );
+                    at_rule.push_str(&t.to_string());
+                }
+                TokenTree::Punct(t) => {
+                    let ch = t.as_char();
+                    add_spaces(
+                        &mut at_rule,
+                        t.span(),
+                        &mut pre_line,
+                        &mut pre_col,
+                        is_proc_macro,
+                    );
+                    at_rule.push(ch);
+                    // Regular at-rule ends with semicolon. there won't be any style declaration for this.
+                    if ch == ';' {
+                        self.at_rules.push(at_rule.clone());
+                    }
+                }
             }
         }
 
-        sel_map
+        selectors
     }
 }

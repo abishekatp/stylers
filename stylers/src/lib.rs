@@ -1,6 +1,7 @@
 use glob::glob;
+use proc_macro2::TokenStream;
 use std::fs::File;
-use std::io::Write;
+use std::io::{self, Write};
 use std::{borrow::Borrow, env::current_dir, fs};
 use stylers_core::Class;
 use stylers_core::{from_str, from_ts};
@@ -47,7 +48,8 @@ pub fn build(output_path: Option<String>) {
                                     if macro_name == String::from("style") {
                                         let ts = expr_mac.mac.tokens.clone();
                                         let class = Class::rand_class_from_seed(ts.to_string());
-                                        let (scoped_css, _) = from_ts(ts, &class, false);
+                                        let token_stream = TokenStream::from(ts).into_iter();
+                                        let (scoped_css, _) = from_ts(token_stream, &class, false);
                                         output_css += &scoped_css;
                                     }
 
@@ -73,16 +75,28 @@ pub fn build(output_path: Option<String>) {
         }
     }
 
-    let mut out_path = String::from("./target/stylers_out.css");
-    if let Some(path) = output_path {
-        out_path = path;
-    }
-    let mut file = File::create(out_path).expect("Problem creating main.css file");
-    file.write_all(output_css.as_bytes())
-        .expect("Error writing to the file");
+    write_css(output_path, &output_css)
+        .unwrap_or_else(|e| p!("Problem creating output file: {}", e.to_string()));
 
     p!(
         "{}",
         "===============================Stylers debug output end==============================="
     );
+}
+
+const OUTPUT_DIR: &str = "./target";
+/// Writes the styles in its own file and appends itself to the main.css file
+fn write_css(output_path: Option<String>, content: &str) -> io::Result<()> {
+    let mut out_path = String::from("./target/stylers_out.css");
+    if let Some(path) = output_path {
+        out_path = path;
+    }
+
+    fs::create_dir_all(&OUTPUT_DIR)?;
+
+    let mut buffer = File::create(out_path)?;
+    buffer.write_all(content.as_bytes())?;
+    buffer.flush()?;
+
+    Ok(())
 }
