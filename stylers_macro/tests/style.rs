@@ -616,3 +616,27 @@ fn test_50() {
         "@supports (display: flex){.flex-container.test>.test{text-shadow: 0 0 2px blue;float: none;}.flex-container.test{display: flex;}}"
     );
 }
+
+#[test]
+fn test_51() {
+    let style = style_test! {
+        :deep(.rollUp) .unlockSplash {
+            max-height: 0;
+        }
+    };
+    assert_eq!(style, ".rollUp .unlockSplash.test{max-height: 0;}");
+}
+
+#[test]
+fn test_52() {
+    let style = style_test! {
+        .unitToggle :deep(.onDisplay),
+        .unitToggle :deep(.offDisplay) {
+            color: black;
+        }
+    };
+    assert_eq!(
+        style,
+        ".unitToggle.test .onDisplay,.unitToggle.test .offDisplay{color: black;}"
+    );
+}

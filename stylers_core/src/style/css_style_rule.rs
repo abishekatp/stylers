@@ -119,6 +119,7 @@ impl StyleRule {
         let mut is_bracket_open = false;
         let mut is_deep_directive = false;
         let mut is_deep_directive_open = false;
+        let mut was_deep_directive_open = false;
         let mut temp = String::new();
         let mut i = 0;
         for c in selector_text.chars() {
@@ -126,6 +127,18 @@ impl StyleRule {
             //when reading external files in h2,h1{} selector will be splitted into multiple lines
             if c == '\n' {
                 continue;
+            }
+
+            //ignore all white spaces after :deep directive.
+            if was_deep_directive_open {
+                if c.is_whitespace() {
+                    source.push(' ');
+                    continue;
+                } else {
+                    source.push(c);
+                    was_deep_directive_open = false;
+                    continue;
+                }
             }
 
             //ignore everything between square brackets.
@@ -164,6 +177,7 @@ impl StyleRule {
             if is_deep_directive_open && c == ')' {
                 is_deep_directive = false;
                 is_deep_directive_open = false;
+                was_deep_directive_open = true;
                 continue;
             }
             if is_deep_directive && c == '(' {
