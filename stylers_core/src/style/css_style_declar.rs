@@ -3,7 +3,7 @@ use levenshtein::levenshtein;
 use proc_macro2::{Delimiter, Group, TokenTree};
 use std::collections::HashMap;
 
-/// See <https://www.w3schools.com/cssref/index.php>
+/// ref: https://www.w3schools.com/cssref/index.php
 static ALL_PROPERTIES: [&str; 552] = [
     "accent-color",
     "align-content",
@@ -560,25 +560,28 @@ static ALL_PROPERTIES: [&str; 552] = [
     "zoomAndPan",
 ];
 
-/// See: <https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleDeclaration>
+/// ref: https://developer.mozilla.org/en-US/docs/Web/API/StyleDeclaration
 #[derive(Debug, Default)]
 pub(crate) struct StyleDeclaration {
-    // e.g. `{color:red;}`
+    //e.g {color:red;}
     pub(crate) style_css_text: String,
 }
 
 impl StyleDeclaration {
-    pub(crate) fn new(group: Group) -> StyleDeclaration {
-        let mut declaration = StyleDeclaration::default();
-        declaration.parse(group);
-        declaration
+    pub(crate) fn new(group: Group, is_proc_macro: bool) -> StyleDeclaration {
+        let mut css_style_declar = StyleDeclaration {
+            style_css_text: "".to_string(),
+        };
+        css_style_declar.parse(group, is_proc_macro);
+        css_style_declar
     }
 
-    pub(crate) fn style_css_text(&self) -> &str {
-        &self.style_css_text
+    pub(crate) fn style_css_text(&self) -> String {
+        self.style_css_text.clone()
     }
 
-    pub(crate) fn parse(&mut self, group: Group) {
+    //parse and validate the style declaration group and store it in style_css_text.
+    pub(crate) fn parse(&mut self, group: Group, is_proc_macro: bool) {
         let mut body = String::new();
         let mut property_map = HashMap::new();
         ALL_PROPERTIES.iter().for_each(|key| {
@@ -595,13 +598,25 @@ impl StyleDeclaration {
         body.push('{');
         group.stream().into_iter().for_each(|tt| match tt {
             TokenTree::Group(t) => {
-                add_spaces(&mut property, t.span(), &mut pre_line, &mut pre_col);
-                property.push_str(&parse_property_group(t, raw_str));
+                add_spaces(
+                    &mut property,
+                    t.span(),
+                    &mut pre_line,
+                    &mut pre_col,
+                    is_proc_macro,
+                );
+                property.push_str(&parse_property_group(t, raw_str, is_proc_macro));
                 //completed parsing current raw_str group.
                 raw_str = false;
             }
             TokenTree::Ident(t) => {
-                add_spaces(&mut property, t.span(), &mut pre_line, &mut pre_col);
+                add_spaces(
+                    &mut property,
+                    t.span(),
+                    &mut pre_line,
+                    &mut pre_col,
+                    is_proc_macro,
+                );
                 let ident = t.to_string();
                 if ident == "raw_str" {
                     raw_str = true;
@@ -610,7 +625,13 @@ impl StyleDeclaration {
                 }
             }
             TokenTree::Literal(t) => {
-                add_spaces(&mut property, t.span(), &mut pre_line, &mut pre_col);
+                add_spaces(
+                    &mut property,
+                    t.span(),
+                    &mut pre_line,
+                    &mut pre_col,
+                    is_proc_macro,
+                );
                 //we are trimming r and # because in some cases user have to use r#"\1g"34"#.
                 //note: we will also trim all double quotes by default unless it is wrapped with raw_str()
                 property.push_str(
@@ -637,7 +658,13 @@ impl StyleDeclaration {
                     }
                 }
 
-                add_spaces(&mut property, t.span(), &mut pre_line, &mut pre_col);
+                add_spaces(
+                    &mut property,
+                    t.span(),
+                    &mut pre_line,
+                    &mut pre_col,
+                    is_proc_macro,
+                );
                 property.push(ch);
                 //end of declaration of one property key value pair.
                 if ch == ';' {
@@ -654,29 +681,25 @@ impl StyleDeclaration {
 
 fn validate_property(prop_key: &str, prop_map: &HashMap<&str, ()>) -> (bool, Option<String>) {
     let property = prop_key.trim_start_matches("-webkit-");
-
     if prop_map.contains_key(property) {
         return (true, None);
-    } else if let Some(_css_prop_name) = property.strip_prefix("--") {
-        // TODO: check if the property is custom css property
+    } else if property.starts_with("--") {
+        //this will check if the property is custom css property.
         return (true, None);
     }
-
-    let mut most_relevant = String::new();
+    let mut most_relevent = String::new();
     let mut min_distance = 1000;
-
     ALL_PROPERTIES.iter().for_each(|key| {
         let dist = levenshtein(prop_key, key);
         if dist < min_distance {
             min_distance = dist;
-            most_relevant = key.to_string();
+            most_relevent = key.to_string();
         }
     });
-
-    (false, Some(most_relevant))
+    (false, Some(most_relevent))
 }
 
-fn parse_property_group(group: Group, raw_str: bool) -> String {
+fn parse_property_group(group: Group, raw_str: bool, is_proc_macro: bool) -> String {
     let mut body = String::new();
     let mut pre_col: usize = 0;
     let mut pre_line: usize = 0;
@@ -703,8 +726,14 @@ fn parse_property_group(group: Group, raw_str: bool) -> String {
     }
     group.stream().into_iter().for_each(|tt| match tt {
         TokenTree::Group(t) => {
-            add_spaces(&mut body, t.span(), &mut pre_line, &mut pre_col);
-            let mut group_str: &str = &parse_property_group(t, raw_str);
+            add_spaces(
+                &mut body,
+                t.span(),
+                &mut pre_line,
+                &mut pre_col,
+                is_proc_macro,
+            );
+            let mut group_str: &str = &parse_property_group(t, raw_str, is_proc_macro);
             //there will be group token followed by raw_str! ident.
             if raw_str {
                 group_str = group_str.trim_matches(|c| c == '(' || c == ')');
@@ -714,7 +743,13 @@ fn parse_property_group(group: Group, raw_str: bool) -> String {
             body.push_str(group_str);
         }
         TokenTree::Ident(t) => {
-            add_spaces(&mut body, t.span(), &mut pre_line, &mut pre_col);
+            add_spaces(
+                &mut body,
+                t.span(),
+                &mut pre_line,
+                &mut pre_col,
+                is_proc_macro,
+            );
             let ident = t.to_string();
             if ident == "raw_str" {
                 raw_str = true;
@@ -722,7 +757,13 @@ fn parse_property_group(group: Group, raw_str: bool) -> String {
             body.push_str(&ident);
         }
         TokenTree::Literal(t) => {
-            add_spaces(&mut body, t.span(), &mut pre_line, &mut pre_col);
+            add_spaces(
+                &mut body,
+                t.span(),
+                &mut pre_line,
+                &mut pre_col,
+                is_proc_macro,
+            );
             //in case of properties will trim r,# around the string literals
             let mut literal: &str = &t.to_string();
             literal = literal.trim_start_matches('r').trim_matches(|c| c == '#');
@@ -734,7 +775,13 @@ fn parse_property_group(group: Group, raw_str: bool) -> String {
             raw_str = false;
         }
         TokenTree::Punct(t) => {
-            add_spaces(&mut body, t.span(), &mut pre_line, &mut pre_col);
+            add_spaces(
+                &mut body,
+                t.span(),
+                &mut pre_line,
+                &mut pre_col,
+                is_proc_macro,
+            );
             body.push(t.as_char());
         }
     });

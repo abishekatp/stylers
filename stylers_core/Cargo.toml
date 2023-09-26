@@ -1,0 +1,16 @@
+[package]
+name = "stylers_core"
+version = "1.0.0-alpha"
+edition = "2021"
+authors = ["Abishek P"]
+license = "MIT"
+repository = "https://github.com/abishekatp/stylers"
+description = "Scoped CSS implementation in Rust"
+readme = "../README.md"
+
+[dependencies]
+quote = "1.0"
+proc-macro2 = { version = "1.0", features = ["span-locations"] }
+rand = "0.8.5"
+rand_chacha = "0.3.1"
+levenshtein = "1.0.5"

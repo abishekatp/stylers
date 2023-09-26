@@ -3,7 +3,7 @@ use stylers::{style, style_str};
 
 #[component]
 pub fn Parent(cx: Scope) -> impl IntoView {
-    let class_name = style! {"Parent",
+    let class_name = style! {
         button {
             background-color: green;
             border-radius: 8px;

@@ -23,6 +23,7 @@ impl StyleSheet {
     pub(crate) fn new(
         token_stream: impl IntoIterator<Item = TokenTree>,
         class: &Class,
+        is_proc_macro: bool,
     ) -> (StyleSheet, HashSet<String>) {
         let mut css_style_sheet = StyleSheet::default();
 
@@ -42,12 +43,13 @@ impl StyleSheet {
                     if t.delimiter() == Delimiter::Brace {
                         count = 0;
                         if is_at_rule {
-                            let (at_rule, new_map) = AtRule::new(css_rule_tt, class);
+                            let (at_rule, new_map) = AtRule::new(css_rule_tt, class, is_proc_macro);
                             css_style_sheet.rules.push(Rule::AtRule(at_rule));
                             sel_map.extend(new_map);
                             is_at_rule = false;
                         } else {
-                            let (style_rule, new_map) = StyleRule::new(css_rule_tt, class);
+                            let (style_rule, new_map) =
+                                StyleRule::new(css_rule_tt, class, is_proc_macro);
                             css_style_sheet.rules.push(Rule::StyleRule(style_rule));
                             sel_map.extend(new_map);
                         }
@@ -61,7 +63,7 @@ impl StyleSheet {
                     }
                     //in regular at-rule css rule ends with semicolon without any style declaration.
                     if is_at_rule && ch == ';' {
-                        let (at_rule, new_map) = AtRule::new(css_rule_tt, class);
+                        let (at_rule, new_map) = AtRule::new(css_rule_tt, class, is_proc_macro);
                         css_style_sheet.rules.push(Rule::AtRule(at_rule));
                         sel_map.extend(new_map);
                         is_at_rule = false;

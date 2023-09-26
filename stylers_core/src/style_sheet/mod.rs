@@ -10,7 +10,7 @@ use crate::{
 
 /// This function will build the whole style text as the String.
 /// This build_style is string version of the build_style method from style macro.
-pub(crate) fn build_style(style_str: &str, class: &Class) -> String {
+pub fn build_style_from_str(style_str: &str, class: &Class) -> String {
     let mut style = String::new();
     let style_sheet = StyleSheet::from_str(style_str, class);
     style_sheet.rules.iter().for_each(|rule| match rule {

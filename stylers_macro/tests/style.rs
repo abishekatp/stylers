@@ -2,11 +2,11 @@
 // run this command cargo run inside styler_test folder.
 // Ref: https://www.w3schools.com/cssref/css_selectors.php
 
-use stylers::style_test;
+use stylers_macro::style_test;
 
 #[test]
 fn test_1() {
-    let style = style_test! {"Hello",.two{
+    let style = style_test! {.two{
             // this comment should be ignored
             color: yellow;
         }
@@ -16,7 +16,7 @@ fn test_1() {
 
 #[test]
 fn test_2() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         .two.one  {
             color: yellow;
         }
@@ -26,7 +26,7 @@ fn test_2() {
 
 #[test]
 fn test_3() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         .two  .one{
             color: yellow;
         }
@@ -36,7 +36,7 @@ fn test_3() {
 
 #[test]
 fn test_4() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         #firstname{
             background-color: yellow;
         }
@@ -47,7 +47,7 @@ fn test_4() {
 #[test]
 fn test_5() {
     // todo: decide weather all element should have the random classname inserted for this.
-    let style = style_test! {"Hello",
+    let style = style_test! {
         *{
             background-color: yellow;
         }
@@ -57,7 +57,7 @@ fn test_5() {
 
 #[test]
 fn test_6() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         div{
             border: 1px solid black;
             margin: 25px 50px 75px 100px;
@@ -68,7 +68,7 @@ fn test_6() {
 }
 #[test]
 fn test_7() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         div .one p{
             color: blue;
         }
@@ -78,7 +78,7 @@ fn test_7() {
 
 #[test]
 fn test_8() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         div.one p div{
             color: blue;
         }
@@ -88,7 +88,7 @@ fn test_8() {
 
 #[test]
 fn test_9() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         div #two{
             color: blue;
         }
@@ -98,7 +98,7 @@ fn test_9() {
 
 #[test]
 fn test_10() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         h2 , a{
             color: purple;
         }
@@ -108,7 +108,7 @@ fn test_10() {
 
 #[test]
 fn test_11() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         div > p{
             background-color: yellow;
         }
@@ -118,7 +118,7 @@ fn test_11() {
 
 #[test]
 fn test_12() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         div + p {
             background-color: yellow;
         }
@@ -128,7 +128,7 @@ fn test_12() {
 
 #[test]
 fn test_13() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         p ~ ul {
             background: #ff0000;
         }
@@ -138,7 +138,7 @@ fn test_13() {
 
 #[test]
 fn test_14() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         a[target] {
             background-color: yellow;
         }
@@ -148,7 +148,7 @@ fn test_14() {
 
 #[test]
 fn test_15() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         a[title="I am ,testing"] {
             background-color: yellow;
         }
@@ -161,7 +161,7 @@ fn test_15() {
 
 #[test]
 fn test_16() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         [title~=flower] {
             background-color: yellow;
         }
@@ -171,7 +171,7 @@ fn test_16() {
 
 #[test]
 fn test_17() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         [lang|=en] {
             background-color: yellow;
         }
@@ -181,7 +181,7 @@ fn test_17() {
 
 #[test]
 fn test_18() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         div[class^="test"] {
             background-color: yellow;
         }
@@ -194,7 +194,7 @@ fn test_18() {
 
 #[test]
 fn test_19() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         div[class$=test] {
             background-color: yellow;
         }
@@ -204,7 +204,7 @@ fn test_19() {
 
 #[test]
 fn test_20() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         div [class$=test] {
             background-color: yellow;
         }
@@ -217,7 +217,7 @@ fn test_20() {
 
 #[test]
 fn test_21() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         div[class*="test"] {
             background-color: yellow;
         }
@@ -230,7 +230,7 @@ fn test_21() {
 
 #[test]
 fn test_22() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         .one:hover{
             background-color: green;
         }
@@ -240,7 +240,7 @@ fn test_22() {
 
 #[test]
 fn test_23() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         p::before {
             content: raw_str("Read this: ");
         }
@@ -250,7 +250,7 @@ fn test_23() {
 
 #[test]
 fn test_24() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         div:nth-child(2){
             background-color: green;
         }
@@ -260,7 +260,7 @@ fn test_24() {
 
 #[test]
 fn test_25() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         p:lang(it){
             background: yellow;
         }
@@ -270,7 +270,7 @@ fn test_25() {
 
 #[test]
 fn test_26() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         svg|a {
         }
     };
@@ -281,7 +281,7 @@ fn test_26() {
 
 #[test]
 fn test_27() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         @charset "UTF-8";
     };
     assert_eq!(style, r#"@charset "UTF-8";"#);
@@ -289,7 +289,7 @@ fn test_27() {
 
 #[test]
 fn test_28() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         @import url("landscape.css") screen and (orientation: landscape);
     };
     assert_eq!(
@@ -302,7 +302,7 @@ fn test_28() {
 
 #[test]
 fn test_29() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         @namespace svg url("http://www.w3.org/2000/svg");
     };
     assert_eq!(
@@ -315,7 +315,7 @@ fn test_29() {
 
 #[test]
 fn test_30() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         @supports (display: flex) {
             @media screen and (min-width: 900px) {
                 article {
@@ -332,7 +332,7 @@ fn test_30() {
 
 #[test]
 fn test_31() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         @document url("https://www.example.com/")
         {
             h1 {
@@ -348,7 +348,7 @@ fn test_31() {
 
 #[test]
 fn test_32() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         @page {
             size: A4;
             margin: 10%;
@@ -366,7 +366,7 @@ fn test_32() {
 
 #[test]
 fn test_33() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         @font-face {
             font-family: "Trickster";
             src: local("Trickster"),
@@ -385,7 +385,7 @@ fn test_33() {
 
 #[test]
 fn test_34() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         @keyframes spin1 {
             to {
                 -webkit-transform: rotate(360deg);
@@ -400,7 +400,7 @@ fn test_34() {
 
 #[test]
 fn test_35() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         @-webkit-keyframes spin2 {
             to {
                 -webkit-transform: rotate(360deg);
@@ -417,7 +417,7 @@ fn test_35() {
 
 #[test]
 fn test_36() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         @counter-style thumbs {
             system: cyclic;
             symbols: r"\1F44D";
@@ -432,7 +432,7 @@ fn test_36() {
 
 #[test]
 fn test_37() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         @font-feature-values Font One {
             @styleset {
                 nice-style: 12;
@@ -449,7 +449,7 @@ fn test_37() {
 
 #[test]
 fn test_38() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         @property --property-name {
             syntax: "<color>";
             inherits: false;
@@ -466,7 +466,7 @@ fn test_38() {
 
 #[test]
 fn test_39() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         @layer framework {
             @layer layout {
                 p {
@@ -486,7 +486,7 @@ fn test_39() {
 
 #[test]
 fn test_40() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         @layer theme, layout, utilities;
     };
     assert_eq!(style, r#"@layer theme, layout, utilities;"#);
@@ -494,7 +494,7 @@ fn test_40() {
 
 #[test]
 fn test_41() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         :not(body) {
             background: #ff0000;
         }
@@ -504,7 +504,7 @@ fn test_41() {
 
 #[test]
 fn test_42() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         :root {
             --blue: #1e90ff;
         }
@@ -519,7 +519,7 @@ fn test_42() {
 
 #[test]
 fn test_43() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         #container {
             --first-color: #290;
         }
@@ -536,7 +536,7 @@ fn test_43() {
 
 #[test]
 fn test_44() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         table th,
         table td {
             color: red;
@@ -549,7 +549,7 @@ fn test_44() {
 
 #[test]
 fn test_45() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         div :deep(h3) {
             color: orange;
         }
@@ -559,7 +559,7 @@ fn test_45() {
 
 #[test]
 fn test_46() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         :deep(h3 div) {
             color: orange;
         }
@@ -569,7 +569,7 @@ fn test_46() {
 
 #[test]
 fn test_47() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         div> :deep(h3) {
             color: orange;
         }
@@ -579,7 +579,7 @@ fn test_47() {
 
 #[test]
 fn test_48() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         :deep([data-custom]) {
             color: orange;
         }
@@ -589,7 +589,7 @@ fn test_48() {
 
 #[test]
 fn test_49() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         .nested> :deep([data-custom]) {
             color: orange;
         }
@@ -599,7 +599,7 @@ fn test_49() {
 
 #[test]
 fn test_50() {
-    let style = style_test! {"Hello",
+    let style = style_test! {
         @supports (display: flex) {
             .flex-container > * {
                 text-shadow: 0 0 2px blue;
@@ -614,5 +614,29 @@ fn test_50() {
     assert_eq!(
         style,
         "@supports (display: flex){.flex-container.test>.test{text-shadow: 0 0 2px blue;float: none;}.flex-container.test{display: flex;}}"
+    );
+}
+
+#[test]
+fn test_51() {
+    let style = style_test! {
+        :deep(.rollUp) .unlockSplash {
+            max-height: 0;
+        }
+    };
+    assert_eq!(style, ".rollUp .unlockSplash.test{max-height: 0;}");
+}
+
+#[test]
+fn test_52() {
+    let style = style_test! {
+        .unitToggle :deep(.onDisplay),
+        .unitToggle :deep(.offDisplay) {
+            color: black;
+        }
+    };
+    assert_eq!(
+        style,
+        ".unitToggle.test .onDisplay,.unitToggle.test .offDisplay{color: black;}"
     );
 }

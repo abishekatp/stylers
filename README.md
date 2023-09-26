@@ -5,15 +5,42 @@
 - `style_str!` macro is same as `style!` macro but returns the tuple `(class_name, style_val)` instead of saving the style_val to the separate file.
 - `style_sheet_str!` this same as `style_sheet!` macro but returns the tuple `(class_name, style_val)` instead of saving the style_val to the separate file.
 
+## Important Note
+- This Readme file is for the latest relase of stylers 1.0.0-alpha. You can find the readme for previous versions [here](https://crates.io/crates/stylers/0.3.2)
+
 ## Installtion
 ```cargo add stylers```
 
+## Prerequisite
+- If you are using `style` or `style_sheet` macro, then you have to add the `stylers` crate as both dependencies and build-dependencies in your Cargo.toml file.
+```
+[dependencies]
+stylers = { version = "*" }
+
+[build-dependencies]
+stylers = {  version = "*" }
+```
+
+- Then you have to add `build.rs` file in your root directory and add the below code snippet in it. 
+```rust 
+use stylers::build;
+
+fn main() {
+    build(Some(String::from("./target/main.css")));
+}
+```
+- In the above case output css file will be generated in the `./target/main.css` path. You can include that `main.css` file in your `index.html` file.(**Or If you are using a build like Trunk.rs you have to follow appropriate methods to include the main.css file to your project**).
+
+You can find the importance of these new changes [here](https://github.com/abishekatp/stylers/issues/35).
+
 ## Leptos Example
+**Note :Leptos version > 0.4.9 has some new changes. But stylers works the same way in all versions of leptos**
+
 #### style!
 ```rust
 #[component]
 fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
-    let styler_class = style! {"Hello",
+    let styler_class = style! {
         #two{
             color: blue;
         }
@@ -61,10 +88,9 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
     }
 }
 ```
-- In this case you should place the ```hello.css``` file inside the `root` directory of the project.
+- In the above case ```hello.css``` file is inside the `root` directory of the project.
 
 #### style_str!
-- Note that in `style_str!` macro we don't need to pass the component name as we do in `style!` macro.
 ```rust
 #[component]
 pub fn GreenButton(cx: Scope) -> impl IntoView {
@@ -119,7 +145,7 @@ pub fn BlueButton(cx: Scope) -> impl IntoView {
     }
 }
 ```
-- In this case you should place the ```button.css``` file inside the `src` directory of the project.
+- In this case ```button.css``` file is inside the `src` directory of the project.
 
 ## Custom pseudo classes
 - In some situations we may need our css to affect `deep down` the dom tree. To achieve this we have custom pseudo class called `:deep()`. For example below css is valid one.
@@ -147,16 +173,9 @@ h3 div{color: orange;}
 ```
 
 ## How it works:
+- This `stylers::build` method will parse all the rust files in the path `/src/**/*.rs` during build step to find the places the `style` and `style_sheet` macros has been used and generate single output css file.
+- `style_str` and `style_sheet_str` directly returns the tuple (class_name, output_css).
 
-- Both `style!` and `style_sheet!` macros generate a css file with the given name inside the `./target/stylers/css` directory.
-- For e.g. below code generates `mystyle.css` in `./target/stylers/css` directory and also generates one combined `./target/stylers/main.css` with all css files.
-```rust
-style!{"mystyle",
-    h2 {
-        color: green;
-    }
-}
-```
 
 ## Edge cases handled for `style!` macros
 - By default double quotes ( " ) around css property values will be removed. If user wants to retain the double quotes they have to wrap it using ```raw_str``` as given below:
@@ -182,12 +201,12 @@ style!(
 - You have to include generated main.css in the index.html
 (e.g ```<link rel="stylesheet" href="/main.css">```).
 
-- In ```Trunk.toml``` you have to add the below lines to move the the `main.css` file from `./target/stylers/` directory to `./dist/` directory.
+- In ```Trunk.toml``` you have to add the below lines to move the the `main.css` file from `./target/` directory to `./dist/` directory.
 ```toml
 [[hooks]]
 stage = "post_build"
 command = "sh"
-command_arguments = ["-c", "cp ./target/stylers/main.css $TRUNK_STAGING_DIR/"]
+command_arguments = ["-c", "cp ./target/main.css $TRUNK_STAGING_DIR/"]
 ```
 - when you are including external css file using `style_sheet!` macro, whenever you make some changes in your css file you have to save corresponding rust file(*.rs) for css to be updated on the browser. For more info about trunk refer [here](https://trunkrs.dev/commands/).
 - if something is odd with styling, delete the `./target/stylers` directory and rebuild your package. If the problem persists please raise an issue here.
