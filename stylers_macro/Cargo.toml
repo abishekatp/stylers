@@ -16,4 +16,4 @@ proc_macro = true
 quote = "1.0"
 proc-macro2 = { version = "1.0" }
 litrs = "0.4.0"
-stylers_core = { version = "1.0.0-alpha", path = "../stylers_core" }
+stylers_core = "1.0.0-alpha"
