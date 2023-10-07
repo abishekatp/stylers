@@ -640,3 +640,30 @@ fn test_52() {
         ".unitToggle.test .onDisplay,.unitToggle.test .offDisplay{color: black;}"
     );
 }
+
+#[test]
+fn test_53() {
+    let style = style_test! {
+         .wingman :deep(svg[role=graphics-symbol]) {
+           width: 100%;
+        }
+    };
+    assert_eq!(
+        style,
+        ".wingman.test svg[role=graphics-symbol]{width: 100%;}"
+    );
+}
+
+#[test]
+fn test_54() {
+    let style = style_test! {
+        .errorSign {
+            transform-box: fill-box;
+            transform-origin: center;
+        }
+    };
+    assert_eq!(
+        style,
+        ".errorSign.test{transform-box: fill-box;transform-origin: center;}"
+    );
+}
