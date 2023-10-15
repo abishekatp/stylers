@@ -65,11 +65,18 @@ pub fn Abi(cx: Scope) -> impl IntoView {
                 color: blue
             }
         }
+        :deep(.rollUp ) .deep-text{
+            color: orange;
+            font-size: 1.5rem;
+        }
     };
     view! {cx, class = class_name,
-        <div>
+        <div class="rollUp">
             <Hello name="hello"/>
             <h3 >"Hai"</h3>
+
+            <span class="deep-text">:deep directive test</span>
         </div>
+
     }
 }
