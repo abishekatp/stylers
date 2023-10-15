@@ -4,7 +4,7 @@ use proc_macro2::{Delimiter, Group, TokenTree};
 use std::collections::HashMap;
 
 /// ref: https://www.w3schools.com/cssref/index.php
-static ALL_PROPERTIES: [&str; 553] = [
+static ALL_PROPERTIES: [&str; 555] = [
     "accent-color",
     "align-content",
     "align-items",
@@ -267,6 +267,8 @@ static ALL_PROPERTIES: [&str; 553] = [
     "rotate",
     "row-gap",
     "scale",
+    "scrollbar-width",
+    "scrollbar-color",
     "scroll-behavior",
     "scroll-margin",
     "scroll-margin-block",

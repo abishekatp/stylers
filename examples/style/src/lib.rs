@@ -38,6 +38,9 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
         p::before {
             content: raw_str("Read this: ");
         }
+        .example-url{
+            content: r#"url("https://picsum.photos/200/300")"#;
+        }
     };
 
     view! {cx, class = class_name,
@@ -49,6 +52,7 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
             <p> "This is example content"</p>
             <a href="www.google.com">"Visit the link"</a>
         </div>
+        <span class="example-url"></span>
     }
 }
 

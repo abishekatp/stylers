@@ -660,10 +660,12 @@ fn test_54() {
         .errorSign {
             transform-box: fill-box;
             transform-origin: center;
+            scrollbar-width: 1px;
+            scrollbar-color: red;
         }
     };
     assert_eq!(
         style,
-        ".errorSign.test{transform-box: fill-box;transform-origin: center;}"
+        ".errorSign.test{transform-box: fill-box;transform-origin: center;scrollbar-width: 1px;scrollbar-color: red;}"
     );
 }
