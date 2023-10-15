@@ -4,7 +4,7 @@ use proc_macro2::{Delimiter, Group, TokenTree};
 use std::collections::HashMap;
 
 /// ref: https://www.w3schools.com/cssref/index.php
-static ALL_PROPERTIES: [&str; 552] = [
+static ALL_PROPERTIES: [&str; 553] = [
     "accent-color",
     "align-content",
     "align-items",
@@ -516,6 +516,7 @@ static ALL_PROPERTIES: [&str; 552] = [
     "text-anchor",
     "text-rendering",
     "textLength",
+    "transform-box",
     "to",
     "type",
     "u1",
