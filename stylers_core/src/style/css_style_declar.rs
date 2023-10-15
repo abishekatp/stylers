@@ -680,7 +680,7 @@ impl StyleDeclaration {
 }
 
 fn validate_property(prop_key: &str, prop_map: &HashMap<&str, ()>) -> (bool, Option<String>) {
-    let property = prop_key.trim_start_matches("-webkit-");
+    let property = prop_key.strip_prefix("-webkit-").unwrap_or(prop_key);
     if prop_map.contains_key(property) {
         return (true, None);
     } else if property.starts_with("--") {
