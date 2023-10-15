@@ -1,6 +1,6 @@
 [package]
 name = "stylers_macro"
-version = "1.0.0-alpha"
+version = "1.0.1"
 edition = "2021"
 authors = ["Abishek P"]
 license = "MIT"
@@ -16,4 +16,4 @@ proc_macro = true
 quote = "1.0"
 proc-macro2 = { version = "1.0" }
 litrs = "0.4.0"
-stylers_core = "1.0.0-alpha"
+stylers_core = "1.0.1"
