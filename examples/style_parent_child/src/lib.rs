@@ -2,7 +2,7 @@ use leptos::*;
 use stylers::{style, style_str};
 
 #[component]
-pub fn Parent(cx: Scope) -> impl IntoView {
+pub fn Parent() -> impl IntoView {
     let class_name = style! {
         button {
             background-color: green;
@@ -35,14 +35,14 @@ pub fn Parent(cx: Scope) -> impl IntoView {
         }
     };
 
-    view! {cx, class = {class_name},
+    view! {class = {class_name},
         <button>"I am green button"</button>
         <Child class_name={class_name.to_string()}/>
     }
 }
 
 #[component]
-fn Child(cx: Scope, class_name: String) -> impl IntoView {
+fn Child(class_name: String) -> impl IntoView {
     let (local_class, style_val) = style_str! {
         button{
             background-color: blue;
@@ -53,7 +53,7 @@ fn Child(cx: Scope, class_name: String) -> impl IntoView {
         }
     };
     let class_name = format!("{} {}", class_name, local_class);
-    view! {cx, class = {class_name.clone()},
+    view! {class = {class_name.clone()},
         <style>{style_val}</style>
         <button>"I am blue button"</button>
     }

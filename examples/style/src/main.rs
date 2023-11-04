@@ -4,5 +4,5 @@ use style_macro::*;
 
 pub fn main() {
     console::log!("Hello, stylers!");
-    mount_to_body(|cx| view! { cx,  <Abi/> });
+    mount_to_body(|| view! { <Abi/> });
 }
