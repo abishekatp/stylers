@@ -684,10 +684,8 @@ impl StyleDeclaration {
 
 fn validate_property(prop_key: &str, prop_map: &HashMap<&str, ()>) -> (bool, Option<String>) {
     let property = prop_key.strip_prefix("-webkit-").unwrap_or(prop_key);
-    if prop_map.contains_key(property) {
-        return (true, None);
-    } else if property.starts_with("--") {
-        //this will check if the property is custom css property.
+    // Check if the property is a custom css property.
+    if prop_map.contains_key(property) || property.starts_with("--") {
         return (true, None);
     }
     let mut most_relevent = String::new();
