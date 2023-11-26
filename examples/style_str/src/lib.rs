@@ -2,7 +2,7 @@ use leptos::*;
 use stylers::style_str;
 
 #[component]
-pub fn GreenButton(cx: Scope) -> impl IntoView {
+pub fn GreenButton() -> impl IntoView {
     let (class_name, style_val) = style_str! {
         button {
             background-color: green;
@@ -39,7 +39,7 @@ pub fn GreenButton(cx: Scope) -> impl IntoView {
         }
     };
 
-    view! {cx, class = class_name,
+    view! {class = class_name,
         <style>{style_val}</style>
         <button>"I am green button"</button>
         <div class="one">

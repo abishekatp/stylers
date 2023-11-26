@@ -1,5 +1,5 @@
 use glob::glob;
-use proc_macro2::TokenStream;
+
 use std::fs::File;
 use std::io::{self, Write};
 use std::{borrow::Borrow, env::current_dir, fs};
@@ -45,19 +45,19 @@ pub fn build(output_path: Option<String>) {
                                     let macro_name = path_seg.ident.clone().to_string();
                                     // p!("macro_name:{:?}", macro_name);
 
-                                    if macro_name == String::from("style") {
+                                    if macro_name == *"style" {
                                         let ts = expr_mac.mac.tokens.clone();
                                         let class = Class::rand_class_from_seed(ts.to_string());
-                                        let token_stream = TokenStream::from(ts).into_iter();
+                                        let token_stream = ts.into_iter();
                                         let (scoped_css, _) = from_ts(token_stream, &class, false);
                                         output_css += &scoped_css;
                                     }
 
-                                    if macro_name == String::from("style_sheet") {
+                                    if macro_name == *"style_sheet" {
                                         let ts = expr_mac.mac.tokens.clone();
                                         let file_path = ts.to_string();
                                         let file_path = file_path.trim_matches('"');
-                                        let css_content = std::fs::read_to_string(&file_path)
+                                        let css_content = std::fs::read_to_string(file_path)
                                             .expect("Expected to read file");
 
                                         let class =
@@ -92,7 +92,7 @@ fn write_css(output_path: Option<String>, content: &str) -> io::Result<()> {
         out_path = path;
     }
 
-    fs::create_dir_all(&OUTPUT_DIR)?;
+    fs::create_dir_all(OUTPUT_DIR)?;
 
     let mut buffer = File::create(out_path)?;
     buffer.write_all(content.as_bytes())?;

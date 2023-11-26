@@ -2,10 +2,10 @@ use leptos::*;
 use stylers::{style, style_sheet};
 
 #[component]
-fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
+fn Hello(name: &'static str) -> impl IntoView {
     let class_name = style_sheet!("./src/hello.css");
 
-    view! {cx, class = class_name,
+    view! {class = class_name,
         <div class="one">
             <h1 id="two">"Hello"</h1>
             <h2>"World"</h2>
@@ -18,7 +18,7 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
 }
 
 #[component]
-pub fn Abi(cx: Scope) -> impl IntoView {
+pub fn Abi() -> impl IntoView {
     let class_name = style! {
         h3{
             background-color: blue;
@@ -30,7 +30,7 @@ pub fn Abi(cx: Scope) -> impl IntoView {
             }
         }
     };
-    view! {cx, class = class_name,
+    view! {class = class_name,
         <Hello name="hello"/>
         <h3 >"Hai"</h3>
     }

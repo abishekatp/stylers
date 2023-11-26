@@ -2,7 +2,7 @@ use leptos::*;
 use stylers::style;
 
 #[component]
-fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
+fn Hello(name: &'static str) -> impl IntoView {
     //note: we will trim all double quotes by default unless it is wrapped with raw_str()
     let class_name = style! {
         // this comment will be ignored
@@ -43,7 +43,7 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
         }
     };
 
-    view! {cx, class = class_name,
+    view! {class = class_name,
         <div class="one">
             <h1 id="two">"Hello"</h1>
             <h2>"World"</h2>
@@ -57,7 +57,7 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
 }
 
 #[component]
-pub fn Abi(cx: Scope) -> impl IntoView {
+pub fn Abi() -> impl IntoView {
     let class_name = style! {
         // we can use this :deep() pseudo class in external css file as well.
         div :deep(h3){
@@ -74,7 +74,7 @@ pub fn Abi(cx: Scope) -> impl IntoView {
             font-size: 1.5rem;
         }
     };
-    view! {cx, class = class_name,
+    view! {class = class_name,
         <div class="rollUp">
             <Hello name="hello"/>
             <h3 >"Hai"</h3>
