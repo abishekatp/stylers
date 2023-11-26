@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 leptos = { version = "0.5.2", features = ["csr"] }
-gloo = "0.8.0"
+gloo = "0.10.0"
 stylers = { path = "../../stylers" }
 
 [build-dependencies]
