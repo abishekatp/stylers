@@ -21,8 +21,8 @@ stylers = { version = "*" }
 stylers = {  version = "*" }
 ```
 
-- Then you have to add `build.rs` file in your root directory and add the below code snippet in it. 
-```rust 
+- Then you have to add `build.rs` file in your root directory and add the below code snippet in it.
+```rust
 use stylers::build;
 
 fn main() {
@@ -65,7 +65,7 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
         }
     };
 
-    view! {cx, class = styler_class,
+    view! {class = styler_class,
         <div class="one">
             <h1 id="two">"Hello"</h1>
             <h2>"World"</h2>
@@ -80,7 +80,7 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
 #[component]
 fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
     let class_name = style_sheet!("./hello.css");
-    view! {cx, class = class_name,
+    view! {class = class_name,
         <div class="one">
             <h1 id="two">"Hello"</h1>
             <h2>"World"</h2>
@@ -126,7 +126,7 @@ pub fn GreenButton(cx: Scope) -> impl IntoView {
         }
     };
 
-    view! {cx, class = class_name,
+    view! {class = class_name,
         <style>{style_val}</style>
         <button>"I am green button"</button>
     }
@@ -136,10 +136,10 @@ pub fn GreenButton(cx: Scope) -> impl IntoView {
 #### style_sheet_str!
 ```rust
 #[component]
-pub fn BlueButton(cx: Scope) -> impl IntoView {
+pub fn BlueButton() -> impl IntoView {
     let (class_name, style_val) = style_sheet_str!("./src/button.css");
 
-    view! {cx, class = class_name,
+    view! {class = class_name,
         <style>{style_val}</style>
         <button>"I am blue button"</button>
     }
