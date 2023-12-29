@@ -40,7 +40,7 @@ You can find the importance of these new changes [here](https://github.com/abish
 ```rust
 #[component]
 fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
-    let styler_class = style! {
+    let styler_class = style! {"App",
         #two{
             color: blue;
         }
