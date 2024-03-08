@@ -198,16 +198,9 @@ style!(
 ```
 
 ## Optional build process using Trunk(Only when you use `style!` or `style_sheet!` macro )
-- You have to include generated main.css in the index.html
-(e.g ```<link rel="stylesheet" href="/main.css">```).
-
-- In ```Trunk.toml``` you have to add the below lines to move the the `main.css` file from `./target/` directory to `./dist/` directory.
-```toml
-[[hooks]]
-stage = "post_build"
-command = "sh"
-command_arguments = ["-c", "cp ./target/main.css $TRUNK_STAGING_DIR/"]
+- include target/main.css using a link tag with the additional attribute `data-trunk`
+```html
+<link rel="css" href="target/main.css" data-trunk />
 ```
-- when you are including external css file using `style_sheet!` macro, whenever you make some changes in your css file you have to save corresponding rust file(*.rs) for css to be updated on the browser. For more info about trunk refer [here](https://trunkrs.dev/commands/).
-- if something is odd with styling, delete the `./target/stylers` directory and rebuild your package. If the problem persists please raise an issue here.
+- this will tell trunk to copy the main.css file over to the output directory and link it properly
 
