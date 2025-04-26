@@ -1,5 +1,5 @@
 [workspace]
-members = ["stylers_core", "stylers", "stylers_macro"]
+members = ["stylers_core", "stylers", "stylers_macro", "stylers_cli"]
 exclude = ["examples"]
 resolver = "2"
 

@@ -1,0 +1,20 @@
+[package]
+name = "stylers_cli"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+path = "src/main.rs"
+name = "stylers"
+
+[dependencies]
+camino = "1.1.9"
+clap = { version = "4.5.36", features = ["derive"] }
+color-eyre = "0.6.3"
+stylers = { version = "1.0.0-alpha", path = "../stylers", default-features = false, features = [
+    "build",
+    "cli",
+] }
+tracing = "0.1.41"
+tracing-error = "0.2.1"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter", "fmt"] }
