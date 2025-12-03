@@ -43,7 +43,7 @@ fn Hello(name: &'static str) -> impl IntoView {
         }
     };
 
-    view! {class = class_name,
+    view! {class:class_name,
         <div class="one">
             <h1 id="two">"Hello"</h1>
             <h2>"World"</h2>
@@ -74,7 +74,7 @@ pub fn Abi() -> impl IntoView {
             font-size: 1.5rem;
         }
     };
-    view! {class = class_name,
+    view! {class:class_name,
         <div class="rollUp">
             <Hello name="hello"/>
             <h3 >"Hai"</h3>

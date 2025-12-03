@@ -1,19 +1,20 @@
 [package]
 name = "stylers_macro"
-version = "1.0.2"
-edition = "2021"
-authors = ["Abishek P"]
-license = "MIT"
-repository = "https://github.com/abishekatp/stylers"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
 description = "Scoped CSS for Rust web frameworks like leptos"
 readme = "../README.md"
+documentation = "https://docs.rs/stylers_macro"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
-proc_macro = true
+proc-macro = true
 
 [dependencies]
 quote = "1.0"
 proc-macro2 = { version = "1.0" }
-litrs = "0.4.0"
-stylers_core = "1.0.2"
+litrs = "0.4"
+stylers_core = { path = "../stylers_core", version = "0.4.0" }

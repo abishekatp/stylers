@@ -39,7 +39,7 @@ pub fn GreenButton() -> impl IntoView {
         }
     };
 
-    view! {class = class_name,
+    view! {class:class_name,
         <style>{style_val}</style>
         <button>"I am green button"</button>
         <div class="one">

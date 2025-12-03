@@ -1,3 +1,5 @@
+#![warn(missing_docs)]
+
 use glob::glob;
 
 use std::fs::File;
@@ -19,25 +21,57 @@ macro_rules! p {
 }
 
 pub fn build(output_path: Option<String>) {
-    let pattern = format!("{}/src/**/*.rs", current_dir().unwrap().to_str().unwrap());
+    let current_dir = match current_dir() {
+        Ok(dir) => dir,
+        Err(e) => {
+            p!("Failed to get current directory: {}", e);
+            return;
+        }
+    };
+    let pattern = format!("{}/src/**/*.rs", current_dir.to_str().unwrap_or("."));
     let mut output_css = String::from("");
     p!(
         "{}",
         "===============================Stylers debug output start==============================="
     );
-    for file in glob(&pattern).unwrap() {
-        let file = file.unwrap();
-        let content = fs::read_to_string(file).expect("Failed to read file");
-        let ast = syn::parse_file(&content).unwrap();
+    let files = match glob(&pattern) {
+        Ok(files) => files,
+        Err(e) => {
+            p!("Failed to glob pattern {}: {}", pattern, e);
+            return;
+        }
+    };
+    for file in files {
+        let file = match file {
+            Ok(f) => f,
+            Err(e) => {
+                p!("Failed to read glob result: {}", e);
+                continue;
+            }
+        };
+        let content = match fs::read_to_string(&file) {
+            Ok(c) => c,
+            Err(e) => {
+                p!("Failed to read file {}: {}", file.display(), e);
+                continue;
+            }
+        };
+        let ast = match syn::parse_file(&content) {
+            Ok(ast) => ast,
+            Err(e) => {
+                p!("Failed to parse file {}: {}", file.display(), e);
+                continue;
+            }
+        };
 
         // check the each item in the *.rs file
         for item in ast.items {
             // check if the item is of type Function.
             if let Item::Fn(fn_def) = item {
-                let _componet_name = &fn_def.sig.ident;
+                let _component_name = &fn_def.sig.ident;
                 // check each statement in the function
                 for stmt in fn_def.block.stmts {
-                    // check if any of the statment is of the form `let any_valid_variable = style!{}`
+                    // check if any of the statement is of the form `let any_valid_variable = style!{}`
                     if let Stmt::Local(let_bin) = stmt {
                         if let Some(init) = let_bin.init {
                             if let Expr::Macro(expr_mac) = init.expr.borrow() {
@@ -57,19 +91,25 @@ pub fn build(output_path: Option<String>) {
                                         let ts = expr_mac.mac.tokens.clone();
                                         let file_path = ts.to_string();
                                         let file_path = file_path.trim_matches('"');
-                                        let css_content = std::fs::read_to_string(file_path)
-                                            .expect("Expected to read file");
-
-                                        let class =
-                                            Class::rand_class_from_seed(css_content.to_string());
-                                        let style = from_str(&css_content, &class);
-                                        output_css += &style;
+                                        match std::fs::read_to_string(&file_path) {
+                                            Ok(css_content) => {
+                                                let class = Class::rand_class_from_seed(
+                                                    css_content.to_string(),
+                                                );
+                                                let style = from_str(&css_content, &class);
+                                                output_css += &style;
+                                            }
+                                            Err(e) => {
+                                                p!("Failed to read CSS file {}: {}", file_path, e);
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                    //todo: other than let statements cover that other way style! macro can instantiated.
+                    // Note: Currently only handles `let` statements. Other ways to instantiate style! macro
+                    // (e.g., direct function calls, struct fields) are not yet supported.
                 }
             }
         }

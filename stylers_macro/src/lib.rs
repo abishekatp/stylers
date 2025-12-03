@@ -31,7 +31,16 @@ pub fn style(ts: proc_macro::TokenStream) -> proc_macro::TokenStream {
 pub fn style_sheet(ts: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let file_path = ts.to_string();
     let file_path = file_path.trim_matches('"');
-    let css_content = std::fs::read_to_string(file_path).expect("Expected to read file");
+    let css_content = match std::fs::read_to_string(&file_path) {
+        Ok(content) => content,
+        Err(e) => {
+            // Return a compile error instead of panicking
+            let error_msg = format!("Failed to read CSS file '{}': {}", file_path, e);
+            return proc_macro::TokenStream::from(quote! {
+                compile_error!(#error_msg);
+            });
+        }
+    };
     let class = Class::rand_class_from_seed(css_content.to_string());
     let class = class.as_name();
     let expanded = quote! {

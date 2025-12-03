@@ -1,4 +1,4 @@
-//! This create as of now only exposes one function named build_style.
+//! This crate as of now only exposes one function named build_style.
 //! The main focus of this function is to provide scoped css for Rust components(for the framework which provides component like architecture e.g leptos).
 //! This function can be used parse the style sheet in rust.
 mod css_at_rule;
@@ -43,7 +43,8 @@ mod tests {
     use super::*;
     use quote::quote;
 
-    // TODO: Span is only available outside procedural macro crate. workaround?
+    // Note: Span is only available outside procedural macro crate. This is a known limitation.
+    // See: https://docs.rs/proc-macro2/latest/proc_macro2/struct.Span.html#method.unwrap
     // https://docs.rs/proc-macro2/latest/proc_macro2/struct.Span.html#method.unwrap
     #[test]
     #[ignore]

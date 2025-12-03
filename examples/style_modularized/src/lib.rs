@@ -15,7 +15,7 @@ pub fn GreenButton() -> impl IntoView {
     let common_class = button_style();
     let class_name = format!("{} {}", common_class, local_class);
 
-    view! {class = {class_name.clone()},
+    view! {class:{class_name.clone()},
         <style>{style_val}</style>
         <button>"I am green button"</button>
     }
@@ -35,7 +35,7 @@ pub fn BlueButton() -> impl IntoView {
     let common_class = button_style();
     let class_name = format!("{} {}", common_class, local_class);
 
-    view! {class = {class_name.clone()},
+    view! {class:{class_name.clone()},
         <style>{style_val}</style>
         <button>"I am blue button"</button>
     }

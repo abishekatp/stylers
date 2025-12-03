@@ -142,7 +142,8 @@ impl StyleRule {
             }
 
             //ignore everything between square brackets.
-            //todo:handle the case when brackets inside attribute.
+            // Note: Currently doesn't handle nested brackets inside attribute selectors.
+            // This is a known limitation for complex attribute selectors.
             if is_bracket_open {
                 if c == ']' {
                     is_bracket_open = false;

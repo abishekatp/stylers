@@ -35,7 +35,7 @@ pub fn Parent() -> impl IntoView {
         }
     };
 
-    view! {class = {class_name},
+    view! {class:{class_name},
         <button>"I am green button"</button>
         <Child class_name={class_name.to_string()}/>
     }
@@ -53,7 +53,7 @@ fn Child(class_name: String) -> impl IntoView {
         }
     };
     let class_name = format!("{} {}", class_name, local_class);
-    view! {class = {class_name.clone()},
+    view! {class:{class_name.clone()},
         <style>{style_val}</style>
         <button>"I am blue button"</button>
     }

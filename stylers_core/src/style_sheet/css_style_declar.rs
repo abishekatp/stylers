@@ -12,7 +12,8 @@ impl StyleDeclaration {
 
     // note: this is string version of the parse method in StyleDeclaration struct.
     fn parse_from_str(&mut self, style_delar: String) {
-        //todo: what if newline is inside content property
+        // Note: Splitting by newline may break if newline is inside content property value.
+        // This is a known limitation for CSS content properties with escaped newlines.
         let mut declarations: Vec<&str> = style_delar.split('\n').collect();
         declarations = declarations.iter().map(|item| item.trim()).collect();
         self.style_css_text = declarations.join("");

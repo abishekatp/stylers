@@ -1,15 +1,32 @@
 # Stylers
-- Scoped CSS for Rust web frameworks like Leptos.
-- `style!` macro is for writing css inside rust functions directly. It will validates css properties as well.
+
+[![Crates.io](https://img.shields.io/crates/v/stylers)](https://crates.io/crates/stylers)
+[![docs.rs](https://docs.rs/stylers/badge.svg)](https://docs.rs/stylers)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![CI](https://github.com/abishekatp/stylers/workflows/CI/badge.svg)](https://github.com/abishekatp/stylers/actions)
+
+Scoped CSS for Rust web frameworks like Leptos.
+- `style!` macro is for writing css inside rust functions directly. It validates css properties as well.
 - `style_sheet!` macro is for writing css in external css file and importing that inside rust functions.
 - `style_str!` macro is same as `style!` macro but returns the tuple `(class_name, style_val)` instead of saving the style_val to the separate file.
 - `style_sheet_str!` this same as `style_sheet!` macro but returns the tuple `(class_name, style_val)` instead of saving the style_val to the separate file.
 
 ## Important Note
-- This Readme file is for the latest relase of stylers 1.0.0-alpha. You can find the readme for previous versions [here](https://crates.io/crates/stylers/0.3.2)
+- This Readme file is for the latest release of stylers 0.4.0. You can find the readme for previous versions [here](https://crates.io/crates/stylers/0.3.2)
 
-## Installtion
+## Installation
 ```cargo add stylers```
+
+## Rust Version Requirement
+
+**Note:** This crate requires **nightly Rust** due to the use of the `proc_macro_span` feature, which is currently unstable. The project uses the latest nightly toolchain as specified in `rust-toolchain.toml`. 
+
+If you're using this crate in your project, ensure you have nightly Rust installed:
+```bash
+rustup toolchain install nightly
+```
+
+The `rust-toolchain.toml` file in this repository will automatically use the correct nightly version when building.
 
 ## Prerequisite
 - If you are using `style` or `style_sheet` macro, then you have to add the `stylers` crate as both dependencies and build-dependencies in your Cargo.toml file.
@@ -29,17 +46,17 @@ fn main() {
     build(Some(String::from("./target/main.css")));
 }
 ```
-- In the above case output css file will be generated in the `./target/main.css` path. You can include that `main.css` file in your `index.html` file.(**Or If you are using a build like Trunk.rs you have to follow appropriate methods to include the main.css file to your project**).
+- In the above case output css file will be generated in the `./target/main.css` path. You can include that `main.css` file in your `index.html` file. (**Or If you are using a build like Trunk.rs you have to follow appropriate methods to include the main.css file to your project**).
 
 You can find the importance of these new changes [here](https://github.com/abishekatp/stylers/issues/35).
 
 ## Leptos Example
-**Note :Leptos version > 0.4.9 has some new changes. But stylers works the same way in all versions of leptos**
+**Note: Stylers is compatible with Leptos 0.8.14 and works the same way across all Leptos versions.**
 
 #### style!
 ```rust
 #[component]
-fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
+fn Hello(name: &'static str) -> impl IntoView {
     let styler_class = style! {
         #two{
             color: blue;
@@ -65,7 +82,7 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
         }
     };
 
-    view! {class = styler_class,
+    view! {class:styler_class,
         <div class="one">
             <h1 id="two">"Hello"</h1>
             <h2>"World"</h2>
@@ -78,9 +95,9 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
 #### style_sheet!
 ```rust
 #[component]
-fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
+fn Hello(name: &'static str) -> impl IntoView {
     let class_name = style_sheet!("./hello.css");
-    view! {class = class_name,
+    view! {class:class_name,
         <div class="one">
             <h1 id="two">"Hello"</h1>
             <h2>"World"</h2>
@@ -93,7 +110,7 @@ fn Hello(cx: Scope, name: &'static str) -> impl IntoView {
 #### style_str!
 ```rust
 #[component]
-pub fn GreenButton(cx: Scope) -> impl IntoView {
+pub fn GreenButton() -> impl IntoView {
     let (class_name, style_val) = style_str! {
         button {
             background-color: green;
@@ -126,7 +143,7 @@ pub fn GreenButton(cx: Scope) -> impl IntoView {
         }
     };
 
-    view! {class = class_name,
+    view! {class:class_name,
         <style>{style_val}</style>
         <button>"I am green button"</button>
     }
@@ -139,7 +156,7 @@ pub fn GreenButton(cx: Scope) -> impl IntoView {
 pub fn BlueButton() -> impl IntoView {
     let (class_name, style_val) = style_sheet_str!("./src/button.css");
 
-    view! {class = class_name,
+    view! {class:class_name,
         <style>{style_val}</style>
         <button>"I am blue button"</button>
     }
@@ -148,7 +165,7 @@ pub fn BlueButton() -> impl IntoView {
 - In this case ```button.css``` file is inside the `src` directory of the project.
 
 ## Custom pseudo classes
-- In some situations we may need our css to affect `deep down` the dom tree. To achieve this we have custom pseudo class called `:deep()`. For example below css is valid one.
+- In some situations we may need our css to affect deeply the dom tree. To achieve this we have custom pseudo class called `:deep()`. For example below css is valid one.
 #### Input
 ```css
 div :deep(h3) {
@@ -160,14 +177,14 @@ div :deep(h3) {
 div.l-243433 h3{color: orange;}
 ```
 
-- If you want your particular css to be `global` you can use `:deep()` directive without any  prceding selectors it.
+- If you want your particular css to be `global` you can use `:deep()` directive without any preceding selectors it.
 #### Input
 ```css
 :deep(h3 div) {
     color: orange;
 }
 ```
-#### Ouput
+#### Output
 ```css
 h3 div{color: orange;}
 ```
@@ -201,13 +218,13 @@ style!(
 - You have to include generated main.css in the index.html
 (e.g ```<link rel="stylesheet" href="/main.css">```).
 
-- In ```Trunk.toml``` you have to add the below lines to move the the `main.css` file from `./target/` directory to `./dist/` directory.
+- In ```Trunk.toml``` you have to add the below lines to move the `main.css` file from `./target/` directory to `./dist/` directory.
 ```toml
 [[hooks]]
 stage = "post_build"
 command = "sh"
 command_arguments = ["-c", "cp ./target/main.css $TRUNK_STAGING_DIR/"]
 ```
-- when you are including external css file using `style_sheet!` macro, whenever you make some changes in your css file you have to save corresponding rust file(*.rs) for css to be updated on the browser. For more info about trunk refer [here](https://trunkrs.dev/commands/).
+- when you are including external css file using `style_sheet!` macro, whenever you make some changes in your css file you have to save corresponding rust file(*.rs) for css to be updated on the browser. For more info about Trunk, refer [here](https://trunkrs.dev/commands/).
 - if something is odd with styling, delete the `./target/stylers` directory and rebuild your package. If the problem persists please raise an issue here.
 
